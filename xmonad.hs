@@ -30,6 +30,16 @@ import XMonad.Util.Scratchpad
 import XMonad.StackSet(RationalRect(RationalRect))
 import XMonad.Hooks.ManageHelpers
 
+import XMonad.Layout.Fullscreen
+import XMonad.Layout.Minimize
+import XMonad.Hooks.Minimize
+import XMonad.Layout.NoBorders
+ 
+import XMonad.Layout.Minimize
+import XMonad.Actions.Minimize
+import XMonad.Layout.IM
+import Data.Ratio ((%))
+
 manageScratchPad :: ManageHook
 manageScratchPad = scratchpadManageHook (RationalRect l t w h)
   where
@@ -58,19 +68,21 @@ myNormalBorderColor  = "#171322"
 myFocusedBorderColor = "#c50df3"
 
 --
-coreLayoutHook = tiled ||| Mirror tiled ||| tiled3 ||| Full ||| Grid ||| centerMaster Grid ||| spiral (0.857142857143)
-  where
-    -- default tiling algorithm partitions the screen into two panes
-    tiled   = ResizableTall nmaster delta ratio []
-    -- like the tall, but with three columns
-    tiled3  = ThreeColMid nmaster delta ratio
-    -- The default number of windows in the master pane
-    nmaster = 1
-    -- Percent of screen to increment by when resizing panes
-    delta   = 1/200
-    -- Default proportion of screen occupied by master pane
-    ratio   = 2/3
 
+coreLayoutHook = modifiers (all)
+        where tiled = Tall nmaster delta ratio
+              tiled3  = ThreeColMid nmaster delta ratio
+              nmaster = 1
+              delta = 1/100
+              ratio = 2/3
+              fullfull = fullscreenFull Full 
+              im       = withIM(1%5) (ClassName "Skype") $ withIM (1%5) (ClassName "Ktp-text-ui") tiled
+              -- When I want fullscreen, I usually don't want the panel
+              -- TODO: Find a way to set avoidStruts to false (i.e. allow fullfull to toggle struts but have it disabled by default)
+              all = avoidStruts(tiled) ||| avoidStruts(tiled3) ||| Full ||| Grid ||| centerMaster Grid ||| spiral (0.857142857143) ||| avoidStruts(im) ||| avoidStrutsOn [] fullfull
+              modifiers x = minimize(x)
+              --ws l = windowSwitcherDecorationWithButtons shrinkText defaultThemeWithButtons (draggingVisualizer l)
+			  
 myLayout = avoidStruts $ coreLayoutHook
 
 customManageHook = composeAll . concat $
@@ -91,7 +103,7 @@ customManageHook = composeAll . concat $
 
 myManageHook = fullscreenManageHook <+> manageDocks <+> manageScratchPad <+> manageHook kdeConfig <+> customManageHook <+> (isFullscreen --> doFullFloat)
 
-myEventHook = handleEventHook kdeConfig <+> fullscreenEventHook
+myEventHook = handleEventHook kdeConfig <+> docksEventHook <+> fullscreenEventHook <+> minimizeEventHook
 
 myLogHook = return ()
 
@@ -159,7 +171,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_k     ), windows W.focusUp  )
 
     -- Move focus to the master window
-    , ((modm,               xK_m     ), windows W.focusMaster  )
+    , ((modm,               xK_m     ), withFocused minimizeWindow  )
 
     -- Swap the focused window and the master window
     , ((modm .|. shiftMask, xK_Return), windows W.swapMaster)
