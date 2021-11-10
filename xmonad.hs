@@ -8,6 +8,7 @@
 --
 
 import XMonad
+import XMonad.Layout.Spacing
 import Data.Monoid
 import System.Exit
 import XMonad.Hooks.ManageDocks
@@ -40,6 +41,9 @@ import XMonad.Actions.Minimize
 import XMonad.Layout.IM
 import Data.Ratio ((%))
 
+import XMonad.Layout.SimpleDecoration
+import           Control.Monad   (when)
+
 manageScratchPad :: ManageHook
 manageScratchPad = scratchpadManageHook (RationalRect l t w h)
   where
@@ -54,7 +58,7 @@ myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True 
 
 myClickJustFocuses :: Bool
-myClickJustFocuses = False
+myClickJustFocuses = True
 
 myBorderWidth   = 1
 
@@ -69,26 +73,20 @@ myFocusedBorderColor = "#c50df3"
 
 --
 
-coreLayoutHook = modifiers (all)
+coreLayoutHook = modifiers (spacing 5 $ all)
         where tiled = Tall nmaster delta ratio
               tiled3  = ThreeColMid nmaster delta ratio
               nmaster = 1
               delta = 1/100
               ratio = 2/3
-              fullfull = fullscreenFull Full 
-              im       = withIM(1%5) (ClassName "Skype") $ withIM (1%5) (ClassName "Ktp-text-ui") tiled
-              -- When I want fullscreen, I usually don't want the panel
-              -- TODO: Find a way to set avoidStruts to false (i.e. allow fullfull to toggle struts but have it disabled by default)
-              all = avoidStruts(tiled) ||| avoidStruts(tiled3) ||| Full ||| Grid ||| centerMaster Grid ||| spiral (0.857142857143) ||| avoidStruts(im) ||| avoidStrutsOn [] fullfull
+              all = Full ||| tiled3 ||| tiled ||| Grid ||| centerMaster Grid ||| spiral (0.857142857143)
               modifiers x = minimize(x)
-              --ws l = windowSwitcherDecorationWithButtons shrinkText defaultThemeWithButtons (draggingVisualizer l)
-			  
 myLayout = avoidStruts $ coreLayoutHook
 
 customManageHook = composeAll . concat $
   [ [ className   =? c --> doFloat           | c <- myFloats]
   , [ className   =? c --> doF (W.shift "9") | c <- mailIrcApps]
-  , [ className   =? "plasmashell" --> doFloat >> doIgnore ]
+  , [ className   =? "plasmashell" --> doIgnore ]
   ]
   where
     myFloats      = [
@@ -109,8 +107,6 @@ myLogHook = return ()
 
 myStartupHook = do
   startupHook kdeConfig
-  spawnOnce "telegram-desktop &"
-  spawnOnce "plasmashell &"
   spawnOnce "compton &"
   
 main = do
@@ -153,7 +149,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_space ), sendMessage NextLayout)
 
     -- Reset the layouts on the current workspace to default
-    , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
+    , ((modm .|. shiftMask, xK_m ), sendMessage FirstLayout)
 
     -- Launch Telegram
     , ((modm .|. shiftMask, xK_t     ), spawn "telegram-desktop")
@@ -237,9 +233,12 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- mod-button1, Set the window to floating mode and move by dragging
-    [ ((modm, button3), (\w -> XMonad.focus w >> mouseMoveWindow w
+    [ ((modm, button3), \w -> 
+          focus w >>
+          mouseMoveWindow w >>
+          windows W.shiftMaster)
+    , ((modm .|. shiftMask, button1), (\w -> XMonad.focus w >> mouseMoveWindow w
                                        >> windows W.shiftMaster))
-
     -- mod-button2, Raise the window to the top of the stack
     , ((modm, button2), (\w -> XMonad.focus w >> windows W.shiftMaster))
 
