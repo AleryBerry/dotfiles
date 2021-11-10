@@ -107,7 +107,7 @@ myEventHook = handleEventHook kdeConfig <+> docksEventHook <+> fullscreenEventHo
 
 myLogHook :: X ()
 myLogHook = fadeInactiveLogHook fadeAmount
-    where fadeAmount = 0.8
+    where fadeAmount = 0.9
 
 myStartupHook = do
   startupHook kdeConfig
