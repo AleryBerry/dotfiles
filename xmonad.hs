@@ -44,19 +44,7 @@ import Data.Ratio ((%))
 import XMonad.Layout.SimpleDecoration
 import           Control.Monad   (when)
 
-import Graphics.X11.Xlib
-import Graphics.X11.Xlib.Extras
-import Data.Monoid
-import Data.Word
-
-setTransparentHook :: Event -> X All
-setTransparentHook ConfigureEvent{ev_event_type = createNotify, ev_window = id} = do
-  setOpacity id opacity
-  return (All True) where
-    opacityFloat = 0.9
-    opacity = floor $ fromIntegral (maxBound :: Word32) * opacityFloat
-    setOpacity id op = spawn $ "xprop -id " ++ show id ++ " -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY " ++ show op
-setTransparentHook _ = return (All True)
+import XMonad.Hooks.FadeInactive
 
 manageScratchPad :: ManageHook
 manageScratchPad = scratchpadManageHook (RationalRect l t w h)
@@ -115,9 +103,11 @@ customManageHook = composeAll . concat $
 
 myManageHook = fullscreenManageHook <+> manageDocks <+> manageScratchPad <+> manageHook kdeConfig <+> customManageHook <+> (isFullscreen --> doFullFloat)
 
-myEventHook = setTransparentHook <+> handleEventHook kdeConfig <+> docksEventHook <+> fullscreenEventHook <+> minimizeEventHook
+myEventHook = handleEventHook kdeConfig <+> docksEventHook <+> fullscreenEventHook <+> minimizeEventHook
 
-myLogHook = return ()
+myLogHook :: X ()
+myLogHook = fadeInactiveLogHook fadeAmount
+    where fadeAmount = 0.8
 
 myStartupHook = do
   startupHook kdeConfig
@@ -131,7 +121,7 @@ main = do
         clickJustFocuses   = myClickJustFocuses,
         borderWidth        = myBorderWidth,
         modMask            = myModMask,
-        XMonad.workspaces         = myWorkspaces,
+        XMonad.workspaces  = myWorkspaces,
         normalBorderColor  = myNormalBorderColor,
         focusedBorderColor = myFocusedBorderColor,
 
