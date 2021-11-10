@@ -44,6 +44,20 @@ import Data.Ratio ((%))
 import XMonad.Layout.SimpleDecoration
 import           Control.Monad   (when)
 
+import Graphics.X11.Xlib
+import Graphics.X11.Xlib.Extras
+import Data.Monoid
+import Data.Word
+
+setTransparentHook :: Event -> X All
+setTransparentHook ConfigureEvent{ev_event_type = createNotify, ev_window = id} = do
+  setOpacity id opacity
+  return (All True) where
+    opacityFloat = 0.9
+    opacity = floor $ fromIntegral (maxBound :: Word32) * opacityFloat
+    setOpacity id op = spawn $ "xprop -id " ++ show id ++ " -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY " ++ show op
+setTransparentHook _ = return (All True)
+
 manageScratchPad :: ManageHook
 manageScratchPad = scratchpadManageHook (RationalRect l t w h)
   where
@@ -101,7 +115,7 @@ customManageHook = composeAll . concat $
 
 myManageHook = fullscreenManageHook <+> manageDocks <+> manageScratchPad <+> manageHook kdeConfig <+> customManageHook <+> (isFullscreen --> doFullFloat)
 
-myEventHook = handleEventHook kdeConfig <+> docksEventHook <+> fullscreenEventHook <+> minimizeEventHook
+myEventHook = setTransparentHook <+> handleEventHook kdeConfig <+> docksEventHook <+> fullscreenEventHook <+> minimizeEventHook
 
 myLogHook = return ()
 
