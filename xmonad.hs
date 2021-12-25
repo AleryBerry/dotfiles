@@ -25,7 +25,7 @@ myNormalBorderColor  = "#ffffff"
 myFocusedBorderColor = "#1414ff"
 
 myWorkspaces       :: [String]
-myWorkspaces         = ["I","II","III", "IV","V","VI","VII","VII","IX"]
+myWorkspaces         = ["I","II","III", "IV","V","VI","VII","VIII","IX"]
 
 myLayoutHook = avoidStruts (
     tiled ||| Mirror tiled ||| Full
@@ -62,8 +62,7 @@ main = do
      -- Request Access (needed when sending messages)
      D.requestAccess dbus
      -- Start XMonad
-     xmonad . ewmhFullscreen . ewmh $ myConfig { logHook = myLogHook dbus }    
-
+     xmonad . ewmhFullscreen . ewmh $ myConfig { logHook = dynamicLogWithPP (myLogHook dbus) }
 myConfig = def {
   terminal = myTerminal
 , clickJustFocuses   = myClickJustFocuses
