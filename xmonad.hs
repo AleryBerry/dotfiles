@@ -1,13 +1,10 @@
 import XMonad
-
-
 -- XMONAD + POLYBAR
 import XMonad.Hooks.ManageDocks
 import qualified XMonad.DBus as D
 import qualified DBus.Client as DC
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
-
 -- ManageHook
 import XMonad.Hooks.ManageHelpers
 -- Ewmh Screen
@@ -17,7 +14,7 @@ import qualified XMonad.StackSet as W
 import qualified Data.Map as M
 import XMonad.Util.EZConfig(additionalKeysP)
 import XMonad.Actions.Navigation2D
--- Layouts
+-- Layout
 import XMonad.Layout.NoBorders
 
 myTerminal           = "alacritty" 
@@ -44,62 +41,78 @@ myManageHook = composeAll . concat $
     [ [ className =? c --> doShift "I" | c <- myBrowsers   ]
     , [ className =? b --> doShift "V" | b <- myGames      ]
     , [ className =? "telegram-desktop" --> doShift "II"   ]
-    , [ isFullscreen   --> doFullFloat <+> hasBorder False ]
+    , [ isFullscreen   --> doF W.focusDown <+> doFullFloat <+> hasBorder False ]
     , [ isDialog       --> doFloat                         ]
     ]
   where
       myBrowsers = [ "qutebrowser", "falkon", "vivaldi-bin" ]
       myGames    = [ "dota2", "clonehero", "Dwarf_Fortress" ]
 
+-- Colours
+gray      = "#7F7F7F"
+gray2     = "#691A64"
+red       = "#900000"
+blue      = "#2E9AFE"
+white     = "#eeeeee"
+
 myLogHook :: DC.Client -> PP
 myLogHook dbus = def {
-    ppOutput = D.send dbus
-,   ppHiddenNoWindows = wrap "<" ">"
+    ppCurrent = wrap ("%{F" ++ blue ++ "} ") " %{F-}"
+  , ppVisible = wrap ("%{F" ++ gray2 ++ "} ") " %{F-}"
+  , ppUrgent = wrap ("%{F" ++ red ++ "} ") " %{F-}"
+  , ppTitle = shorten 30  
+  , ppHidden = wrap ("%{F" ++ gray2 ++ "} ") " %{F-}"
+  , ppOutput = D.send dbus
+  , ppHiddenNoWindows = wrap ("%{F" ++ gray ++ "} ") " %{F-}"
 }
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- launch a terminal
-    [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
-    -- launch dmenu
-    , ((modm,               xK_p     ), spawn "rofi -show drun")
+    [ ((modm,                xK_Return), spawn $ XMonad.terminal conf)
+    -- launch rofi drun
+    , ((modm,                xK_p     ), spawn "rofi -show drun")
+    -- launch rofi -show 
+    , ((modm .|. controlMask,xK_p     ), spawn "rofi -show")
     -- launch clipmenu
-    , ((modm .|. shiftMask ,xK_p     ), spawn "clipmenu")
+    , ((modm .|. shiftMask,  xK_p     ), spawn "clipmenu")
     -- close focused window
-    , ((modm,               xK_q     ), kill)
+    , ((modm,                xK_q     ), kill)
     -- next layout
-    , ((modm,               xK_space ), sendMessage NextLayout)
+    , ((modm,                xK_space ), sendMessage NextLayout)
     -- move focus to the next window
-    , ((modm,               xK_Tab   ), windows W.focusDown)
+    , ((modm,                xK_Tab   ), windows W.focusDown)
     -- push window back into tiling
-    , ((modm,               xK_t     ), withFocused $ windows . W.sink)
+    , ((modm,                xK_t     ), withFocused $ windows . W.sink)
     -- increment the number of windows in the master area
-    , ((modm,               xK_comma ), sendMessage (IncMasterN 1))
+    , ((modm,                xK_comma ), sendMessage (IncMasterN 1))
     -- deincrement the number of windows in the master area
-    , ((modm,               xK_period), sendMessage (IncMasterN (-1)))
+    , ((modm,                xK_period), sendMessage (IncMasterN (-1)))
     -- toggle the status bar gap
-    , ((modm,               xK_b     ), sendMessage ToggleStruts)
+    , ((modm,                xK_b     ), sendMessage ToggleStruts)
     -- restart xmonad
-    , ((modm .|. shiftMask, xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+    , ((modm .|. shiftMask,  xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+    -- logout 
+    , ((modm .|. controlMask,xK_q     ), spawn "loginctl terminate-user hibiscus-tea")
     -- Swap adjacent windows | no arrowkeys
-    , ((modm,               xK_l     ), windowSwap R True)
-    , ((modm,               xK_h     ), windowSwap L True)
-    , ((modm,               xK_k     ), windowSwap U True)
-    , ((modm,               xK_j     ), windowSwap D True)
+    , ((modm,                xK_l     ), windowSwap R True)
+    , ((modm,                xK_h     ), windowSwap L True)
+    , ((modm,                xK_k     ), windowSwap U True)
+    , ((modm,                xK_j     ), windowSwap D True)
     -- Directional navigation of windows | no arrowkeys   
-    , ((modm .|. shiftMask, xK_l     ), windowGo R True)
-    , ((modm .|. shiftMask, xK_h     ), windowGo L True)
-    , ((modm .|. shiftMask, xK_k     ), windowGo U True)
-    , ((modm .|. shiftMask, xK_j     ), windowGo D True)
+    , ((modm .|. shiftMask,  xK_l     ), windowGo R True)
+    , ((modm .|. shiftMask,  xK_h     ), windowGo L True)
+    , ((modm .|. shiftMask,  xK_k     ), windowGo U True)
+    , ((modm .|. shiftMask,  xK_j     ), windowGo D True)
     -- Swap adjacent windows
-    , ((modm,               xK_Right), windowSwap R True)
-    , ((modm,               xK_Left  ), windowSwap L True)
-    , ((modm,               xK_Up    ), windowSwap U True)
-    , ((modm,               xK_Down  ), windowSwap D True)
+    , ((modm,                xK_Right ), windowSwap R True)
+    , ((modm,                xK_Left  ), windowSwap L True)
+    , ((modm,                xK_Up    ), windowSwap U True)
+    , ((modm,                xK_Down  ), windowSwap D True)
     -- Directional navigation of windows
-    , ((modm .|. shiftMask, xK_Right ), windowGo R True)
-    , ((modm .|. shiftMask, xK_Left  ), windowGo L True)
-    , ((modm .|. shiftMask, xK_Up    ), windowGo U True)
-    , ((modm .|. shiftMask, xK_Down  ), windowGo D True)
+    , ((modm .|. shiftMask,  xK_Right ), windowGo R True)
+    , ((modm .|. shiftMask,  xK_Left  ), windowGo L True)
+    , ((modm .|. shiftMask,  xK_Up    ), windowGo U True)
+    , ((modm .|. shiftMask,  xK_Down  ), windowGo D True)
     ]
     ++
     -- mod-[1..9], Switch to workspace N
@@ -136,7 +149,7 @@ main = do
      -- Request Access (needed when sending messages)
      D.requestAccess dbus
      -- Start XMonad
-     xmonad . ewmhFullscreen . ewmh $ myConfig { logHook = dynamicLogWithPP (myLogHook dbus) }
+     xmonad . ewmhFullscreen . ewmh $ myConfig { logHook = dynamicLogWithPP (myLogHook dbus)  } 
 myConfig = def {
   terminal = myTerminal
 , clickJustFocuses   = myClickJustFocuses
