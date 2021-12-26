@@ -12,8 +12,11 @@ import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.ManageHelpers
 -- Ewmh Screen
 import XMonad.Hooks.EwmhDesktops
--- Additional Keys
+-- Key Binding
+import qualified XMonad.StackSet as W
+import qualified Data.Map as M
 import XMonad.Util.EZConfig(additionalKeysP)
+import XMonad.Actions.Navigation2D
 -- Layouts
 import XMonad.Layout.NoBorders
 
@@ -23,7 +26,6 @@ myClickJustFocuses   = True
 myBorderWidth        = 4
 myNormalBorderColor  = "#ffffff"
 myFocusedBorderColor = "#1414ff"
-
 myWorkspaces       :: [String]
 myWorkspaces         = ["I","II","III", "IV","V","VI","VII","VIII","IX"]
 
@@ -55,6 +57,66 @@ myLogHook dbus = def {
 ,   ppHiddenNoWindows = wrap "<" ">"
 }
 
+myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
+    -- launch a terminal
+    [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
+    -- launch dmenu
+    , ((modm,               xK_p     ), spawn "dmenu_run")
+    -- close focused window
+    , ((modm,               xK_q     ), kill)
+    -- next layout
+    , ((modm,               xK_space ), sendMessage NextLayout)
+    -- move focus to the next window
+    , ((modm,               xK_Tab   ), windows W.focusDown)
+    -- push window back into tiling
+    , ((modm,               xK_t     ), withFocused $ windows . W.sink)
+    -- increment the number of windows in the master area
+    , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
+    -- deincrement the number of windows in the master area
+    , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
+    -- toggle the status bar gap
+    , ((modm              , xK_b     ), sendMessage ToggleStruts)
+    -- restart xmonad
+    , ((modm .|. shiftMask, xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+    -- Swap adjacent windows
+    , ((modm,              xK_Right), windowSwap R True)
+    , ((modm,              xK_Left ), windowSwap L True)
+    , ((modm,              xK_Up   ), windowSwap U True)
+    , ((modm,              xK_Down ), windowSwap D True)
+    -- Directional navigation of windows
+    , ((modm .|. shiftMask, xK_Right), windowGo R True)
+    , ((modm .|. shiftMask, xK_Left ), windowGo L True)
+    , ((modm .|. shiftMask, xK_Up   ), windowGo U True)
+    , ((modm .|. shiftMask, xK_Down ), windowGo D True)
+    ]
+    ++
+    -- mod-[1..9], Switch to workspace N
+    -- mod-shift-[1..9], Move client to workspace N
+    [((m .|. modm, k), windows $ f i)
+        | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
+        , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+    ++
+    -- mod-{w,e,r}, Switch to physical/Xinerama screens 1, 2, or 3
+    -- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
+    [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
+        | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
+        , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
+
+myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
+    -- mod-button1, Set the window to floating mode and move by dragging
+    [ ((modm, button3), \w -> 
+        focus w >>
+        mouseMoveWindow w >>
+        windows W.shiftMaster)
+    , ((modm .|. shiftMask, button1), (\w -> XMonad.focus w >> mouseMoveWindow w
+        >> windows W.shiftMaster))
+    -- mod-button2, Raise the window to the top of the stack
+    , ((modm, button2), (\w -> XMonad.focus w >> windows W.shiftMaster))
+    -- mod-button3, Set the window to floating mode and resize by dragging
+    , ((modm, button1), (\w -> XMonad.focus w >> mouseResizeWindow w
+        >> windows W.shiftMaster))
+    ] 
+
 main :: IO ()
 main = do
      -- Connect to DBus
@@ -68,6 +130,8 @@ myConfig = def {
 , clickJustFocuses   = myClickJustFocuses
 , modMask            = mod4Mask
 , workspaces         = myWorkspaces
+, keys               = myKeys
+-- Hooks
 , layoutHook         = smartBorders $ myLayoutHook
 , manageHook         = manageDocks <+> myManageHook 
 , borderWidth        = myBorderWidth
