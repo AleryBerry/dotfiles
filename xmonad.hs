@@ -61,7 +61,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- launch a terminal
     [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
     -- launch dmenu
-    , ((modm,               xK_p     ), spawn "dmenu_run")
+    , ((modm,               xK_p     ), spawn "rofi -show drun")
+    -- launch clipmenu
+    , ((modm .|. shiftMask ,xK_p     ), spawn "clipmenu")
     -- close focused window
     , ((modm,               xK_q     ), kill)
     -- next layout
@@ -71,23 +73,33 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- push window back into tiling
     , ((modm,               xK_t     ), withFocused $ windows . W.sink)
     -- increment the number of windows in the master area
-    , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
+    , ((modm,               xK_comma ), sendMessage (IncMasterN 1))
     -- deincrement the number of windows in the master area
-    , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
+    , ((modm,               xK_period), sendMessage (IncMasterN (-1)))
     -- toggle the status bar gap
-    , ((modm              , xK_b     ), sendMessage ToggleStruts)
+    , ((modm,               xK_b     ), sendMessage ToggleStruts)
     -- restart xmonad
     , ((modm .|. shiftMask, xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+    -- Swap adjacent windows | no arrowkeys
+    , ((modm,               xK_l     ), windowSwap R True)
+    , ((modm,               xK_h     ), windowSwap L True)
+    , ((modm,               xK_k     ), windowSwap U True)
+    , ((modm,               xK_j     ), windowSwap D True)
+    -- Directional navigation of windows | no arrowkeys   
+    , ((modm .|. shiftMask, xK_l     ), windowGo R True)
+    , ((modm .|. shiftMask, xK_h     ), windowGo L True)
+    , ((modm .|. shiftMask, xK_k     ), windowGo U True)
+    , ((modm .|. shiftMask, xK_j     ), windowGo D True)
     -- Swap adjacent windows
-    , ((modm,              xK_Right), windowSwap R True)
-    , ((modm,              xK_Left ), windowSwap L True)
-    , ((modm,              xK_Up   ), windowSwap U True)
-    , ((modm,              xK_Down ), windowSwap D True)
+    , ((modm,               xK_Right), windowSwap R True)
+    , ((modm,               xK_Left  ), windowSwap L True)
+    , ((modm,               xK_Up    ), windowSwap U True)
+    , ((modm,               xK_Down  ), windowSwap D True)
     -- Directional navigation of windows
-    , ((modm .|. shiftMask, xK_Right), windowGo R True)
-    , ((modm .|. shiftMask, xK_Left ), windowGo L True)
-    , ((modm .|. shiftMask, xK_Up   ), windowGo U True)
-    , ((modm .|. shiftMask, xK_Down ), windowGo D True)
+    , ((modm .|. shiftMask, xK_Right ), windowGo R True)
+    , ((modm .|. shiftMask, xK_Left  ), windowGo L True)
+    , ((modm .|. shiftMask, xK_Up    ), windowGo U True)
+    , ((modm .|. shiftMask, xK_Down  ), windowGo D True)
     ]
     ++
     -- mod-[1..9], Switch to workspace N
