@@ -19,6 +19,10 @@ import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import qualified XMonad.DBus as D
 import qualified DBus.Client as DC
+import XMonad.Util.Loggers
+import XMonad.Util.WorkspaceCompare
+import Data.List
+import Data.List.Split
 
 myBorderWidth        = 4
 myClickJustFocuses :: Bool
@@ -26,10 +30,11 @@ myClickJustFocuses   = True
 myTerminal           = "alacritty" 
 myWorkspaces       :: [String]
 myWorkspaces         = ["I","II","III", "IV","V","VI","VII","VIII"]
+-- myWorkspaces         = ["1","2","3","4","5","6","7","8"]
 
 -- Colours
 myFocusedBorderColor = "#F5C035"
-myNormalBorderColor  = "#EEEEEE"
+myNormalBorderColor  = "#reformat"
 gray      = "#7F7F7F"
 yellow    = "#F5C035"
 yellow2   = "#755B1A"
@@ -62,17 +67,40 @@ myManageHook = composeAll . concat $
       myComs     = [ "TelegramDesktop", "Element", "discord" ]
       myFloats   = [ "ranger" ]
 
-myLogHook :: DC.Client -> PP
-myLogHook dbus = def {
-    ppLayout    = shorten 30  
-    , ppCurrent = wrap ("%{F" ++ yellow ++ "} ") " %{F-}"
-    , ppTitle   = shorten 30  
-    , ppVisible = wrap ("%{F" ++ yellow2 ++ "} ") " %{F-}"
-    , ppUrgent  = wrap ("%{F" ++ yellow ++ "} ") " %{F-}"
-    , ppHidden  = wrap ("%{F" ++ yellow2 ++ "} ") " %{F-}"
-    , ppHiddenNoWindows = wrap ("%{F" ++ gray ++ "} ") " %{F-}"
-    , ppOutput  = D.send dbus
+rmdups :: Eq a => [a] -> [a]
+rmdups [] = []
+rmdups (x:xs)   | x `elem` xs   = rmdups xs
+                | otherwise     = x : rmdups xs
+
+removeItem _ []                 = []
+removeItem x (y:ys) | x == y    = removeItem x ys
+                    | otherwise = y : removeItem x ys
+
+boolToString :: Bool -> [String]
+boolToString True = ["TRUE"]
+boolToString False = ["FALSE"]
+
+finalDestination :: String -> [String] -> [String]
+finalDestination cs (w:ws) = foldr (\x xs -> if (x /= cs) then x:xs else reformat cs:xs) [] (w:ws)
+
+reformat :: String -> String
+reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-}" ((split (dropBlanks $ dropDelims $ oneOf "$}") x) !! 1)
+
+myLogHook :: DC.Client -> ScreenId -> String -> PP
+myLogHook dbus i s = def {
+    ppCurrent = formatUnfocused
+    , ppVisible = formatUnfocused
+    , ppHidden  = formatUnfocused
+    , ppHiddenNoWindows = wrap ("%{F" ++ gray ++ "}") "%{F-}"
+    , ppOutput  = D.sendToPath dbus s 
+    , ppSep     = "  "
+    , ppOrder   = \(ws : _ : _ : wins : cs) -> finalDestination (head cs) (words ws) <> [wins]
+    , ppExtras  = [titlesOnScreen, wrapL ("%{F" ++ yellow2 ++ "}") "%{F-}" $ logCurrentOnScreen i]
 }
+    where
+        titlesOnScreen  = logDefault (logTitlesOnScreen i formatFocused formatUnfocused) (logConst "Hey, you, you're finally awake.")
+        formatFocused   = wrap ("%{F" ++ yellow ++ "}") "%{F-}"
+        formatUnfocused = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}" 
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- launch a terminal
@@ -180,7 +208,7 @@ main = do
      -- Request Access (needed when sending messages)
      D.requestAccess dbus
      -- Start XMonad
-     xmonad . ewmhFullscreen . ewmh $ myConfig { logHook = dynamicLogWithPP (myLogHook dbus)  } 
+     xmonad . ewmhFullscreen . ewmh $ myConfig { logHook = dynamicLogWithPP (myLogHook dbus 0 "DVI" ) >> dynamicLogWithPP (myLogHook dbus 1 "HDMI") } 
 
 myConfig = def {
   terminal = myTerminal
