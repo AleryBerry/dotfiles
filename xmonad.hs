@@ -50,17 +50,18 @@ myManageHook = composeAll . concat $
     , [ className =? "Alacritty" --> doShift "III"   ]
     , [ className =? "Deadbeef" --> doShift "IV"   ]
     , [ className =? d --> doShift "V" | d <- myGames  ]
-    , [ className =? "Steam" --> doShift "VI"   ]
+    , [ className =? e --> doShift "VI" | e <- myGameLaunchers  ]
     , [ className =? "Bitwarden" --> doShift "VIII"   ]
-    , [ isFullscreen   --> doF W.focusDown <+> doFullFloat <+> hasBorder False ]
+    , [ isFullscreen --> doF W.focusDown <+> doFullFloat <+> hasBorder False ]
     , [ isDialog --> doFloat ]
     , [ className =? g --> doCenterFloat | g <- myFloats                    ]
     ]
   where
-      myBrowsers = [ "qutebrowser", "Falkon", "Vivaldi-stable", "vivaldi" ]
-      myGames    = [ "dota2", "clonehero", "Dwarf_Fortress", "Blender" ]
-      myComs     = [ "TelegramDesktop", "Element", "discord" ]
-      myFloats   = [ "ranger" ]
+      myBrowsers      = [ "qutebrowser", "Falkon", "Vivaldi-stable", "firefox" ]
+      myGames         = [ "dota2", "clonehero", "Dwarf_Fortress", "Blender" ]
+      myComs          = [ "TelegramDesktop", "Element", "discord" ]
+      myFloats        = [ "ranger" ]
+      myGameLaunchers = [ "Steam", "heroic" ]
 
 myLogHook :: DC.Client -> PP
 myLogHook dbus = def {
@@ -85,7 +86,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. controlMask,xK_p     ), spawn "rofi -show")
 
     -- launch clipmenu
-    , ((modm .|. shiftMask,  xK_p     ), spawn "clipmenu")
+    , ((modm,                xK_v     ), spawn "clipmenu")
 
     -- close focused window
     , ((modm,                xK_q     ), kill)
@@ -114,32 +115,29 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- logout 
     , ((modm .|. controlMask,xK_q     ), spawn "loginctl terminate-user hibiscus-tea")
 
-    -- Swap adjacent windows | no arrowkeys
+    -- swap adjacent windows             | no arrowkeys
     , ((modm,                xK_l     ), windowGo   R True)
     , ((modm,                xK_h     ), windowGo   L True)
     , ((modm,                xK_k     ), windowGo   U True)
     , ((modm,                xK_j     ), windowGo   D True)
 
-    -- Directional navigation of windows | no arrowkeys   
+    -- directional navigation of windows | no arrowkeys   
     , ((modm .|. shiftMask,  xK_l     ), windowSwap R True)
     , ((modm .|. shiftMask,  xK_h     ), windowSwap L True)
     , ((modm .|. shiftMask,  xK_k     ), windowSwap U True)
     , ((modm .|. shiftMask,  xK_j     ), windowSwap D True)
 
-    -- Swap adjacent windows
+    -- swap adjacent windows
     , ((modm,                xK_Right ), windowGo   R True)
     , ((modm,                xK_Left  ), windowGo   L True)
     , ((modm,                xK_Up    ), windowGo   U True)
     , ((modm,                xK_Down  ), windowGo   D True)
 
-    -- Directional navigation of windows
+    -- directional navigation of windows
     , ((modm .|. shiftMask,  xK_Right ), windowSwap R True)
     , ((modm .|. shiftMask,  xK_Left  ), windowSwap L True)
     , ((modm .|. shiftMask,  xK_Up    ), windowSwap U True)
     , ((modm .|. shiftMask,  xK_Down  ), windowSwap D True)
-
-    , ((modm .|. controlMask,xK_l    ), nextWS)
-    , ((modm .|. controlMask,xK_h    ), prevWS)
     ]
 
     ++
@@ -156,20 +154,20 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
         | (key, sc) <- zip [xK_a, xK_s, xK_d] [0..]
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
-myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
-    -- mod-button3, Set the window to floating mode and move by dragging
-    [ ((modm, button3), \w -> 
-        focus w >>
-        mouseMoveWindow w >>
-        windows W.shiftMaster)
-    , ((modm .|. shiftMask, button1), (\w -> XMonad.focus w >> mouseMoveWindow w
+myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $ [
+    -- mod-button1, Set rhe window to floating mode and resize by dragging
+      ((modm, button3), (\w -> XMonad.focus w >> mouseResizeWindow w
         >> windows W.shiftMaster))
 
     -- mod-button2, Raise the window to the top of the stack
     , ((modm, button2), (\w -> XMonad.focus w >> windows W.shiftMaster))
 
-    -- mod-button1, Set the window to floating mode and resize by dragging
-    , ((modm, button1), (\w -> XMonad.focus w >> mouseResizeWindow w
+    -- mod-button3, Set the window to floating mode and move by dragging
+    , ((modm, button1), \w -> 
+        focus w >>
+            mouseMoveWindow w >>
+                windows W.shiftMaster)
+    , ((modm .|. shiftMask, button3), (\w -> XMonad.focus w >> mouseMoveWindow w
         >> windows W.shiftMaster))
     ] 
 
