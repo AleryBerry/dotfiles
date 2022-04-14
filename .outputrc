@@ -13,13 +13,13 @@ if [ -f ~/.date ]; then
     fi  
 else
     echo $(echo `date +%s` / 3600 | bc -l) > ~/.date
-    sysfex --ascii-path /opt/sysfex/ascii/arch.txt > /tmp/.sysfex
-    tstock xmr --chart -t 'day' -b 40 -a 'crypto' -y 20 > /tmp/.tstock
+    sysfex --ascii-path /opt/sysfex/ascii/arch.txt > ~/.sysfex
+    tstock xmr --chart -t 'day' -b 40 -a 'crypto' -y 20 > ~/.tstock
     isDateCreated=true
     echo "File not found."
 fi
 
-paste <(cat /tmp/.sysfex) <(cat /tmp/.tstock) | column -s $'\t' -t
+paste <(cat ~/.sysfex) <(cat ~/.tstock) | column -s $'\t' -t
 
 if [ "$isDateCreated" = true ]; then
     echo "New Date Created."
