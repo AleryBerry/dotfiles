@@ -125,7 +125,7 @@ autoload edit-command-line; zle -N edit-command-line
 bindkey '^e' edit-command-line
 
 # load aliases and shortcuts if existent.
-source ~/.config/aliasrc
+source ~/.aliasrc
 
 # Use lf to switch directories and bind it to ctrl-o
 lfcd () {
