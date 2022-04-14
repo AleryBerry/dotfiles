@@ -864,3 +864,5 @@ mouse:
 
   # Print all received window events.
   #print_events: false
+import:
+- /home/hibiscus-tea/.config/alacritty/gelacritty.yml
