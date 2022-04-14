@@ -155,7 +155,8 @@ call plug#end()
 let g:suda_smart_edit = 1
 let g:airline_powerline_fonts = 1
 let g:coc_global_extensions = [ 'coc-tsserver' ]
-autocmd VimEnter * NERDTree | wincmd p
+autocmd VimEnter * NERDTree 
+autocmd VimEnter * NERDTreeToggle
 " Exit Vim if NERDTree is the only window remaining in the only tab.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
