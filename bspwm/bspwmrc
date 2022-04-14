@@ -3,7 +3,7 @@
 devilspie &
 bash ~/.config/polybar/launch.sh --shapes
 feh --bg-scale ~/Images/wallhaven-4v3yzp_1920x1080.png
-lightscreen &
+lightscreen -i &
 pgrep -x sxhkd > /dev/null || sxhkd &
 
 bspc monitor -d I II III IV V VI VII VIII IX X
