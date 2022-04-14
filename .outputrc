@@ -1,0 +1,26 @@
+#paste <(neofetch) <(tstock xmr) | column -s $'\t' -t
+
+todate=$(echo `date +%s` / 3600 | bc -l)
+isDateCreated=false
+if [ -f ~/.date ]; then
+    olddate=`head -1 .date`
+    n1=$(($todate-$olddate))
+    n2=24
+    if [[ $(bc -l <<< "$n1 > $n2") -eq 1 ]]; then
+        echo "holaa"
+        sysfex --ascii-path /opt/sysfex/ascii/arch.txt > /tmp/.sysfex
+        tstock xmr --chart -t 'day' -b 40 -a 'crypto' -y 20 > /tmp/.tstock
+        echo $(echo `date +%s` / 3600 | bc -l) > ~/.date
+        isDateCreated=true
+    fi  
+else
+    echo $(echo `date +%s` / 3600 | bc -l) > ~/.date
+    isDateCreated=true
+    echo "File not found."
+fi
+
+paste <(cat /tmp/.sysfex) <(cat /tmp/.tstock) | column -s $'\t' -t
+
+if [ "$isDateCreated" = true ]; then
+    echo "New Date Created."
+fi

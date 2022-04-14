@@ -82,7 +82,6 @@ fi
 # Then, source plugins and add commands to $PATH
 zplug load 
 
-neofetch 
 autoload -U compinit
 zstyle ':completion:*' menu select
 zmodload zsh/complist
@@ -92,6 +91,9 @@ _comp_options+=(globdots)		# include hidden files.
 # vi mode
 bindkey -v
 export keytimeout=1
+export ALPHAVANTAGE_API_KEY='DH5ZX26E46MYMEXW'
+
+source ~/.outputrc
 
 bindkey -M menuselect 'h' vi-backward-char
 bindkey -M menuselect 'k' vi-up-line-or-history
@@ -123,7 +125,6 @@ autoload edit-command-line; zle -N edit-command-line
 bindkey '^e' edit-command-line
 
 # load aliases and shortcuts if existent.
-[ -f "$home/.config/shortcutrc" ] && source "$home/.config/shortcutrc"
 source ~/.config/aliasrc
 
 # Use lf to switch directories and bind it to ctrl-o
