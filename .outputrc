@@ -1,7 +1,6 @@
-#paste <(neofetch) <(tstock xmr) | column -s $'\t' -t
-
 todate=$(echo `date +%s` / 3600 | bc -l)
 isDateCreated=false
+
 if [ -f ~/.date ]; then
     olddate=`head -1 .date`
     n1=$(($todate-$olddate))
