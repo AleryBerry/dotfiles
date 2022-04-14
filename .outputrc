@@ -4,7 +4,7 @@ isDateCreated=false
 if [ -f ~/.date ]; then
     olddate=`head -1 .date`
     n1=$(($todate-$olddate))
-    n2=24
+    n2=6
     if [[ $(bc -l <<< "$n1 > $n2") -eq 1 ]]; then
         sysfex --ascii-path /opt/sysfex/ascii/arch.txt > ~/.sysfex
         tstock xmr --pady 2 --padx 2 -t 'day' -b 40 -a 'crypto' -y 20 > ~/.tstock
