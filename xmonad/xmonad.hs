@@ -96,10 +96,11 @@ myLogHook dbus i s = def {
     , ppOutput  = D.sendToPath dbus s 
     , ppSep     = "  "
     , ppOrder   = \(ws : _ : _ : wins : cs) -> finalDestination (head cs) (words ws) <> [wins]
-    , ppExtras  = [titlesOnScreen, wrapL ("%{F" ++ yellow2 ++ "}") "%{F-}" $ logCurrentOnScreen i]
+    , ppExtras  = [titlesOnScreen, currentOnScreen]
 }
     where
-        titlesOnScreen  = logDefault (logTitlesOnScreen i formatFocused formatUnfocused) (logConst "Hey, you, you're finally awake.")
+        titlesOnScreen  = logDefault (shortenL 70 $ logTitlesOnScreen i formatFocused formatUnfocused) (logConst "Hey, you, you're finally awake.")
+        currentOnScreen = wrapL ("%{F" ++ yellow2 ++ "}") "%{F-}" $ logCurrentOnScreen i
         formatFocused   = wrap ("%{F" ++ yellow ++ "}") "%{F-}"
         formatUnfocused = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}" 
 
