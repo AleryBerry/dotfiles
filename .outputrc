@@ -7,14 +7,14 @@ if [ -f ~/.date ]; then
     n2=24
     if [[ $(bc -l <<< "$n1 > $n2") -eq 1 ]]; then
         sysfex --ascii-path /opt/sysfex/ascii/arch.txt > ~/.sysfex
-        tstock xmr --chart -t 'day' -b 40 -a 'crypto' -y 20 > ~/.tstock
+        tstock xmr --pady 2 --padx 2 -t 'day' -b 40 -a 'crypto' -y 20 > ~/.tstock
         echo $(echo `date +%s` / 3600 | bc -l) > ~/.date
         isDateCreated=true
     fi  
 else
     echo $(echo `date +%s` / 3600 | bc -l) > ~/.date
     sysfex --ascii-path /opt/sysfex/ascii/arch.txt > ~/.sysfex
-    tstock xmr --chart -t 'day' -b 40 -a 'crypto' -y 20 > ~/.tstock
+    tstock xmr --pady 2 --padx 2 -t 'day' -b 40 -a 'crypto' -y 20 > ~/.tstock
     isDateCreated=true
     echo "File not found."
 fi
