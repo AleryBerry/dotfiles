@@ -125,10 +125,12 @@ alias nxinitrc="$EDITOR ~/.xinitrc"
 alias nqutebrowser="$EDITOR ~/.config/qutebrowser/config.py"
 alias nalacritty="$EDITOR ~/.config/alacritty/alacritty.yml"
 alias nvimrc="$EDITOR ~/.vimrc"
-alias naliasrc="$EDITOR ~/.config/aliasrc"
+alias naliasrc="$EDITOR ~/.aliasrc"
 alias nlfrc="$EDITOR ~/.config/lf/lfrc"
 alias nmpv="$EDITOR ~/.config/mpv/input.conf"
 alias noutputrc="$EDITOR ~/.outputrc"
+alias nbspwmrc="$EDITOR ~/.config/bspwm/bspwmrc"
+alias nsxhkdrc="$EDITOR ~/.config/sxhkd/sxhkdrc"
 
 #systeminfo
 alias probe="sudo -E hw-probe -all -upload"
