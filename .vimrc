@@ -18,7 +18,6 @@ set rnu
 filetype on
 
 " Turn on syntax highlighting.
-syntax on
 
 " For plug-ins to load correctly.
 filetype plugin indent on
@@ -61,7 +60,6 @@ set matchpairs+=<:>
 set number
 
 " Set status line display
-set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ [BUFFER=%n]\ %{strftime('%c')}
 
 " Encoding
 set encoding=utf-8
@@ -94,39 +92,29 @@ endif
 call plug#begin('~/.vim/plugged')
 
 "Syntax highlighting and autocompletion
-Plug 'neoclide/coc.nvim' , { 'branch' : 'release' }
-Plug 'sheerun/vim-polyglot'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
-Plug 'derekwyatt/vim-fswitch', { 'for': ['c', 'cpp', 'objc'] }
-Plug 'jparise/vim-graphql'
 Plug 'gcmt/wildfire.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'alvan/vim-closetag'
-Plug 'lilydjwg/colorizer'
 Plug 'tpope/vim-eunuch'
 Plug 'lambdalisue/suda.vim'
-Plug 'neomake/neomake'
-Plug 'ternjs/tern_for_vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'dense-analysis/ale'
 Plug 'ryanoasis/vim-devicons'
 Plug 'mattn/emmet-vim'
 Plug 'AndrewRadev/tagalong.vim'
 Plug 'tpope/vim-surround'
-Plug 'moll/vim-node'
 Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'kana/vim-textobj-user' | Plug 'whatyouhide/vim-textobj-xmlattr'
 Plug 'https://github.com/leafgarland/typescript-vim'
-Plug 'https://github.com/Quramy/vim-js-pretty-template'
-Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'https://github.com/Quramy/tsuquyomi'
-Plug 'https://github.com/vim-syntastic/syntastic'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'leafgarland/typescript-vim'
 Plug 'Quramy/vim-js-pretty-template'
 Plug 'mbbill/undotree'
+Plug 'neovimhaskell/haskell-vim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 "File search and navigation
@@ -140,6 +128,7 @@ Plug 'matze/vim-move'
 "Editor interface and theming
 Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'ryanoasis/vim-devicons'
 Plug 'yggdroot/indentline'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
@@ -154,7 +143,6 @@ call plug#end()
 "
 let g:suda_smart_edit = 1
 let g:airline_powerline_fonts = 1
-let g:coc_global_extensions = [ 'coc-tsserver' ]
 autocmd VimEnter * NERDTree 
 autocmd VimEnter * NERDTreeToggle
 " Exit Vim if NERDTree is the only window remaining in the only tab.
@@ -190,14 +178,6 @@ endif
 xmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
-augroup mygroup
-  autocmd!
-  " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  " Update signature help on jump placeholder.
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
 " Applying codeAction to the selected region.
 " Example: `<leader>aap` for current paragraph
 xmap <leader>a  <Plug>(coc-codeaction-selected)
@@ -230,7 +210,6 @@ nmap <C-q> :tabclose <CR>
 :nmap K :tabp <CR>
 :imap ,ii <Esc>
 
-nnoremap <f12> :%s/<c-r><c-w>//g<c-f>$F/i
 vnoremap <C-n> :norm
 
 "Search shortcuts
@@ -239,8 +218,6 @@ noremap <leader>w :w<cr>
 noremap <leader>gs :CocSearch
 noremap <leader>fs :Files<cr>
 noremap <leader><cr> <cr><c-w>h:q<cr>
-
-command! -nargs=0 Sw w !tuxclocker  
 
 " Vim's auto indentation feature does not work properly with text copied from outside of Vim. Press the <F2> key to toggle paste mode on/off.
 nnoremap <F2> :set invpaste paste?<CR>
@@ -255,7 +232,7 @@ let g:VM_maps['Find Under']         = '<C-d>'           " replace C-n
 let g:VM_maps['Find Subword Under'] = '<C-d>'           " replace visual C-n
 let g:VM_maps["Select Cursor Down"] = '<C-j>'      " start selecting down
 let g:VM_maps["Select Cursor Up"]   = '<C-k>'        " start selecting up
-let b:ale_fixers = ['prettier', 'eslint']
+
 let NERDTreeShowHidden = 1
 let NERDTreeCustomOpenArgs = {'file': {'reuse':'all', 'where':'t', 'keepopen':0, 'stay':0}}
 let NERDTreeMapCustomOpen = 't'
@@ -281,10 +258,33 @@ let g:user_emmet_settings = {
 \    },
 \  },
 \}
+let g:airline_theme='jellybeans'
 
-let g:typescript_compiler_binary = 'tsc'
-let g:typescript_compiler_options = ''
-autocmd QuickFixCmdPost [^l]* nested cwindow
-autocmd QuickFixCmdPost    l* nested lwindow
-autocmd FileType typescript JsPreTmpl html
-autocmd FileType typescript syn clear foldBraces
+lua << EOF
+  require'nvim-treesitter.configs'.setup {
+    -- A list of parser names, or "all"
+    ensure_installed = { "c", "lua", "rust", "haskell", "javascript" },
+
+    -- Install parsers synchronously (only applied to `ensure_installed`)
+    sync_install = false,
+
+    -- List of parsers to ignore installing (for "all")
+
+    highlight = {
+      -- `false` will disable the whole extension
+      enable = true,
+
+      -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
+      -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+      -- the name of the parser)
+      -- list of language that will be disabled
+
+      -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+      -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+      -- Using this option may slow down your editor, and you may see some duplicate highlights.
+      -- Instead of true it can also be a list of languages
+      additional_vim_regex_highlighting = true,
+    },
+  }
+EOF
+
