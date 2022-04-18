@@ -1,4 +1,6 @@
 source ~/.zplug/init.zsh
+export PATH="$HOME/.local/bin:$PATH"
+
 # Make sure to use double quotes
 zplug "zsh-users/zsh-history-substring-search"
 
