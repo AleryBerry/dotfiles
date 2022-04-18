@@ -97,8 +97,8 @@ Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'gcmt/wildfire.vim'
-Plug 'jiangmiao/auto-pairs'
 Plug 'alvan/vim-closetag'
+Plug 'LunarWatcher/auto-pairs'
 Plug 'tpope/vim-eunuch'
 Plug 'lambdalisue/suda.vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
@@ -107,10 +107,7 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'mattn/emmet-vim'
 Plug 'AndrewRadev/tagalong.vim'
 Plug 'tpope/vim-surround'
-Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'kana/vim-textobj-user' | Plug 'whatyouhide/vim-textobj-xmlattr'
-Plug 'https://github.com/leafgarland/typescript-vim'
-Plug 'https://github.com/Quramy/tsuquyomi'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'Quramy/vim-js-pretty-template'
 Plug 'mbbill/undotree'
@@ -143,6 +140,7 @@ call plug#end()
 "
 let g:suda_smart_edit = 1
 let g:airline_powerline_fonts = 1
+let g:NERDTreeWinPos = "right"
 autocmd VimEnter * NERDTree 
 autocmd VimEnter * NERDTreeToggle
 " Exit Vim if NERDTree is the only window remaining in the only tab.
@@ -157,15 +155,21 @@ set bg=dark
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+  \ pumvisible() ? "\<C-n>" :
+  \ coc#expandableOrJumpable() ?
+  \ "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+  \ <SID>check_back_space() ? "\<TAB>" :
+  \ coc#refresh()
 
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
+
+let g:coc_snippet_next = '<tab>'
+
+autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+autocmd CursorHoldI call CocActionAsync('showSignatureHelp')
 
 " Use <c-space> to trigger completion.
 if has('nvim')
@@ -204,10 +208,10 @@ map <S-TAB> b
 nmap <C-a> \\A
 map <SPACE> <Plug>(wildfire-fuel)
 
-nmap <C-t> :tab sball <CR>
-nmap <C-q> :tabclose <CR>
-:nmap J :tabn <CR>
-:nmap K :tabp <CR>
+nmap <silent> <C-t> :tab sball <CR>
+nmap <C-q> :q! <CR>
+:nmap <silent> J :tabn <CR>
+:nmap <silent> K :tabp <CR>
 :imap ,ii <Esc>
 
 vnoremap <C-n> :norm
