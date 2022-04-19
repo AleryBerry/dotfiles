@@ -91,7 +91,7 @@ myLogHook :: DC.Client -> ScreenId -> String -> PP
 myLogHook dbus i s = def {
     ppCurrent = formatUnfocused
     , ppVisible = formatUnfocused
-    , ppHidden  = formatUnfocused
+    , ppHidden  = formatOther
     , ppHiddenNoWindows = wrap ("%{F" ++ gray ++ "}") "%{F-}"
     , ppOutput  = D.sendToPath dbus s 
     , ppSep     = "  "
@@ -102,6 +102,7 @@ myLogHook dbus i s = def {
         titlesOnScreen  = logDefault (shortenL 70 $ logTitlesOnScreen i formatFocused formatUnfocused) (logConst "Hey, you, you're finally awake.")
         currentOnScreen = wrapL ("%{F" ++ yellow2 ++ "}") "%{F-}" $ logCurrentOnScreen i
         formatFocused   = wrap ("%{F" ++ yellow ++ "}") "%{F-}"
+        formatOther   = wrap ("%{F" ++ myNormalBorderColor ++ "}") "%{F-}"
         formatUnfocused = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}" 
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
