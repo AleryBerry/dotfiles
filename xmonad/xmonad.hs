@@ -34,10 +34,11 @@ myWorkspaces         = ["I","II","III", "IV","V","VI","VII","VIII"]
 
 -- Colours
 myFocusedBorderColor = "#F5C035"
-myNormalBorderColor  = "#reformat"
+myNormalBorderColor  = "#AAAAAA"
 gray      = "#7F7F7F"
-yellow    = "#F5C035"
+yellow    = "#FF7B00"
 yellow2   = "#755B1A"
+otherMonitors = "#F5C035"
 
 myLayoutHook = avoidStruts $ equalSpacing 10 4 0 20 (
     tiled ||| Mirror tiled ||| Full
@@ -68,24 +69,11 @@ myManageHook = composeAll . concat $
       myFloats        = [ "ranger" ]
       myGameLaunchers = [ "Steam", "heroic" ]
 
-rmdups :: Eq a => [a] -> [a]
-rmdups [] = []
-rmdups (x:xs)   | x `elem` xs   = rmdups xs
-                | otherwise     = x : rmdups xs
-
-removeItem _ []                 = []
-removeItem x (y:ys) | x == y    = removeItem x ys
-                    | otherwise = y : removeItem x ys
-
-boolToString :: Bool -> [String]
-boolToString True = ["TRUE"]
-boolToString False = ["FALSE"]
-
 finalDestination :: String -> [String] -> [String]
-finalDestination cs (w:ws) = foldr (\x xs -> if (x /= cs) then x:xs else reformat cs:xs) [] (w:ws)
+finalDestination cs (w:ws) = foldr (\x xs -> if x /= cs then x:xs else reformat cs:xs) [] (w:ws)
 
 reformat :: String -> String
-reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-}" ((split (dropBlanks $ dropDelims $ oneOf "$}") x) !! 1)
+reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-}" (split (dropBlanks $ dropDelims $ oneOf "$}") x !! 1)
 
 myLogHook :: DC.Client -> ScreenId -> String -> PP
 myLogHook dbus i s = def {
@@ -100,10 +88,10 @@ myLogHook dbus i s = def {
 }
     where
         titlesOnScreen  = logDefault (shortenL 70 $ logTitlesOnScreen i formatFocused formatUnfocused) (logConst "Hey, you, you're finally awake.")
-        currentOnScreen = wrapL ("%{F" ++ yellow2 ++ "}") "%{F-}" $ logCurrentOnScreen i
+        currentOnScreen = wrapL ("%{F" ++ otherMonitors ++ "}") "%{F-}" $ logCurrentOnScreen i
         formatFocused   = wrap ("%{F" ++ yellow ++ "}") "%{F-}"
-        formatOther   = wrap ("%{F" ++ myNormalBorderColor ++ "}") "%{F-}"
-        formatUnfocused = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}" 
+        formatOther   = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}"
+        formatUnfocused = wrap ("%{F" ++ otherMonitors ++ "}") "%{F-}" 
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- launch a terminal
