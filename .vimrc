@@ -100,7 +100,6 @@ Plug 'gcmt/wildfire.vim'
 Plug 'alvan/vim-closetag'
 Plug 'LunarWatcher/auto-pairs'
 Plug 'tpope/vim-eunuch'
-Plug 'lambdalisue/suda.vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'dense-analysis/ale'
 Plug 'ryanoasis/vim-devicons'
@@ -111,7 +110,6 @@ Plug 'kana/vim-textobj-user' | Plug 'whatyouhide/vim-textobj-xmlattr'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'Quramy/vim-js-pretty-template'
 Plug 'mbbill/undotree'
-Plug 'neovimhaskell/haskell-vim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'hasufell/ghcup.vim'
 Plug 'rbgrouleff/bclose.vim'
@@ -132,6 +130,7 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'yggdroot/indentline'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'mhinz/vim-startify'
+Plug 'lambdalisue/suda.vim'
 
 "Debugging, refactoring and version control
 Plug 'puremourning/vimspector'
