@@ -113,6 +113,8 @@ Plug 'Quramy/vim-js-pretty-template'
 Plug 'mbbill/undotree'
 Plug 'neovimhaskell/haskell-vim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'hasufell/ghcup.vim'
+Plug 'rbgrouleff/bclose.vim'
 
 "File search and navigation
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -292,4 +294,4 @@ lua << EOF
   }
 EOF
 let g:ale_disable_lsp = 1
-
+let g:ale_linters = {'haskell': ['hlint']}
