@@ -131,6 +131,8 @@ Plug 'yggdroot/indentline'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'mhinz/vim-startify'
 Plug 'lambdalisue/suda.vim'
+Plug 'KabbAmine/vCoolor.vim'
+Plug 'ap/vim-css-color'
 
 "Debugging, refactoring and version control
 Plug 'puremourning/vimspector'
