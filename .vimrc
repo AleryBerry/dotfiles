@@ -295,4 +295,5 @@ lua << EOF
   }
 EOF
 let g:ale_disable_lsp = 1
-let g:ale_linters = {'haskell': ['hlint']}
+let g:ale_linters = {'haskell': ['hlint' ]}
+let g:ale_fixers = {'haskell': ['ormolu', 'floskell' ]}
