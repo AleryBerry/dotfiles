@@ -1,8 +1,8 @@
 #! /bin/sh
 
 devilspie &
-bash ~/.config/polybar/launch.sh --shapes
-feh --bg-scale ~/Images/wallhaven-4v3yzp_1920x1080.png
+bash ~/.config/polybar/launch.sh --cuts
+feh --bg-scale ~/Images/wallhaven-4v3yzp_1366x768.png
 lightscreen -i &
 pgrep -x sxhkd > /dev/null || sxhkd &
 
