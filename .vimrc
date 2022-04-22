@@ -93,9 +93,6 @@ call plug#begin('~/.vim/plugged')
 
 "Syntax highlighting and autocompletion
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'pangloss/vim-javascript'
-Plug 'leafgarland/typescript-vim'
-Plug 'maxmellon/vim-jsx-pretty'
 Plug 'gcmt/wildfire.vim'
 Plug 'alvan/vim-closetag'
 Plug 'LunarWatcher/auto-pairs'
@@ -108,7 +105,6 @@ Plug 'AndrewRadev/tagalong.vim'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-textobj-user' | Plug 'whatyouhide/vim-textobj-xmlattr'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'Quramy/vim-js-pretty-template'
 Plug 'mbbill/undotree'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'hasufell/ghcup.vim'
@@ -270,10 +266,10 @@ let g:airline_theme='jellybeans'
 lua << EOF
   require'nvim-treesitter.configs'.setup {
     -- A list of parser names, or "all"
-    ensure_installed = { "c", "lua", "rust", "haskell", "javascript" },
+    ensure_installed = { "c", "lua", "rust", "haskell", "javascript", "css", "typescript" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
-    sync_install = false,
+    sync_install = true,
 
     -- List of parsers to ignore installing (for "all")
 
@@ -295,5 +291,5 @@ lua << EOF
   }
 EOF
 let g:ale_disable_lsp = 1
-let g:ale_linters = {'haskell': ['hlint' ]}
+let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs']}
 let g:ale_fixers = {'haskell': ['ormolu', 'floskell' ]}
