@@ -14,12 +14,10 @@ set nocompatible
 set nolist
 set rnu
 
-"Helps force plug-ins to load correctly when it is turned back on below.
+syntax on
+
 filetype on
-
-" Turn on syntax highlighting.
-
-" For plug-ins to load correctly.
+"Helps force plug-ins to load correctly when it is turned back on below.
 filetype plugin indent on
 
 " Turn off modelines
@@ -106,9 +104,11 @@ Plug 'tpope/vim-surround'
 Plug 'kana/vim-textobj-user' | Plug 'whatyouhide/vim-textobj-xmlattr'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'mbbill/undotree'
+"Syntax Highlight
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'hasufell/ghcup.vim'
 Plug 'rbgrouleff/bclose.vim'
+Plug 'nathom/filetype.nvim'
 
 "File search and navigation
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -264,32 +264,60 @@ let g:user_emmet_settings = {
 let g:airline_theme='jellybeans'
 
 lua << EOF
-  require'nvim-treesitter.configs'.setup {
-    -- A list of parser names, or "all"
-    ensure_installed = { "c", "lua", "rust", "haskell", "javascript", "css", "typescript" },
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "c", "lua", "rust", "haskell", "javascript", "css", "typescript" },
+  sync_install = true,
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = true,
+  },
+}
+require("filetype").setup({
+    overrides = {
+        extensions = {
+            -- Set the filetype of *.pn files to potion
+            purs = "purescript",
+        },
+        complex = {
+            -- Set the filetype of any full filename matching the regex to gitconfig
+            [".*git/config"] = "gitconfig", -- Included in the plugin
+        },
 
-    -- Install parsers synchronously (only applied to `ensure_installed`)
-    sync_install = true,
+        -- The same as the ones above except the keys map to functions
+        function_extensions = {
+            ["cpp"] = function()
+                vim.bo.filetype = "cpp"
+                -- Remove annoying indent jumping
+                vim.bo.cinoptions = vim.bo.cinoptions .. "L0"
+            end,
+            ["pdf"] = function()
+                vim.bo.filetype = "pdf"
+                -- Open in PDF viewer (Skim.app) automatically
+                vim.fn.jobstart(
+                    "open -a skim " .. '"' .. vim.fn.expand("%") .. '"'
+                )
+            end,
+        },
+        function_literal = {
+            Brewfile = function()
+                vim.cmd("syntax off")
+            end,
+        },
+        function_complex = {
+            ["*.math_notes/%w+"] = function()
+                vim.cmd("iabbrev $ $$")
+            end,
+        },
 
-    -- List of parsers to ignore installing (for "all")
-
-    highlight = {
-      -- `false` will disable the whole extension
-      enable = true,
-
-      -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
-      -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
-      -- the name of the parser)
-      -- list of language that will be disabled
-
-      -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-      -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-      -- Using this option may slow down your editor, and you may see some duplicate highlights.
-      -- Instead of true it can also be a list of languages
-      additional_vim_regex_highlighting = true,
+        shebang = {
+            -- Set the filetype of files with a dash shebang to sh
+            dash = "sh",
+        },
     },
-  }
+})
+local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
+ft_to_parser.purescript = "haskell"
 EOF
 let g:ale_disable_lsp = 1
-let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs']}
-let g:ale_fixers = {'haskell': ['ormolu', 'floskell' ]}
+let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs'], 'javascript': ['t'] }
+let g:ale_fixers = {'haskell': ['ormolu', 'floskell' ], 'purescript': ['purs-tidy']}

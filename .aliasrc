@@ -100,6 +100,8 @@ alias cleanup='sudo pacman -Rns $(pacman -Qtdq)'
 #get the error messages from journalctl
 alias jctl="journalctl -p 3 -xb"
 
+alias tstock="tstock --pady 2 --padx 2 -t 'day' -b 40 -y 20"
+
 #nano for important configuration files
 #know what you do in these files
 alias nlightdm="$EDITOR /etc/lightdm/lightdm.conf"
@@ -131,6 +133,8 @@ alias nmpv="$EDITOR ~/.config/mpv/input.conf"
 alias noutputrc="$EDITOR ~/.outputrc"
 alias nbspwmrc="$EDITOR ~/.config/bspwm/bspwmrc"
 alias nsxhkdrc="$EDITOR ~/.config/sxhkd/sxhkdrc"
+alias ndunst="$EDITOR ~/.config/dunst/dunstrc"
+alias nhikari="$EDITOR ~/.config/hikari/hikari.conf"
 
 #systeminfo
 alias probe="sudo -E hw-probe -all -upload"
