@@ -174,8 +174,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
 myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $ [
     -- mod-button1, Set rhe window to floating mode and resize by dragging
-      ((modm, button3), (\w -> XMonad.focus w >> mouseResizeWindow w
-        >> windows W.shiftMaster))
+      ((modm, button3), \w -> XMonad.focus w >> mouseResizeWindow w
+        >> windows W.shiftMaster)
 
     -- mod-button2, Raise the window to the top of the stack
     , ((modm, button2), (\w -> XMonad.focus w >> windows W.shiftMaster))
@@ -185,8 +185,6 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $ [
         focus w >>
             mouseMoveWindow w >>
                 windows W.shiftMaster)
-    , ((modm .|. shiftMask, button3), (\w -> XMonad.focus w >> mouseMoveWindow w
-        >> windows W.shiftMaster))
     ] 
 
 main :: IO ()
@@ -205,7 +203,7 @@ myConfig = def {
 , workspaces         = myWorkspaces
 , keys               = myKeys
 -- Hooks
-, layoutHook         = smartBorders $ myLayoutHook
+, layoutHook         = smartBorders myLayoutHook
 , manageHook         = manageDocks <+> myManageHook 
 , borderWidth        = myBorderWidth
 , normalBorderColor  = myNormalBorderColor
