@@ -57,8 +57,7 @@ set matchpairs+=<:>
 " Show line numbers
 set number
 
-" Set status line display
-
+set updatetime=500
 " Encoding
 set encoding=utf-8
 
@@ -133,6 +132,7 @@ Plug 'ap/vim-css-color'
 
 "Debugging, refactoring and version control
 Plug 'puremourning/vimspector'
+Plug 'antoinemadec/FixCursorHold.nvim'
 
 call plug#end()
 
@@ -161,21 +161,24 @@ inoremap <silent><expr> <TAB>
   \ <SID>check_back_space() ? "\<TAB>" :
   \ coc#refresh()
 
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+    \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
 function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+let col = col('.') - 1
+return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
 let g:coc_snippet_next = '<tab>'
 
 autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-autocmd CursorHoldI call CocActionAsync('showSignatureHelp')
+autocmd CursorHoldI * call CocActionAsync('showSignatureHelp')
 
 " Use <c-space> to trigger completion.
 if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
+inoremap <silent><expr> <c-space> coc#refresh()
 else
-  inoremap <silent><expr> <c-@> coc#refresh()
+inoremap <silent><expr> <c-@> coc#refresh()
 endif
 
 " Formatting selected code.
@@ -323,3 +326,5 @@ EOF
 let g:ale_disable_lsp = 1
 let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs'], 'javascript': ['t'] }
 let g:ale_fixers = {'haskell': ['ormolu', 'floskell' ], 'purescript': ['purs-tidy']}
+let g:cursorhold_updatetime = 100
+
