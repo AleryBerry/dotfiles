@@ -22,6 +22,7 @@ zplug "junegunn/fzf-bin", \
     rename-to:fzf, \
     use:"*darwin*amd64*"
 
+zplug "jeffreytse/zsh-vi-mode"
 # Supports oh-my-zsh plugins and the like
 zplug "plugins/git",   from:oh-my-zsh
 
@@ -96,36 +97,6 @@ export keytimeout=1
 export ALPHAVANTAGE_API_KEY='DH5ZX26E46MYMEXW'
 
 source ~/.outputrc
-
-bindkey -M menuselect 'h' vi-backward-char
-bindkey -M menuselect 'k' vi-up-line-or-history
-bindkey -M menuselect 'l' vi-forward-char
-bindkey -M menuselect 'j' vi-down-line-or-history
-bindkey -v '^?' backward-delete-char
-
-function zle-keymap-select {
-  if [[ ${keymap} == vicmd ]] ||
-     [[ $1 = 'block' ]]; then
-    echo -ne '\e[1 q'
-  elif [[ ${keymap} == main ]] ||
-       [[ ${keymap} == viins ]] ||
-       [[ ${keymap} = '' ]] ||
-       [[ $1 = 'beam' ]]; then
-    echo -ne '\e[5 q'
-  fi
-}
-zle -N zle-keymap-select
-zle-line-init() {
-    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -v` has been set elsewhere)
-    echo -ne "\e[5 q"
-}
-zle -N zle-line-init
-echo -ne '\e[5 q' # use beam shape cursor on startup.
-preexec() { echo -ne '\e[5 q' ;} # use beam shape cursor for each new prompt.
-
-autoload edit-command-line; zle -N edit-command-line
-bindkey '^e' edit-command-line
-
 # load aliases and shortcuts if existent.
 source ~/.aliasrc
 
