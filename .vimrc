@@ -108,6 +108,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'hasufell/ghcup.vim'
 Plug 'rbgrouleff/bclose.vim'
 Plug 'nathom/filetype.nvim'
+Plug 'junegunn/vim-easy-align'
 
 "File search and navigation
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -119,7 +120,7 @@ Plug 'matze/vim-move'
 
 "Editor interface and theming
 Plug 'morhetz/gruvbox'
-Plug 'arcticicestudio/nord-vim'
+Plug 'arcticicestudio/nord-vim', { 'for': 'haskell' }
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'ryanoasis/vim-devicons'
@@ -148,6 +149,7 @@ autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTr
 autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
     \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 colorscheme nord
+autocmd vimenter * ++nested colorscheme gruvbox
 set bg=dark
 
 "-----------Coc----------
@@ -201,21 +203,36 @@ nmap <silent> gr <Plug>(coc-references)
 nmap <C-n> :NERDTreeToggle <CR>
 vmap <C-v> <Esc>"+gp
 "Misc
-:imap ii <Esc>
+:imap II <Esc>
 :map H b
 :map L w
-:noremap e b
-:noremap w e
 noremap <TAB> w
 map <S-TAB> b
-nmap <C-a> \\A
+nmap <C-a> \\
+
+let g:AutoPairsCompatibleMaps = 0 
+let g:AutoPairsMapBS = 1
+let g:AutoPairsShortcutToggle = 0
+let g:AutoPairsShortcutJump = "<C-e>"
+let g:AutoPairsMultilineClose = 1
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
 map <SPACE> <Plug>(wildfire-fuel)
+let g:wildfire_objects = {
+    \ "*" : ["i'", 'i"', "i)", "i]", "i}"]
+\ }
+
+cal wildfire#triggers#Add("<ENTER>", {
+    \ "html,xml" : ["at", "it"],
+\ })
 
 nmap <silent> <C-t> :tab sball <CR>
 nmap <C-q> :q! <CR>
 :nmap <silent> J :tabn <CR>
 :nmap <silent> K :tabp <CR>
-:imap ,ii <Esc>
 
 vnoremap <C-n> :norm
 
