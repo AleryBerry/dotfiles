@@ -341,7 +341,7 @@ local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
 ft_to_parser.purescript = "haskell"
 EOF
 let g:ale_disable_lsp = 1
-let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs'], 'javascript': ['t'] }
+let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs']}
 let g:ale_fixers = {'haskell': ['ormolu', 'floskell' ], 'purescript': ['purs-tidy']}
 let g:cursorhold_updatetime = 100
 
