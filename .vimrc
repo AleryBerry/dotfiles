@@ -3,9 +3,6 @@
 "   ██    ██ ██ ██ ████ ██ ██████  ██
 "    ██  ██  ██ ██  ██  ██ ██   ██ ██
 "██   ████   ██ ██      ██ ██   ██  ██████
-"This configuration file comes with ABSOLUTELY NO WARRANTY,
-"to the extent permitted by applicable law.
-
 
 "---------GENERAL SETTINGS------------
 
@@ -13,6 +10,7 @@
 set nocompatible
 set nolist
 set rnu
+set termguicolors
 
 syntax on
 
@@ -109,6 +107,7 @@ Plug 'hasufell/ghcup.vim'
 Plug 'rbgrouleff/bclose.vim'
 Plug 'nathom/filetype.nvim'
 Plug 'junegunn/vim-easy-align'
+Plug 'gyim/vim-boxdraw' 
 
 "File search and navigation
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -120,7 +119,8 @@ Plug 'matze/vim-move'
 
 "Editor interface and theming
 Plug 'morhetz/gruvbox'
-Plug 'arcticicestudio/nord-vim', { 'for': 'haskell' }
+Plug 'arcticicestudio/nord-vim'
+Plug 'cocopon/iceberg.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'ryanoasis/vim-devicons'
@@ -148,10 +148,14 @@ autocmd VimEnter * NERDTreeToggle
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
     \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
-colorscheme nord
-autocmd vimenter * ++nested colorscheme gruvbox
-set bg=dark
 
+autocmd vimenter * ++nested colorscheme gruvbox
+autocmd BufEnter,FileType *
+\   if &ft ==# 'c' || &ft ==# 'cpp' | colorscheme iceberg |
+\   elseif &ft ==? 'haskell' | colorscheme gruvbox |
+\   elseif &ft ==? 'nerdtree' | colorscheme |
+\   else | colorscheme gruvbox |
+\   endif
 "-----------Coc----------
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
@@ -222,7 +226,7 @@ nmap ga <Plug>(EasyAlign)
 
 map <SPACE> <Plug>(wildfire-fuel)
 let g:wildfire_objects = {
-    \ "*" : ["i'", 'i"', "i)", "i]", "i}"]
+    \ "*" : ["i'", 'i"', "i)", "i]", "i}", "i`"]
 \ }
 
 cal wildfire#triggers#Add("<ENTER>", {
@@ -341,7 +345,7 @@ local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
 ft_to_parser.purescript = "haskell"
 EOF
 let g:ale_disable_lsp = 1
-let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs']}
+let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs'], 'javascript': ['eslint', 'jscs', 'prettier', 'tsserver', 'flow']}
 let g:ale_fixers = {'haskell': ['ormolu', 'floskell' ], 'purescript': ['purs-tidy']}
 let g:cursorhold_updatetime = 100
 
