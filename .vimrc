@@ -6,6 +6,7 @@
 
 "---------GENERAL SETTINGS------------
 
+
 "Set compatibility to Vim only.
 set nocompatible
 set nolist
@@ -13,7 +14,7 @@ set rnu
 set termguicolors
 
 syntax on
-
+ 
 filetype on
 "Helps force plug-ins to load correctly when it is turned back on below.
 filetype plugin indent on
@@ -86,15 +87,33 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
+
 "Syntax highlighting and autocompletion
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neovim/nvim-lspconfig'
+Plug 'https://git.sr.ht/~whynothugo/lsp_lines.nvim'
+Plug 'ray-x/lsp_signature.nvim'
+Plug 'onsails/lspkind.nvim'
+Plug 'weilbith/nvim-code-action-menu'
+Plug 'kosayoda/nvim-lightbulb'
+Plug 'p00f/clangd_extensions.nvim'
+Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
+Plug 'rafamadriz/friendly-snippets'
+Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'nvim-lua/completion-nvim'
+Plug 'nvim-lua/diagnostic-nvim'
+Plug 'williamboman/nvim-lsp-installer'
+Plug 'L3MON4D3/LuaSnip'
 Plug 'gcmt/wildfire.vim'
 Plug 'alvan/vim-closetag'
 Plug 'LunarWatcher/auto-pairs'
 Plug 'tpope/vim-eunuch'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'dense-analysis/ale'
-Plug 'ryanoasis/vim-devicons'
 Plug 'mattn/emmet-vim'
 Plug 'AndrewRadev/tagalong.vim'
 Plug 'tpope/vim-surround'
@@ -103,11 +122,13 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'mbbill/undotree'
 "Syntax Highlight
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'm-demare/hlargs.nvim'
 Plug 'hasufell/ghcup.vim'
 Plug 'rbgrouleff/bclose.vim'
 Plug 'nathom/filetype.nvim'
 Plug 'junegunn/vim-easy-align'
 Plug 'gyim/vim-boxdraw' 
+Plug 'haringsrob/nvim_context_vt'
 
 "File search and navigation
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -121,15 +142,20 @@ Plug 'matze/vim-move'
 Plug 'morhetz/gruvbox'
 Plug 'arcticicestudio/nord-vim'
 Plug 'cocopon/iceberg.vim'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'ryanoasis/vim-devicons'
-Plug 'yggdroot/indentline'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'mhinz/vim-startify'
 Plug 'lambdalisue/suda.vim'
-Plug 'KabbAmine/vCoolor.vim'
-Plug 'ap/vim-css-color'
+Plug 'norcalli/nvim-colorizer.lua'
+Plug 'folke/twilight.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'romgrk/barbar.nvim'
+Plug 'lukas-reineke/indent-blankline.nvim'
+Plug 'folke/zen-mode.nvim'
+Plug 'dstein64/nvim-scrollview'
+Plug 'edluffy/specs.nvim'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
 "Debugging, refactoring and version control
 Plug 'puremourning/vimspector'
@@ -137,6 +163,7 @@ Plug 'antoinemadec/FixCursorHold.nvim'
 
 call plug#end()
 
+set completeopt=menu,menuone,noselect
 "---------- PLUGIN VARIABLES---------------
 "
 let g:suda_smart_edit = 1
@@ -150,59 +177,13 @@ autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_
     \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 
 autocmd vimenter * ++nested colorscheme gruvbox
+autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
 autocmd BufEnter,FileType *
 \   if &ft ==# 'c' || &ft ==# 'cpp' | colorscheme iceberg |
 \   elseif &ft ==? 'haskell' | colorscheme gruvbox |
 \   elseif &ft ==? 'nerdtree' | colorscheme |
-\   else | colorscheme gruvbox |
+\   else | colorscheme iceberg |
 \   endif
-"-----------Coc----------
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-  \ pumvisible() ? "\<C-n>" :
-  \ coc#expandableOrJumpable() ?
-  \ "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-  \ <SID>check_back_space() ? "\<TAB>" :
-  \ coc#refresh()
-
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-    \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-function! s:check_back_space() abort
-let col = col('.') - 1
-return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-let g:coc_snippet_next = '<tab>'
-
-autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-autocmd CursorHoldI * call CocActionAsync('showSignatureHelp')
-
-" Use <c-space> to trigger completion.
-if has('nvim')
-inoremap <silent><expr> <c-space> coc#refresh()
-else
-inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
-" Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-
-" Applying codeAction to the selected region.
-" Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-"-----------NAVIGATION KEYMAPS-------------
-"
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
 
 nmap <C-n> :NERDTreeToggle <CR>
 vmap <C-v> <Esc>"+gp
@@ -289,6 +270,8 @@ let g:user_emmet_settings = {
 let g:airline_theme='jellybeans'
 
 lua << EOF
+require'lspconfig'.hls.setup{}
+
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "c", "lua", "rust", "haskell", "javascript", "css", "typescript" },
   sync_install = true,
@@ -298,6 +281,12 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 
+
+require("zen-mode").setup {
+  -- your configuration comes here
+  -- or leave it empty to use the default settings
+  -- refer to the configuration section below
+}
 require("filetype").setup({
     overrides = {
         extensions = {
@@ -343,9 +332,14 @@ require("filetype").setup({
 })
 local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
 ft_to_parser.purescript = "haskell"
+require("lsp_config")
 EOF
 let g:ale_disable_lsp = 1
 let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs'], 'javascript': ['eslint', 'jscs', 'prettier', 'tsserver', 'flow']}
 let g:ale_fixers = {'haskell': ['ormolu', 'floskell' ], 'purescript': ['purs-tidy']}
 let g:cursorhold_updatetime = 100
+
+nmap <leftmouse> <plug>(ScrollViewLeftMouse)
+vmap <leftmouse> <plug>(ScrollViewLeftMouse)
+imap <leftmouse> <plug>(ScrollViewLeftMouse)
 
