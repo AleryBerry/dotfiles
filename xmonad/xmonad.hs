@@ -94,42 +94,31 @@ myLogHook dbus i s = def {
         formatUnfocused = wrap ("%{F" ++ otherMonitors ++ "}") "%{F-}" 
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
+
     -- launch a terminal
     [ ((modm,                xK_Return), spawn $ XMonad.terminal conf)
-
     -- launch rofi drun
     , ((modm,                xK_p     ), spawn "rofi -show drun")
-
     -- launch rofi -show 
     , ((modm .|. controlMask,xK_p     ), spawn "rofi -show")
-
     -- launch clipmenu
     , ((modm,                xK_v     ), spawn "clipmenu")
-
     -- close focused window
     , ((modm,                xK_q     ), kill)
-
     -- next layout
     , ((modm,                xK_space ), sendMessage NextLayout)
-
     -- move focus to the next window
     , ((modm,                xK_Tab   ), windows W.focusDown)
-
     -- push window back into tiling
     , ((modm,                xK_t     ), withFocused $ windows . W.sink)
-
     -- increment the number of windows in the master area
     , ((modm,                xK_comma ), sendMessage (IncMasterN 1))
-
     -- deincrement the number of windows in the master area
     , ((modm,                xK_period), sendMessage (IncMasterN (-1)))
-
     -- toggle the status bar gap
     , ((modm,                xK_b     ), sendMessage ToggleStruts)
-
     -- restart xmonad
     , ((modm .|. shiftMask,  xK_q     ), spawn "xmonad --recompile; xmonad --restart")
-
     -- logout 
     , ((modm .|. controlMask,xK_q     ), spawn "loginctl terminate-user hibiscus-tea")
 
@@ -173,15 +162,15 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
 myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $ [
-    -- mod-button1, Set rhe window to floating mode and resize by dragging
-      ((modm, button3), \w -> XMonad.focus w >> mouseResizeWindow w
+    -- mod-button1, Set the window to floating mode and resize by dragging
+      ((modm, button1), \w -> XMonad.focus w >> mouseResizeWindow w
         >> windows W.shiftMaster)
 
     -- mod-button2, Raise the window to the top of the stack
-    , ((modm, button2), (\w -> XMonad.focus w >> windows W.shiftMaster))
+    , ((modm, button2), \w -> XMonad.focus w >> windows W.shiftMaster)
 
     -- mod-button3, Set the window to floating mode and move by dragging
-    , ((modm, button1), \w -> 
+    , ((modm, button3), \w -> 
         focus w >>
             mouseMoveWindow w >>
                 windows W.shiftMaster)
@@ -208,5 +197,6 @@ myConfig = def {
 , borderWidth        = myBorderWidth
 , normalBorderColor  = myNormalBorderColor
 , focusedBorderColor = myFocusedBorderColor
+, mouseBindings      = myMouseBindings
 }
 
