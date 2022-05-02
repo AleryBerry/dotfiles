@@ -140,6 +140,7 @@ Plug 'matze/vim-move'
 
 "Editor interface and theming
 Plug 'morhetz/gruvbox'
+Plug 'jacoborus/tender.vim'
 Plug 'arcticicestudio/nord-vim'
 Plug 'cocopon/iceberg.vim'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
@@ -181,6 +182,7 @@ autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
 autocmd BufEnter,FileType *
 \   if &ft ==# 'c' || &ft ==# 'cpp' | colorscheme iceberg |
 \   elseif &ft ==? 'haskell' | colorscheme gruvbox |
+\   elseif &ft ==? 'purescript' | colorscheme tender |
 \   elseif &ft ==? 'nerdtree' | colorscheme |
 \   else | colorscheme iceberg |
 \   endif
