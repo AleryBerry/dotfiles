@@ -247,17 +247,20 @@ cmp.setup {
   sources = {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
-    { name = 'nvim_lsp_signature_help' }
+    { name = 'nvim_lsp_signature_help' },
+    { name = 'buffer' },
+    { name = 'cmp_tabnine' },
+    { name = 'path' }
   },
 }
 
-require'cmp'.setup.cmdline('/', {
-  sources = cmp.config.sources({
-    { name = 'nvim_lsp_document_symbol' }
-  }, {
-    { name = 'buffer' }
+cmp.setup.cmdline('/', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+      { name = 'buffer' }
+    }
   })
-})
+
 
 local tabnine = require('cmp_tabnine.config')
 tabnine:setup({
