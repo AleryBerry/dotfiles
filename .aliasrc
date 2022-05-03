@@ -60,6 +60,7 @@ alias merge="xrdb -merge ~/.Xresources"
 
 alias filecount="ls | wc -l"
 
+
 # Aliases for software managment
 # pacman or pm
 alias pacman='sudo pacman --color auto'
@@ -77,6 +78,9 @@ alias update-grub="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 
 #add new fonts
 alias update-fc='sudo fc-cache -fv'
+
+#sudo rm 
+alias rm='sudo rm'
 
 #hardware info --short
 alias hw="hwinfo --short"
@@ -135,6 +139,7 @@ alias nbspwmrc="$EDITOR ~/.config/bspwm/bspwmrc"
 alias nsxhkdrc="$EDITOR ~/.config/sxhkd/sxhkdrc"
 alias ndunst="$EDITOR ~/.config/dunst/dunstrc"
 alias nhikari="$EDITOR ~/.config/hikari/hikari.conf"
+alias nfstab="$EDITOR /etc/fstab"
 
 #systeminfo
 alias probe="sudo -E hw-probe -all -upload"
