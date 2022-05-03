@@ -179,7 +179,7 @@ autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_
 
 autocmd vimenter * ++nested colorscheme gruvbox
 autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
-autocmd BufEnter,FileType *
+autocmd TabEnter,FileType *
 \   if &ft ==# 'c' || &ft ==# 'cpp' | colorscheme iceberg |
 \   elseif &ft ==? 'haskell' | colorscheme gruvbox |
 \   elseif &ft ==? 'purescript' | colorscheme tender |
