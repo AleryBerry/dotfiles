@@ -1,0 +1,41 @@
+sw_volume: 100
+audio_device_state:1:pulse audio
+audio_device_state:1:my_fifo
+state: pause
+current: 16
+time: 2.322000
+random: 0
+repeat: 0
+single: 0
+consume: 0
+crossfade: 0
+mixrampdb: 0.000000
+mixrampdelay: -1.000000
+playlist_begin
+0:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/01 - Night Time.mp3
+1:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/02 - Darkness Before Dawn.mp3
+2:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/03 - Love Like Blood.mp3
+3:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/04 - Kings And Queens.mp3
+4:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/05 - Tabazan.mp3
+5:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/06 - Multitudes.mp3
+6:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/07 - Europe.mp3
+7:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/08 - Eighties.mp3
+8:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/13 - A New Day (7').mp3
+9:Killing Joke/Albums/Killing Joke - 1985 - Night Time [2007 Expanded Remaster]/14 - The Madding Crowd.mp3
+10:Killing Joke/Albums/Killing Joke - 1986 - Brighter Than A Thousand Suns/03 - Chessboards.mp3
+11:1976 - García y La Máquina de Hacer Pájaros/01 - Bubulina.mp3
+12:1990 - Nowhere/[Ride]02)Kaleidoscope.mp3
+13:A Perfect Circle - Eat The Elephant (2018)/02. Disillusioned.mp3
+14:Kate Bush/(1985) - Hounds Of Love/01 - Running Up That Hill (A Deal With God).mp3
+15:Kate Bush/(1985) - Hounds Of Love/02 - Hounds Of Love.mp3
+16:Kate Bush/(1985) - Hounds Of Love/03 - The Big Sky.mp3
+17:Kate Bush/(1985) - Hounds Of Love/04 - Mother Stands For Comfort.mp3
+18:Kate Bush/(1985) - Hounds Of Love/05 - Cloudbusting.mp3
+19:Kate Bush/(1985) - Hounds Of Love/06 - And Dream Of Sheep.mp3
+20:Kate Bush/(1985) - Hounds Of Love/07 - Under Ice.mp3
+21:Kate Bush/(1985) - Hounds Of Love/08 - Waking The Witch.mp3
+22:Kate Bush/(1985) - Hounds Of Love/09 - Watching You Without Me.mp3
+23:Kate Bush/(1985) - Hounds Of Love/10 - Jig Of Life.mp3
+24:Kate Bush/(1985) - Hounds Of Love/11 - Hello Earth.mp3
+25:Kate Bush/(1985) - Hounds Of Love/12 - The Morning Fog.mp3
+playlist_end
