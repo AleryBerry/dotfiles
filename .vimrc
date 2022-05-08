@@ -104,8 +104,6 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
-Plug 'nvim-lua/completion-nvim'
-Plug 'nvim-lua/diagnostic-nvim'
 Plug 'williamboman/nvim-lsp-installer'
 Plug 'L3MON4D3/LuaSnip'
 Plug 'gcmt/wildfire.vim'
@@ -113,7 +111,6 @@ Plug 'alvan/vim-closetag'
 Plug 'LunarWatcher/auto-pairs'
 Plug 'tpope/vim-eunuch'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-Plug 'dense-analysis/ale'
 Plug 'mattn/emmet-vim'
 Plug 'AndrewRadev/tagalong.vim'
 Plug 'tpope/vim-surround'
@@ -272,7 +269,6 @@ let g:user_emmet_settings = {
 let g:airline_theme='jellybeans'
 
 lua << EOF
-require'lspconfig'.hls.setup{}
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "c", "lua", "rust", "haskell", "javascript", "css", "typescript" },
