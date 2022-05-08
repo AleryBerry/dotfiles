@@ -5,6 +5,8 @@ alias v="nvim"
 alias scv="sc-im"
 alias lf="lfrun"
 
+alias music='tmux new-session -s $$ "tmux source-file ~/.config/ncmpcpp/tsession"'
+
 if [ -d "$HOME/.bin" ] ;
   then PATH="$HOME/.bin:$PATH"
 fi
@@ -81,6 +83,7 @@ alias update-fc='sudo fc-cache -fv'
 
 #sudo rm 
 alias rm='sudo rm'
+alias mv='sudo mv'
 
 #hardware info --short
 alias hw="hwinfo --short"
