@@ -190,8 +190,8 @@ vmap <C-v> <Esc>"+gp
 :imap II <Esc>
 :map H b
 :map L w
-noremap <TAB> w
-map <S-TAB> b
+nnoremap <TAB> w
+nnoremap <S-TAB> b
 nmap <C-a> \\
 
 let g:AutoPairsCompatibleMaps = 0 
