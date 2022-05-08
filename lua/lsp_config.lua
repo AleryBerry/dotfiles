@@ -110,9 +110,14 @@ cfg = {
   timer_interval = 200, -- default timer check interval set to lower value if you want to reduce latency
   toggle_key = nil -- toggle signature on and off in insert mode,  e.g. toggle_key = '<M-x>'
 }
+
 require "lsp_signature".setup(cfg)
 
 require("lsp_lines").register_lsp_virtual_lines()
+
+vim.diagnostic.config({
+  virtual_text = false,
+})
 
 require('hlargs').setup()
 
@@ -245,9 +250,9 @@ cmp.setup {
     end, { 'i', 's' }),
   }),
   sources = {
+    { name = 'nvim_lsp_signature_help' },
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
-    { name = 'nvim_lsp_signature_help' },
     { name = 'buffer' },
     { name = 'cmp_tabnine' },
     { name = 'path' }
