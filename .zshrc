@@ -65,11 +65,16 @@ zplug "b4b4r07/emoji-cli", \
 # e.g., zsh-syntax-highlighting must be loaded
 # after executing compinit command and sourcing other plugins
 # (If the defer tag is given 2 or above, run after compinit command)
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 zplug "lib/history", from:oh-my-zsh
 zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-completions"
+
+zplug "nvbn/thefuck"
+zplug "chrissicool/zsh-256color"
+zplug "desyncr/auto-ls"
+zplug "arzzen/calc.plugin.zsh"
+zplug "zdharma-continuum/fast-syntax-highlighting"
 
 # Load theme file
 zplug 'sbugzu/gruvbox-zsh', as:theme
@@ -91,6 +96,7 @@ zmodload zsh/complist
 compinit
 _comp_options+=(globdots)		# include hidden files.
 
+zplug "hlissner/zsh-autopair", defer:2
 # vi mode
 bindkey -v
 export keytimeout=1
