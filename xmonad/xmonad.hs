@@ -23,6 +23,17 @@ import XMonad.Util.Loggers
 import XMonad.Util.WorkspaceCompare
 import Data.List
 import Data.List.Split
+--Scratchpad
+import XMonad.Util.NamedScratchpad
+import Data.Ratio
+import XMonad.Util.Run
+
+scratchpads = [
+  NS "ncmpcpp" "alacritty --title 'ncmpcpp' -e ncmpcppalbum" (title =? "ncmpcpp") 
+    (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4))),
+  NS "neovim" "alacritty --title neovim -e nvim" (title =? "neovim") 
+    (doFullFloat) 
+  ]
 
 myBorderWidth        = 4
 myClickJustFocuses :: Bool
@@ -57,6 +68,7 @@ myManageHook = composeAll . concat $
     , [ className =? "Deadbeef" --> doShift "IV"   ]
     , [ className =? d --> doShift "V" | d <- myGames  ]
     , [ className =? e --> doShift "VI" | e <- myGameLaunchers  ]
+    , [ className =? "Github Desktop" --> doShift "VII"   ]
     , [ className =? "Bitwarden" --> doShift "VIII"   ]
     , [ isFullscreen --> doF W.focusDown <+> doFullFloat <+> hasBorder False ]
     , [ isDialog --> doFloat ]
@@ -66,14 +78,14 @@ myManageHook = composeAll . concat $
       myBrowsers      = [ "qutebrowser", "Falkon", "Vivaldi-stable", "firefox" ]
       myGames         = [ "dota2", "clonehero", "Dwarf_Fortress", "Blender" ]
       myComs          = [ "TelegramDesktop", "Element", "discord" ]
-      myFloats        = [ "ranger" ]
+      myFloats        = [ "ranger", "lf" ]
       myGameLaunchers = [ "Steam", "heroic" ]
 
-finalDestination :: String -> [String] -> [String]
-finalDestination cs (w:ws) = foldr (\x xs -> if x /= cs then x:xs else reformat cs:xs) [] (w:ws)
+fixWorkspaces :: String -> [String] -> [String]
+fixWorkspaces cs (w:ws) = foldr (\x xs -> if x /= cs then x:xs else reformat cs:xs) [] (w:ws)
 
 reformat :: String -> String
-reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-}" (split (dropBlanks $ dropDelims $ oneOf "$}") x !! 1)
+reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-" (split (dropBlanks $ dropDelims $ oneOf "$}") x !! 1)
 
 myLogHook :: DC.Client -> ScreenId -> String -> PP
 myLogHook dbus i s = def {
@@ -83,7 +95,7 @@ myLogHook dbus i s = def {
     , ppHiddenNoWindows = wrap ("%{F" ++ gray ++ "}") "%{F-}"
     , ppOutput  = D.sendToPath dbus s 
     , ppSep     = "  "
-    , ppOrder   = \(ws : _ : _ : wins : cs) -> finalDestination (head cs) (words ws) <> [wins]
+    , ppOrder   = \(ws : _ : _ : wins : cs) -> fixWorkspaces (head cs) (words ws) <> [wins]
     , ppExtras  = [titlesOnScreen, currentOnScreen]
 }
     where
@@ -128,6 +140,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                xK_k     ), windowGo   U True)
     , ((modm,                xK_j     ), windowGo   D True)
 
+    -- scratchpads
+    , ((modm,                xK_m     ), namedScratchpadAction scratchpads "ncmpcpp")
+    , ((modm,                xK_n     ), namedScratchpadAction scratchpads "neovim")
+
     -- directional navigation of windows | no arrowkeys   
     , ((modm .|. shiftMask,  xK_l     ), windowSwap R True)
     , ((modm .|. shiftMask,  xK_h     ), windowSwap L True)
@@ -145,6 +161,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,  xK_Left  ), windowSwap L True)
     , ((modm .|. shiftMask,  xK_Up    ), windowSwap U True)
     , ((modm .|. shiftMask,  xK_Down  ), windowSwap D True)
+
     ]
 
     ++
@@ -183,7 +200,10 @@ main = do
      -- Request Access (needed when sending messages)
      D.requestAccess dbus
      -- Start XMonad
-     xmonad . ewmhFullscreen . ewmh $ myConfig { logHook = dynamicLogWithPP (myLogHook dbus 0 "DVI" ) >> dynamicLogWithPP (myLogHook dbus 1 "HDMI") } 
+     xmonad . ewmhFullscreen . ewmh $ myConfig { 
+        logHook = (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 0 "DVI" ) 
+            >> (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 1 "HDMI") 
+        } 
 
 myConfig = def {
   terminal = myTerminal
@@ -193,7 +213,7 @@ myConfig = def {
 , keys               = myKeys
 -- Hooks
 , layoutHook         = smartBorders myLayoutHook
-, manageHook         = manageDocks <+> myManageHook 
+, manageHook         = manageDocks <+> myManageHook <+> namedScratchpadManageHook scratchpads
 , borderWidth        = myBorderWidth
 , normalBorderColor  = myNormalBorderColor
 , focusedBorderColor = myFocusedBorderColor
