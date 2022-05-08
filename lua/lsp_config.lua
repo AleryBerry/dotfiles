@@ -3,6 +3,8 @@ vim.opt.list = true
 vim.opt.listchars:append("space:⋅")
 vim.opt.listchars:append("eol:↴")
 
+require'lspconfig'.tsserver.setup{}
+
 require('lualine').setup {
   options = {
     icons_enabled = true,
