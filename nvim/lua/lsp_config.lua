@@ -26,7 +26,6 @@ npairs.setup({
       highlight_grey='Comment'
     },
 })
->>>>>>> main
 
 vim.g.bufferline = {
   -- Enable/disable animations
