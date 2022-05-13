@@ -73,6 +73,7 @@ set smartcase
 " Store info from no more than 100 files at a time, 9999 lines of text, 100kb of data. Useful for copying large amounts of data between files.
 set viminfo='100,<9999,s100
 
+set indentexpr=vim_treesitter#indent()
 
 " ---------------PLUGINS--------------------
 "
@@ -106,7 +107,6 @@ Plug 'williamboman/nvim-lsp-installer'
 Plug 'L3MON4D3/LuaSnip'
 Plug 'gcmt/wildfire.vim'
 Plug 'alvan/vim-closetag'
-Plug 'LunarWatcher/auto-pairs'
 Plug 'tpope/vim-eunuch'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'mattn/emmet-vim'
@@ -124,6 +124,8 @@ Plug 'nathom/filetype.nvim'
 Plug 'junegunn/vim-easy-align'
 Plug 'gyim/vim-boxdraw' 
 Plug 'haringsrob/nvim_context_vt'
+Plug 'windwp/nvim-autopairs'
+Plug 'windwp/nvim-ts-autotag'
 
 "File search and navigation
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -185,11 +187,6 @@ nnoremap <TAB> w
 nnoremap <S-TAB> b
 nmap <C-a> \\
 
-let g:AutoPairsCompatibleMaps = 0 
-let g:AutoPairsMapBS = 1
-let g:AutoPairsShortcutToggle = 0
-let g:AutoPairsShortcutJump = "<C-e>"
-let g:AutoPairsMultilineClose = 1
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
@@ -263,14 +260,14 @@ require'nvim-treesitter.configs'.setup {
   rainbow = {
       enable = true,
       extended_mode = true
-      -- colors = {}, -- table of hex strings
-      -- termcolors = {} -- table of colour name strings
   },
   context_commentstring = {
       enable = true
-  }
+  }, 
+  indent = {
+		enable = true
+	},
 }
-
 
 require("zen-mode").setup {}
 

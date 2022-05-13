@@ -6,6 +6,26 @@ vim.opt.listchars:append("eol:↴")
 local nvim_tree_events = require('nvim-tree.events')
 local bufferline_state = require('bufferline.state')
 
+require('nvim-autopairs').setup({
+  enable_check_bracket_line = false
+})
+
+local npairs = require("nvim-autopairs")
+
+npairs.setup({
+    check_ts = true,
+    fast_wrap = {
+      map = '<M-e>',
+      chars = { '{', '[', '(', '"', "'" },
+      pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], '%s+', ''),
+      end_key = '$',
+      keys = 'qwertyuiopzxcvbnmasdfghjkl',
+      check_comma = true,
+      highlight = 'Search',
+      highlight_grey='Comment'
+    },
+})
+
 vim.g.bufferline = {
   -- Enable/disable animations
   animation = true,
