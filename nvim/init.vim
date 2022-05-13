@@ -13,11 +13,9 @@ set nolist
 set rnu
 set termguicolors
 
-syntax on
- 
 filetype on
-"Helps force plug-ins to load correctly when it is turned back on below.
-filetype plugin indent on
+
+filetype plugin on
 
 " Turn off modelines
 set modelines=0
@@ -130,22 +128,20 @@ Plug 'haringsrob/nvim_context_vt'
 "File search and navigation
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'preservim/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'matze/vim-move'
 
 "Editor interface and theming
-Plug 'morhetz/gruvbox'
+Plug 'sainnhe/gruvbox-material'
 Plug 'jacoborus/tender.vim'
 Plug 'arcticicestudio/nord-vim'
 Plug 'cocopon/iceberg.vim'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'mhinz/vim-startify'
 Plug 'lambdalisue/suda.vim'
 Plug 'norcalli/nvim-colorizer.lua'
 Plug 'folke/twilight.nvim'
 Plug 'kyazdani42/nvim-web-devicons'
+Plug 'kyazdani42/nvim-tree.lua'
 Plug 'romgrk/barbar.nvim'
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'folke/zen-mode.nvim'
@@ -166,25 +162,22 @@ set completeopt=menu,menuone,noselect
 "
 let g:suda_smart_edit = 1
 let g:airline_powerline_fonts = 1
-let g:NERDTreeWinPos = "right"
-autocmd VimEnter * NERDTree 
-autocmd VimEnter * NERDTreeToggle
-" Exit Vim if NERDTree is the only window remaining in the only tab.
-autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 
-autocmd vimenter * ++nested colorscheme gruvbox
+colorscheme tender
+
 autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
-autocmd TabEnter,FileType *
-\   if &ft ==# 'c' || &ft ==# 'cpp' | colorscheme iceberg |
-\   elseif &ft ==? 'haskell' | colorscheme gruvbox |
-\   elseif &ft ==? 'purescript' | colorscheme tender |
-\   elseif &ft ==? 'nerdtree' | colorscheme |
-\   else | colorscheme iceberg |
-\   endif
+autocmd BufEnter * ++nested if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
 
-nmap <C-n> :NERDTreeToggle <CR>
+autocmd! BufEnter *.hs,*.js call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})
+autocmd! BufEnter *.cpp,*.ts call timer_start(50, { tid -> execute('colorscheme iceberg')})
+autocmd! BufEnter *.purs call timer_start(50, { tid -> execute('colorscheme tender')})
+
+nnoremap <silent> <C-n> :NvimTreeToggle<CR>
+
+let g:VM_maps = {}
+let g:VM_maps['Find Under'] = '<C-d>'           " replace visual C-n
+let g:VM_maps['Find Subword Under'] = '<C-d>'           " replace visual C-n
+
 vmap <C-v> <Esc>"+gp
 "Misc
 :imap II <Esc>
@@ -212,9 +205,9 @@ cal wildfire#triggers#Add("<ENTER>", {
 \ })
 
 nmap <silent> <C-t> :tab sball <CR>
-nmap <C-q> :q! <CR>
-:nmap <silent> J :tabn <CR>
-:nmap <silent> K :tabp <CR>
+nmap <C-q> :BufferClose <CR>
+:nmap <silent> J :BufferNext <CR>
+:nmap <silent> K :BufferPrevious <CR>
 
 vnoremap <C-n> :norm
 
@@ -225,23 +218,15 @@ noremap <leader>gs :CocSearch
 noremap <leader>fs :Files<cr>
 noremap <leader><cr> <cr><c-w>h:q<cr>
 
-" Vim's auto indentation feature does not work properly with text copied from outside of Vim. Press the <F2> key to toggle paste mode on/off.
-nnoremap <F2> :set invpaste paste?<CR>
-imap <F2> <C-O>:set invpaste paste?<CR>
-set pastetoggle=<F2>
-
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
-
-let g:NERDTreeIgnore = ['^node_modules$']
-let g:VM_maps = {}
-let g:VM_maps['Find Under']         = '<C-d>'           " replace C-n
-let g:VM_maps['Find Subword Under'] = '<C-d>'           " replace visual C-n
-let g:VM_maps["Select Cursor Down"] = '<C-j>'      " start selecting down
-let g:VM_maps["Select Cursor Up"]   = '<C-k>'        " start selecting up
-
-let NERDTreeShowHidden = 1
-let NERDTreeCustomOpenArgs = {'file': {'reuse':'all', 'where':'t', 'keepopen':0, 'stay':0}}
-let NERDTreeMapCustomOpen = 't'
+autocmd TextChangedI,TextChangedP * call s:on_complete_check()
+function! s:on_complete_check() abort
+lua <<EOF
+  local before_line = string.sub(vim.api.nvim_get_current_line(), 1, vim.api.nvim_win_get_cursor(0)[2] + 1)
+  if string.match(before_line, '%s$') then
+    require('cmp').complete()
+  end
+EOF
+endfunction
 
 let g:user_emmet_leader_key=','
 let g:user_emmet_settings = {
@@ -275,14 +260,20 @@ require'nvim-treesitter.configs'.setup {
     enable = true,
     additional_vim_regex_highlighting = true,
   },
+  rainbow = {
+      enable = true,
+      extended_mode = true
+      -- colors = {}, -- table of hex strings
+      -- termcolors = {} -- table of colour name strings
+  },
+  context_commentstring = {
+      enable = true
+  }
 }
 
 
-require("zen-mode").setup {
-  -- your configuration comes here
-  -- or leave it empty to use the default settings
-  -- refer to the configuration section below
-}
+require("zen-mode").setup {}
+
 require("filetype").setup({
     overrides = {
         extensions = {
@@ -326,13 +317,12 @@ require("filetype").setup({
         },
     },
 })
+
 local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
 ft_to_parser.purescript = "haskell"
 require("lsp_config")
+
 EOF
-let g:ale_disable_lsp = 1
-let g:ale_linters = {'haskell': ['hlint'], 'css': ['fecs'], 'javascript': ['eslint', 'jscs', 'prettier', 'tsserver', 'flow']}
-let g:ale_fixers = {'haskell': ['ormolu', 'floskell' ], 'purescript': ['purs-tidy']}
 let g:cursorhold_updatetime = 100
 
 nmap <leftmouse> <plug>(ScrollViewLeftMouse)
