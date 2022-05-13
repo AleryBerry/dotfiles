@@ -188,8 +188,6 @@ nmap <C-n> :NERDTreeToggle <CR>
 vmap <C-v> <Esc>"+gp
 "Misc
 :imap II <Esc>
-:map H b
-:map L w
 nnoremap <TAB> w
 nnoremap <S-TAB> b
 nmap <C-a> \\
