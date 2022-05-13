@@ -73,6 +73,8 @@ set smartcase
 " Store info from no more than 100 files at a time, 9999 lines of text, 100kb of data. Useful for copying large amounts of data between files.
 set viminfo='100,<9999,s100
 
+set foldmethod=expr
+set indentexpr=vim_treesitter#indent()
 
 " ---------------PLUGINS--------------------
 "
@@ -85,6 +87,7 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
+autocmd VimEnter * TwilightEnable
 
 "Syntax highlighting and autocompletion
 Plug 'neovim/nvim-lspconfig'
@@ -106,7 +109,6 @@ Plug 'williamboman/nvim-lsp-installer'
 Plug 'L3MON4D3/LuaSnip'
 Plug 'gcmt/wildfire.vim'
 Plug 'alvan/vim-closetag'
-Plug 'LunarWatcher/auto-pairs'
 Plug 'tpope/vim-eunuch'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'mattn/emmet-vim'
@@ -117,6 +119,7 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'mbbill/undotree'
 "Syntax Highlight
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'lewis6991/nvim-treesitter-context'
 Plug 'm-demare/hlargs.nvim'
 Plug 'hasufell/ghcup.vim'
 Plug 'rbgrouleff/bclose.vim'
@@ -124,6 +127,10 @@ Plug 'nathom/filetype.nvim'
 Plug 'junegunn/vim-easy-align'
 Plug 'gyim/vim-boxdraw' 
 Plug 'haringsrob/nvim_context_vt'
+Plug 'windwp/nvim-autopairs'
+Plug 'windwp/nvim-ts-autotag'
+Plug 'p00f/nvim-ts-rainbow'
+Plug 'JoosepAlviste/nvim-ts-context-commentstring'
 
 "File search and navigation
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -184,17 +191,10 @@ vmap <C-v> <Esc>"+gp
 vmap <C-c> "+y
 "Misc
 :imap II <Esc>
-:map H b
-:map L w
 nnoremap <TAB> w
 nnoremap <S-TAB> b
 nmap <C-a> \\
 
-let g:AutoPairsCompatibleMaps = 0 
-let g:AutoPairsMapBS = 1
-let g:AutoPairsShortcutToggle = 0
-let g:AutoPairsShortcutJump = "<C-e>"
-let g:AutoPairsMultilineClose = 1
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
@@ -263,19 +263,19 @@ require'nvim-treesitter.configs'.setup {
   sync_install = true,
   highlight = {
     enable = true,
-    additional_vim_regex_highlighting = true,
+    additional_vim_regex_highlighting = false,
   },
   rainbow = {
       enable = true,
       extended_mode = true
-      -- colors = {}, -- table of hex strings
-      -- termcolors = {} -- table of colour name strings
   },
   context_commentstring = {
       enable = true
-  }
+  }, 
+  indent = {
+		enable = true
+	},
 }
-
 
 require("zen-mode").setup {}
 
@@ -322,6 +322,43 @@ require("filetype").setup({
         },
     },
 })
+
+require'treesitter-context'.setup{
+    enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+    max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+    patterns = { -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
+        -- For all filetypes
+        -- Note that setting an entry here replaces all other patterns for this entry.
+        -- By setting the 'default' entry below, you can control which nodes you want to
+        -- appear in the context window.
+        default = {
+            'class',
+            'function',
+            'method',
+            -- 'for', -- These won't appear in the context
+            -- 'while',
+            -- 'if',
+            -- 'switch',
+            -- 'case',
+        },
+        -- Example for a specific filetype.
+        -- If a pattern is missing, *open a PR* so everyone can benefit.
+        --   rust = {
+        --       'impl_item',
+        --   },
+    },
+    exact_patterns = {
+        -- Example for a specific filetype with Lua patterns
+        -- Treat patterns.rust as a Lua pattern (i.e "^impl_item$" will
+        -- exactly match "impl_item" only)
+        -- rust = true,
+    },
+
+    -- [!] The options below are exposed but shouldn't require your attention,
+    --     you can safely ignore them.
+
+    zindex = 20, -- The Z-index of the context window
+}
 
 local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
 ft_to_parser.purescript = "haskell"
