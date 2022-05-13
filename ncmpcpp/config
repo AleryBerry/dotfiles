@@ -4,7 +4,6 @@ mpd_music_dir = ~/External/Music/
 
 execute_on_song_change = "~/.config/ncmpcpp/cover_obs.sh"
 mouse_list_scroll_whole_page = "yes"
-lines_scrolled = "1"
 
 [header]
 header_visibility = "no"
@@ -13,20 +12,25 @@ volume_color = "green"
 state_line_color = "black"
 
 [statusbar]
-progressbar_look = "━━━"
+progressbar_look = "■◣ "
 progressbar_color = "black"
 statusbar_visibility = "yes"
 progressbar_elapsed_color = "cyan"
 statusbar_color = "3"
-song_status_format = "{%t - %A}"
-#display_bitrate = yes
+
+user_interface = classic
+media_library_primary_tag = album_artist
+ignore_leading_the = yes
 
 [visualizer]
 visualizer_data_source = ""
 visualizer_output_name = ""
 
 [library]
-song_library_format = "{{%A - %t}|{%f}}{$R%l}"
+#song_library_format = "{{%A - %t}|{%f}}{$R%l}"
+song_library_format = {%n - }{%t}|{%f}
+song_list_format = "{$5 $5 %t}|{$2►$2 <untitled>}|{$5►$8 %f} $5$R{$5 %A}|{$8 <unknown artist>} {$5   %l} "
+song_status_format = {$8%t}{$8 "%b"}|{$8 "%A"}$8
 empty_tag_color = "black"
 
 [global]
@@ -35,8 +39,4 @@ centered_cursor = "yes"
 enable_window_title = "yes"
 external_editor = "nvim"
 
-visualizer_look = "  "           # First we make the visualizer invisible
-startup_screen = "visualizer"      # Next we make the left pane open on the empty visualizer
-startup_slave_screen = "playlist"  # The right pane is the usual playlist view
-startup_slave_screen_focus = "yes" # We focus the right pane on ncmpcpp startup
-locked_screen_width_part = 30    
+playlist_display_mode = classic

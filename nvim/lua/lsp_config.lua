@@ -6,6 +6,8 @@ vim.opt.listchars:append("eol:↴")
 local nvim_tree_events = require('nvim-tree.events')
 local bufferline_state = require('bufferline.state')
 
+require'lspconfig'.tailwindcss.setup{}
+
 vim.g.bufferline = {
   -- Enable/disable animations
   animation = true,

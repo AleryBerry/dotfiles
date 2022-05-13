@@ -133,6 +133,7 @@ Plug 'matze/vim-move'
 
 "Editor interface and theming
 Plug 'sainnhe/gruvbox-material'
+Plug 'KabbAmine/yowish.vim'
 Plug 'jacoborus/tender.vim'
 Plug 'arcticicestudio/nord-vim'
 Plug 'cocopon/iceberg.vim'
@@ -163,14 +164,15 @@ set completeopt=menu,menuone,noselect
 let g:suda_smart_edit = 1
 let g:airline_powerline_fonts = 1
 
-colorscheme tender
+colorscheme yowish
 
 autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
 autocmd BufEnter * ++nested if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
 
 autocmd! BufEnter *.hs,*.js call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})
-autocmd! BufEnter *.cpp,*.ts call timer_start(50, { tid -> execute('colorscheme iceberg')})
-autocmd! BufEnter *.purs call timer_start(50, { tid -> execute('colorscheme tender')})
+autocmd! BufEnter *.c,*.ts,*.tsx, *.lua call timer_start(50, { tid -> execute('colorscheme iceberg')})
+autocmd! BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme nord')})
+autocmd! BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('colorscheme tender')})
 
 nnoremap <silent> <C-n> :NvimTreeToggle<CR>
 
@@ -179,6 +181,7 @@ let g:VM_maps['Find Under'] = '<C-d>'           " replace visual C-n
 let g:VM_maps['Find Subword Under'] = '<C-d>'           " replace visual C-n
 
 vmap <C-v> <Esc>"+gp
+vmap <C-c> "+y
 "Misc
 :imap II <Esc>
 :map H b
@@ -322,6 +325,7 @@ require("filetype").setup({
 
 local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
 ft_to_parser.purescript = "haskell"
+ft_to_parser.gd = "gdscript"
 require("lsp_config")
 
 EOF

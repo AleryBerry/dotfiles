@@ -5,7 +5,7 @@ source "`ueberzug library`"
 COVER="/tmp/album_cover.png"
 
 function add_cover {
-  ImageLayer::add [identifier]="img" [x]="2" [y]="1" [path]="$COVER"
+  ImageLayer::add [identifier]="img" [x]="2" [y]="7" [path]="$COVER"
 }
 
 ImageLayer 0< <(

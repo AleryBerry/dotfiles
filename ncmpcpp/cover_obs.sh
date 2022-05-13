@@ -1,7 +1,7 @@
 #!/bin/bash
 
 COVER="/tmp/album_cover.png"
-COVER_SIZE="400"
+COVER_SIZE="300"
 
 #path to current song
 file="/home/hibiscus-tea/External/Music/$(mpc --format %file% current)"

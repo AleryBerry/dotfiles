@@ -15,10 +15,10 @@ send-keys "ncmpcpp" C-m
 send-keys 1
 
 #resize image and visualizer pane to fit image
-resize-pane -t 0 -x 23
+resize-pane -t 0 -x 39
 
 #hook for keeping the image pane size constant
-set-hook client-resized 'resize-pane -t 0 -x 49 -y 23'
+set-hook client-resized 'resize-pane -t 0 -x 50'
 
 #focus on catalog pane
 select-pane -t 1

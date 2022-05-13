@@ -27,6 +27,8 @@ import Data.List.Split
 import XMonad.Util.NamedScratchpad
 import Data.Ratio
 import XMonad.Util.Run
+-- Toggle Fullscreen
+import XMonad.Actions.NoBorders
 
 scratchpads = [
   NS "ncmpcpp" "alacritty --title 'ncmpcpp' -e ncmpcppalbum" (title =? "ncmpcpp") 
@@ -59,6 +61,17 @@ myLayoutHook = avoidStruts $ equalSpacing 10 4 0 20 (
     nmaster = 1
     ratio = 1/2
     delta = 3/100
+
+toggleFull = withFocused (\windowId -> do {
+   floats <- gets (W.floating . windowset);
+   if windowId `M.member` floats
+   then do
+       withFocused $ toggleBorder
+       withFocused $ windows . W.sink
+   else do
+       withFocused $ toggleBorder
+       withFocused $  windows . (flip W.float $ W.RationalRect 0 0 1 1)
+  })
 
 myManageHook :: ManageHook
 myManageHook = composeAll . concat $
@@ -133,6 +146,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,  xK_q     ), spawn "xmonad --recompile; xmonad --restart")
     -- logout 
     , ((modm .|. controlMask,xK_q     ), spawn "loginctl terminate-user hibiscus-tea")
+    -- toggle fullscreen 
+    , ((modm .|. shiftMask,  xK_m     ), toggleFull)
 
     -- swap adjacent windows             | no arrowkeys
     , ((modm,                xK_l     ), windowGo   R True)
