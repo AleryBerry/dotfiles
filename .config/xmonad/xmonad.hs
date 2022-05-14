@@ -30,13 +30,14 @@ import XMonad.Util.Run
 -- Toggle Fullscreen
 import XMonad.Actions.NoBorders
 -- Focus Hooks
-import XMonad.Hooks.Focus
+import Control.Monad
+
 
 scratchpads = [
   NS "ncmpcpp" "alacritty --title 'ncmpcpp' -e ncmpcppalbum" (title =? "ncmpcpp") 
     (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4))),
   NS "neovim" "alacritty --title neovim -e nvim" (title =? "neovim") 
-    (doFullFloat) 
+    doFullFloat
   ]
 
 myBorderWidth        = 4
@@ -68,23 +69,23 @@ toggleFull = withFocused (\windowId -> do {
    floats <- gets (W.floating . windowset);
    if windowId `M.member` floats
    then do
-       withFocused $ toggleBorder
+       withFocused toggleBorder
        withFocused $ windows . W.sink
    else do
-       withFocused $ toggleBorder
-       withFocused $  windows . (flip W.float $ W.RationalRect 0 0 1 1)
+       withFocused toggleBorder
+       withFocused $ windows . (flip W.float $ W.RationalRect 0 0 1 1)
   })
 
 myManageHook :: ManageHook
 myManageHook = composeAll . concat $
-    [ [ className =? b --> doShift "I"                     | b <- myBrowsers   ]
-    , [ className =? c --> doShift "II"                    | c <- myComs       ]
-    , [ className =? "Alacritty" --> doShift "III"   ]
-    , [ className =? "Deadbeef" --> doShift "IV"   ]
-    , [ className =? d --> doShift "V" | d <- myGames  ]
-    , [ className =? e --> doShift "VI" | e <- myGameLaunchers  ]
-    , [ className =? "Github Desktop" --> doShift "VII"   ]
-    , [ className =? "Bitwarden" --> doShift "VIII"   ]
+    [ [ className =? b --> viewShift "I"                     | b <- myBrowsers   ]
+    , [ className =? c --> viewShift "II"                    | c <- myComs       ]
+    , [ className =? "Alacritty" --> viewShift "III"   ]
+    , [ className =? "Deadbeef" --> viewShift "IV"   ]
+    , [ className =? d --> viewShift "V" | d <- myGames  ]
+    , [ className =? e --> viewShift "VI" | e <- myGameLaunchers  ]
+    , [ className =? "Github Desktop" --> viewShift "VII"   ]
+    , [ className =? "Bitwarden" --> viewShift "VIII"   ]
     , [ isFullscreen --> doF W.focusDown <+> doFullFloat <+> hasBorder False ]
     , [ isDialog --> doFloat ]
     , [ className =? g --> doCenterFloat | g <- myFloats                    ]
@@ -95,6 +96,7 @@ myManageHook = composeAll . concat $
       myComs          = [ "TelegramDesktop", "Element", "discord" ]
       myFloats        = [ "ranger", "lf" ]
       myGameLaunchers = [ "Steam", "heroic" ]
+      viewShift = doF . liftM2 (.) W.greedyView W.shift
 
 fixWorkspaces :: String -> [String] -> [String]
 fixWorkspaces cs (w:ws) = foldr (\x xs -> if x /= cs then x:xs else reformat cs:xs) [] (w:ws)
@@ -120,7 +122,7 @@ myLogHook dbus i s = def {
         formatOther   = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}"
         formatUnfocused = wrap ("%{F" ++ otherMonitors ++ "}") "%{F-}" 
 
-myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
+myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
 
     -- launch a terminal
     [ ((modm,                xK_Return), spawn $ XMonad.terminal conf)
@@ -195,7 +197,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
         | (key, sc) <- zip [xK_a, xK_s, xK_d] [0..]
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
-myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $ [
+myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList [
     -- mod-button1, Set the window to floating mode and resize by dragging
       ((modm, button1), \w -> XMonad.focus w >> mouseResizeWindow w
         >> windows W.shiftMaster)
@@ -212,15 +214,15 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $ [
 
 main :: IO ()
 main = do
-     -- Connect to DBus
-     dbus <- D.connect
-     -- Request Access (needed when sending messages)
-     D.requestAccess dbus
-     -- Start XMonad
-     xmonad . ewmhFullscreen . ewmh $ myConfig { 
-        logHook = (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 0 "DVI" ) 
-            >> (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 1 "HDMI") 
-        } 
+  -- Connect to DBus
+  dbus <- D.connect
+  -- Request Access (needed when sending messages)
+  D.requestAccess dbus
+  -- Start XMonad
+  xmonad $ ewmhFullscreen . ewmh $ myConfig { 
+    logHook = (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 0 "DVI" ) 
+        >> (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 1 "HDMI") 
+    } 
 
 myConfig = def {
   terminal = myTerminal
