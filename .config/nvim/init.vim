@@ -23,6 +23,8 @@ set modelines=0
 " Automatically wrap text that extends beyond the screen length.
 set wrap
 
+set title
+set titlestring=Neovim
 " Uncomment below to set the max textwidth. Use a value corresponding to the width of your screen.
 set textwidth=79
 set formatoptions=tcqrn1
