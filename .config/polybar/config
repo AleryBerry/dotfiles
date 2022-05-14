@@ -49,7 +49,7 @@ tail = true
 
 [module/xmonad]
 type = custom/script
-exec = "xmonad-dbus $MONIT"
+exec = ~/.local/bin/xmonad-dbus $MONIT
 tail = true
 interval = 1
 

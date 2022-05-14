@@ -29,6 +29,8 @@ import Data.Ratio
 import XMonad.Util.Run
 -- Toggle Fullscreen
 import XMonad.Actions.NoBorders
+-- Focus Hooks
+import XMonad.Hooks.Focus
 
 scratchpads = [
   NS "ncmpcpp" "alacritty --title 'ncmpcpp' -e ncmpcppalbum" (title =? "ncmpcpp") 

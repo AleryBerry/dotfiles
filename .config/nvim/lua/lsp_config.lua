@@ -3,6 +3,8 @@ vim.opt.list = true
 vim.opt.listchars:append("space:⋅")
 vim.opt.listchars:append("eol:↴")
 
+require'lspconfig'.hls.setup{}
+
 local nvim_tree_events = require('nvim-tree.events')
 local bufferline_state = require('bufferline.state')
 
@@ -348,44 +350,40 @@ local lspconfig = require('lspconfig')
 
 lspconfig.sumneko_lua.setup {}
 lspconfig.rust_analyzer.setup {}
--- Mappings.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local opts = { noremap=false, silent=false }
-vim.api.nvim_set_keymap('n', 'me', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
-vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
-vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
-vim.api.nvim_set_keymap('n', 'mq', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
-vim.api.nvim_set_keymap('n', '[c', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+local map = function(type, key, value)
+	vim.fn.nvim_buf_set_keymap(0,type,key,value,{noremap = true, silent = true});
+end
 
-  -- Mappings.
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'mwa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'mwr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'mwl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'mD', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'mrn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '[c', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'mf', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+local custom_attach = function(client)
+	print("LSP started.");
+	require'completion'.on_attach(client)
+	require'diagnostic'.on_attach(client)
+
+	map('n','gD','<cmd>lua vim.lsp.buf.declaration()<CR>')
+	map('n','gd','<cmd>lua vim.lsp.buf.definition()<CR>')
+	map('n','K','<cmd>lua vim.lsp.buf.hover()<CR>')
+	map('n','gr','<cmd>lua vim.lsp.buf.references()<CR>')
+	map('n','gs','<cmd>lua vim.lsp.buf.signature_help()<CR>')
+	map('n','gi','<cmd>lua vim.lsp.buf.implementation()<CR>')
+	map('n','gt','<cmd>lua vim.lsp.buf.type_definition()<CR>')
+	map('n','<leader>gw','<cmd>lua vim.lsp.buf.document_symbol()<CR>')
+	map('n','<leader>gW','<cmd>lua vim.lsp.buf.workspace_symbol()<CR>')
+	map('n','<leader>ah','<cmd>lua vim.lsp.buf.hover()<CR>')
+	map('n','<leader>af','<cmd>lua vim.lsp.buf.code_action()<CR>')
+	map('n','<leader>ee','<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>')
+	map('n','<leader>ar','<cmd>lua vim.lsp.buf.rename()<CR>')
+	map('n','<leader>=', '<cmd>lua vim.lsp.buf.formatting()<CR>')
+	map('n','<leader>ai','<cmd>lua vim.lsp.buf.incoming_calls()<CR>')
+	map('n','<leader>ao','<cmd>lua vim.lsp.buf.outgoing_calls()<CR>')
 end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { 'pyright', 'rust_analyzer', 'tsserver' }
+local servers = { 'pyright', 'rust_analyzer', 'tsserver', 'clangd', 'eslint' }
 for _, lsp in pairs(servers) do
   require('lspconfig')[lsp].setup {
-    on_attach = on_attach,
+    on_attach = custom_attach,
     flags = {
       -- This will be the default in neovim 0.7+
       debounce_text_changes = 150,
@@ -393,20 +391,6 @@ for _, lsp in pairs(servers) do
   }
   
 
-end
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
-
-local lspconfig = require('lspconfig')
-
--- Enable some language servers with the additional completion capabilities offered by nvim-cmp
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver' }
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    -- on_attach = my_custom_on_attach,
-    capabilities = capabilities,
-  }
 end
 
 -- luasnip setup
