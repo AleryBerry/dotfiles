@@ -10,10 +10,10 @@ sudo pacman -S neovim-git yay lightdm lightdm-webkit2-greeter numlockx qutebrows
 chsh -s /usr/bin/zsh
 git clone 'https://github.com/AleryBerry/lightdm-webkit2-monoarch'
 sudo cp ./lightdm-webkit2-monoarch /usr/share/lightdm-webkit/themes/monoarch -r
-sudo rm ./lightdm-webkit2-monoarch
+sudo rm ./lightdm-webkit2-monoarch -r
 mkdir ~/.config/ncmpcpp ~/.config/sxhkd ~/.config/bspwm ~/.config/alacritty ~/.config/nvim/ ~/.config/qutebrowser/ ~/.config/mpd/ ~/.config/berry ~/.config/polybar
 ln -srf ./config/*/* ~/.config/
-ln -srf ./00-keyboard.conf /etc/X11/xorg.conf.d/
+sudo ln -srf ./00-keyboard.conf /etc/X11/xorg.conf.d/
 ln -srf ./.zshrc ~/
 ln -srf ./.aliasrc ~/
 ln -srf ./.outputrc ~/
