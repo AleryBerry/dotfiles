@@ -12,7 +12,6 @@ import qualified Data.Map as M
 -- Layout
 import XMonad.Layout.EqualSpacing
 import XMonad.Layout.NoBorders
-import XMonad.Layout.Spacing
 -- Xmonad + PolyBAR
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.StatusBar
@@ -32,15 +31,7 @@ import XMonad.Actions.NoBorders
 -- Focus Hooks
 import Control.Monad
 
-
-scratchpads = [
-  NS "ncmpcpp" "alacritty --title 'ncmpcpp' -e ncmpcppalbum" (title =? "ncmpcpp") 
-    (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4))),
-  NS "neovim" "alacritty --title neovim -e nvim" (title =? "neovim") 
-    doFullFloat
-  ]
-
-myBorderWidth        = 4
+myBorderWidth        = 1
 myClickJustFocuses :: Bool
 myClickJustFocuses   = True
 myTerminal           = "alacritty" 
@@ -49,32 +40,21 @@ myWorkspaces         = ["I","II","III", "IV","V","VI","VII","VIII"]
 -- myWorkspaces         = ["1","2","3","4","5","6","7","8"]
 
 -- Colours
-myFocusedBorderColor = "#F5C035"
-myNormalBorderColor  = "#AAAAAA"
-gray      = "#7F7F7F"
-yellow    = "#FF7B00"
-yellow2   = "#755B1A"
-otherMonitors = "#F5C035"
+myFocusedBorderColor = "#ffbe3c"
+myNormalBorderColor  = "#6699cc"
+gray      = "#6e6e6e"
+yellow    = "#ffbe3c"
+yellow2   = "#6699cc"
+otherMonitors = "#d09cea"
 
-myLayoutHook = avoidStruts $ equalSpacing 10 4 0 20 (
+myLayoutHook = avoidStruts $ smartBorders $ equalSpacing 10 4 0 20 (
     tiled ||| Mirror tiled ||| Full
-    )
+  )
   where
     tiled = Tall nmaster delta ratio
     nmaster = 1
     ratio = 1/2
     delta = 3/100
-
-toggleFull = withFocused (\windowId -> do {
-   floats <- gets (W.floating . windowset);
-   if windowId `M.member` floats
-   then do
-       withFocused toggleBorder
-       withFocused $ windows . W.sink
-   else do
-       withFocused toggleBorder
-       withFocused $ windows . (flip W.float $ W.RationalRect 0 0 1 1)
-  })
 
 myManageHook :: ManageHook
 myManageHook = composeAll . concat $
@@ -83,44 +63,38 @@ myManageHook = composeAll . concat $
     , [ className =? "Alacritty" --> viewShift "III"   ]
     , [ className =? "Deadbeef" --> viewShift "IV"   ]
     , [ className =? d --> viewShift "V" | d <- myGames  ]
-    , [ className =? e --> viewShift "VI" | e <- myGameLaunchers  ]
+    , [ className =? e --> doShift "VI" | e <- myGameLaunchers  ]
     , [ className =? "Github Desktop" --> viewShift "VII"   ]
     , [ className =? "Bitwarden" --> viewShift "VIII"   ]
     , [ isFullscreen --> doF W.focusDown <+> doFullFloat <+> hasBorder False ]
     , [ isDialog --> doFloat ]
-    , [ className =? g --> doCenterFloat | g <- myFloats                    ]
+    , [ appName =? g --> doCenterFloat | g <- myFloats                    ]
     ]
   where
       myBrowsers      = [ "qutebrowser", "Falkon", "Vivaldi-stable", "firefox" ]
       myGames         = [ "dota2", "clonehero", "Dwarf_Fortress", "Blender" ]
       myComs          = [ "TelegramDesktop", "Element", "discord" ]
-      myFloats        = [ "ranger", "lf" ]
+      myFloats        = [ "ranger", "lfrun", "Godot_Engine" ]
       myGameLaunchers = [ "Steam", "heroic" ]
       viewShift = doF . liftM2 (.) W.greedyView W.shift
 
-fixWorkspaces :: String -> [String] -> [String]
-fixWorkspaces cs (w:ws) = foldr (\x xs -> if x /= cs then x:xs else reformat cs:xs) [] (w:ws)
+toggleFull = withFocused (\windowId -> do {
+    floats <- gets (W.floating . windowset);
+    if windowId `M.member` floats
+    then do
+       withFocused toggleBorder
+       withFocused $ windows . W.sink
+    else do
+       withFocused toggleBorder
+       withFocused $ windows . flip W.float (W.RationalRect 0 0 1 1)}
+  )
 
-reformat :: String -> String
-reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-" (split (dropBlanks $ dropDelims $ oneOf "$}") x !! 1)
-
-myLogHook :: DC.Client -> ScreenId -> String -> PP
-myLogHook dbus i s = def {
-    ppCurrent = formatUnfocused
-    , ppVisible = formatUnfocused
-    , ppHidden  = formatOther
-    , ppHiddenNoWindows = wrap ("%{F" ++ gray ++ "}") "%{F-}"
-    , ppOutput  = D.sendToPath dbus s 
-    , ppSep     = "  "
-    , ppOrder   = \(ws : _ : _ : wins : cs) -> fixWorkspaces (head cs) (words ws) <> [wins]
-    , ppExtras  = [titlesOnScreen, currentOnScreen]
-}
-    where
-        titlesOnScreen  = logDefault (shortenL 70 $ logTitlesOnScreen i formatFocused formatUnfocused) (logConst "Hey, you, you're finally awake.")
-        currentOnScreen = wrapL ("%{F" ++ otherMonitors ++ "}") "%{F-}" $ logCurrentOnScreen i
-        formatFocused   = wrap ("%{F" ++ yellow ++ "}") "%{F-}"
-        formatOther   = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}"
-        formatUnfocused = wrap ("%{F" ++ otherMonitors ++ "}") "%{F-}" 
+scratchpads = [
+  NS "ncmpcpp" "alacritty --title 'ncmpcpp' -e ncmpcppalbum" (title =? "ncmpcpp") 
+    (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4))),
+  NS "neovim" "alacritty --title neovim -e nvim" (title =? "neovim") 
+    doFullFloat
+  ]
 
 myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
 
@@ -212,6 +186,33 @@ myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList [
                 windows W.shiftMaster)
     ] 
 
+myLogHook :: DC.Client -> ScreenId -> String -> PP
+myLogHook dbus i s = def {
+    ppCurrent = formatUnfocused
+    , ppVisible = formatUnfocused
+    , ppHidden  = formatOther
+    , ppHiddenNoWindows = wrap ("%{F" ++ gray ++ "}") "%{F-}"
+    , ppOutput  = D.sendToPath dbus s 
+    , ppSep     = "  "
+    , ppOrder   = \(ws : _ : _ : wins : cs) -> fixWorkspaces (head cs) (words ws) <> [wins]
+    , ppExtras  = [titlesOnScreen, currentOnScreen]
+}
+    where
+        titlesOnScreen  = logDefault (shortenL 70 $ logTitlesOnScreen i formatFocused formatUnfocused) (logConst "Hey, you, you're finally awake.")
+        currentOnScreen = wrapL ("%{F" ++ otherMonitors ++ "}") "%{F-}" $ logCurrentOnScreen i
+        formatFocused   = wrap ("%{F" ++ yellow ++ "}") "%{F-}"
+        formatOther   = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}"
+        formatUnfocused = wrap ("%{F" ++ otherMonitors ++ "}") "%{F-}" 
+
+fixWorkspaces :: String -> [String] -> [String]
+fixWorkspaces cs = foldr (\x xs -> if x /= cs then x:xs else reformat x:xs) []
+
+reformat :: String -> String
+reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-}" (unwrap x !! 2)
+
+unwrap :: String -> [String]
+unwrap = split (dropFinalBlank . dropDelims . oneOf $ "}%")
+
 main :: IO ()
 main = do
   -- Connect to DBus
@@ -219,7 +220,7 @@ main = do
   -- Request Access (needed when sending messages)
   D.requestAccess dbus
   -- Start XMonad
-  xmonad $ ewmhFullscreen . ewmh $ myConfig { 
+  xmonad . docks . ewmhFullscreen . ewmh $ myConfig { 
     logHook = (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 0 "DVI" ) 
         >> (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 1 "HDMI") 
     } 
@@ -230,8 +231,7 @@ myConfig = def {
 , modMask            = mod4Mask
 , workspaces         = myWorkspaces
 , keys               = myKeys
--- Hooks
-, layoutHook         = smartBorders myLayoutHook
+, layoutHook         = myLayoutHook
 , manageHook         = manageDocks <+> myManageHook <+> namedScratchpadManageHook scratchpads
 , borderWidth        = myBorderWidth
 , normalBorderColor  = myNormalBorderColor

@@ -1,51 +1,44 @@
 [colors]
 rounds =            #2b2f37
-background =        #1e222a 
-background-alt =    #444
-foreground =        #dfdfdf
+background =        #222222 
+background-alt =    #393939
+foreground =        #cbcbcb
 foreground-alt =    #555
-primary =           #ffb52a
-secondary =         #e60053
-alert =             #bd2c40
-green =             #98c379
+primary =           #ffbe3c
+secondary =         #6699cc
+alert =             #f2777a
+green =             #2acf2a
 
 [bar/bar]
 monitor = ${env:MONITOR:}
 width = 100%
-height = 25
+height = 30
 fixed-center = true
-
-background = ${colors.background}
-foreground = ${colors.foreground}
 
 line-size = 1
 
-border-size = 5
-border-color = ${colors.background}
+enable-ipc = true
 
-font-0 = DejavuSansMono:size=11;1
-font-1 = NotoSansCJKJP:size=11;1
-font-2 = FontAwesome:size=11;1
+border-size = 0
 
-modules-left = powermenu xmonad
-modules-center = xkeyboard 
-modules-right = date pulseaudio 
+font-0 = JetBrainsMono Nerd Font:style=Bold:pixelsize=11;3
+font-1 = JetBrainsMono Nerd Font:size=14;4
+font-2 = Material Design Icons:style=Bold:size=9;3
+;font-3 = unifont:fontformat=truetype:size=9;3
+font-3 = Font Awesome 5 Free:style=Solid:size=9;2
+font-4 = Font Awesome 5 Free:style=Regular:size=9;2
+font-5 = Font Awesome 5 Brands:style=Regular:size=9;2
+font-6 = Hack Nerd Font Mono:style=Regular:size=9;2
+
+modules-left = xmonad
+modules-center = xkeyboard info-hackspeed info-eyestrain
+modules-right = notification-chess updates-aurhelper pulseaudio date
 
 tray-position = ${env:TRAY_POSITION:right}
 tray-padding = 1
 
 cursor-click = pointer
 cursor-scroll = ns-resize
-
-[module/workspaces-xmonad]
-type = custom/script
-exec = tail -F /tmp/.xmonad-workspace-log
-tail = true
-
-[module/title-xmonad]
-type = custom/script
-exec = tail -F /tmp/.xmonad-title-log
-tail = true
 
 [module/xmonad]
 type = custom/script
@@ -57,105 +50,31 @@ interval = 1
 type = internal/xkeyboard
 blacklist-0 = num lock
 
-[module/filesystem]
-type = internal/fs
-interval = 100
+[module/updates-aurhelper]
+type = custom/script
+exec = ~/.config/polybar/scripts/updates-aurhelper/updates-aurhelper.sh
+interval = 600
 
-mount-0 = /
-format = <label-mounted>
-format-mounted-padding = 1
-format-mounted-prefix = " "
-format-mounted-prefix-foreground = #dafeab 
-label-mounted = %{F#0a81f5}%mountpoint%%{F-}: %percentage_used%%
-label-unmounted = %mountpoint% not mounted
-label-unmounted-foreground = ${colors.foreground-alt}
+[module/info-hackspeed]
+type = custom/script
+exec = ~/.config/polybar/scripts/info-hackspeed/info-hackspeed.sh
+tail = true
 
-[module/workspaces]
-type = internal/xworkspaces
-pin-workspaces = false
-enable-click = true
-enable-scroll = true
-format-padding = 0
-icon-0 = 1;%{F#aafaff}󰋜
-icon-1 = 2;%{F#ffdaaa}󰊯
-icon-2 = 3;%{F#dafeab}󰝚
-icon-3 = 4;%{F#e0a0d0}󰊗
-icon-4 = 5;%{F#61afef}󰩹
-icon-default = 󰒓
-label-margin = 0
-label-separator =󰧞
+[module/info-eyestrain]
+type = custom/script
+exec = ~/.config/polybar/scripts/info-eyestrain/info-eyestrain.sh
+interval = 60
 
-format = <label-state>
+[module/ticker-crypto]
+type = custom/script
+exec = ~/.config/polybar/scripts/ticker-crypto/ticker-crypto.sh
+interval = 600
 
-label-focused = %{F#282c34}%icon%%{F-}
-label-focused-background = #4d4d4d
-label-focused-padding = 1
-
-label-occupied = %icon%
-label-occupied-padding = 1
-label-occupied-underline = #fff
-
-label-urgent = %icon%
-label-urgent-background = ${colors.alert}
-label-urgent-padding = 1
-
-label-empty = %icon% 
-label-empty-background = ${colors.background}
-label-empty-padding = 1
-
-
-
-[module/bspwm]
-type = internal/bspwm
-pin-workspaces = true
-enable-click = true
-enable-scroll = true
-format-padding = 0
-
-icon-default = 
-
-format = <label-state>
-format-background = ${color.rounds}
-label-active = 
-label-occupied = 
-label-urgent = 
-label-empty = 
-
-label-empty-padding = 1
-label-active-padding = 1
-label-urgent-padding = 1
-label-occupied-padding = 1
-
-label-empty-foreground = #58A4c5
-;label-empty-background = ${colors.rounds}
-
-label-active-foreground = #58a4c5
-;label-active-background = ${colors.rounds}
-
-label-urgent-foreground = #fca2aa
-;label-urgent-background = ${colors.rounds}
-
-label-occupied-foreground = #58a4c5
-;label-occupied-background = ${colors.rounds}
-
-
-[module/mpd]
-type = internal/mpd
-format-padding = 1
-format-online = "<icon-prev> <toggle> <icon-next>"
-format-online-background = ${colors.background}
-format-online-padding = 1
-;format-online-foreground = #98c379
-icon-prev =󰒮
-icon-prev-foreground = #98c379
-icon-next =󰒭
-icon-next-foreground = #98c379
-icon-stop =󰓛
-icon-stop-foreground = #fca2aa
-icon-play =󰐊
-icon-play-foreground = #61afef 
-icon-pause = 󰏥 
-icon-pause-foreground = #fca2aa
+[module/notification-chess]
+type = custom/script
+exec = ~/.config/polybar/scripts/notification-chess/notification-chess.sh
+interval = 10
+click-left = xdg-open https://www.chess.com/goto_ready_game & disown
 
 [module/cpu]
 type = internal/cpu
@@ -253,59 +172,37 @@ label-padding = 1
 [module/pulseaudio]
 type = internal/pulseaudio
 
-format-volume = <label-volume> <bar-volume>
-format-volume-background = ${colors.rounds}
-format-volume-padding = 
-label-volume = 󰕾 %percentage%%
-label-volume-foreground = #ffdaaa
+sink = alsa_output.pci-0000_12_00.3.analog-stereo
+use-ui-max = true
 
-label-muted = 󰖁 muted
-label-muted-foreground = #666
-label-muted-background = ${colors.rounds}
+interval = 5
+format-volume = <label-volume> <bar-volume>
+label-volume = " "  
+label-volume-foreground = ${colors.foreground}
+format-muted-foreground = ${colors.foreground}
+label-muted =  MUDO
+
+format-muted-padding = 1
+
 bar-volume-width = 10
-bar-volume-foreground-0 = #98c379
-bar-volume-foreground-1 = #98c379
-bar-volume-foreground-2 = #98c379
-bar-volume-foreground-3 = #98c379
-bar-volume-foreground-4 = #98c379
-bar-volume-foreground-5 = #f5a70a
-bar-volume-foreground-6 = #ff5555
+bar-volume-foreground-0 = #6699cc
+bar-volume-foreground-1 = #6699cc
+bar-volume-foreground-2 = #6699cc
+bar-volume-foreground-3 = #6699cc
+bar-volume-foreground-4 = #6699cc
+bar-volume-foreground-5 = #6699cc
+bar-volume-foreground-6 = #6699cc
 bar-volume-gradient = false
 bar-volume-indicator = 
+bar-volume-indicator-foreground = #6699cc
 bar-volume-indicator-font = 2
-bar-volume-fill = ─
+bar-volume-fill = ━ 
+bar-volume-fill-foreground = #6699cc
 bar-volume-fill-font = 2
-bar-volume-empty = ─
+bar-volume-empty = ━
 bar-volume-empty-font = 2
-bar-volume-empty-foreground = ${colors.foreground-alt}
-
-[module/alsa]
-type = internal/alsa
-format-volume = <label-volume> <bar-volume>
-format-volume-background = ${colors.rounds}
-format-volume-padding = 1
-label-volume =  %percentage%%
-label-volume-foreground = #ffdaaa
-
-label-muted =  muted
-label-muted-foreground = #666
-label-muted-background = ${colors.rounds}
-bar-volume-width = 10
-bar-volume-foreground-0 = #55aa55
-bar-volume-foreground-1 = #55aa55
-bar-volume-foreground-2 = #55aa55
-bar-volume-foreground-3 = #55aa55
-bar-volume-foreground-4 = #55aa55
-bar-volume-foreground-5 = #f5a70a
-bar-volume-foreground-6 = #ff5555
-bar-volume-gradient = false
-bar-volume-indicator = 
-bar-volume-indicator-font = 2
-bar-volume-fill = ─
-bar-volume-fill-font = 2
-bar-volume-empty = ─
-bar-volume-empty-font = 2
-bar-volume-empty-foreground = ${colors.foreground-alt}
+bar-volume-empty-foreground = #565c64
+format-volume-padding = 2
 
 [module/temperature]
 type = internal/temperature
