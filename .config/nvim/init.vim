@@ -173,7 +173,6 @@ set completeopt=menu,menuone,noselect
 let g:suda_smart_edit = 1
 let g:airline_powerline_fonts = 1
 
-colorscheme yowish
 
 autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
 autocmd BufEnter * ++nested if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
