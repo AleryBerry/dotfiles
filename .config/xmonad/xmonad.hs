@@ -74,7 +74,7 @@ myManageHook = composeAll . concat $
       myBrowsers      = [ "qutebrowser", "Falkon", "Vivaldi-stable", "firefox" ]
       myGames         = [ "dota2", "clonehero", "Dwarf_Fortress", "Blender" ]
       myComs          = [ "TelegramDesktop", "Element", "discord" ]
-      myFloats        = [ "ranger", "lfrun", "Godot_Engine" ]
+      myFloats        = [ "ranger", "lfrun", "Godot_Engine", "gl" ]
       myGameLaunchers = [ "Steam", "heroic" ]
       viewShift = doF . liftM2 (.) W.greedyView W.shift
 

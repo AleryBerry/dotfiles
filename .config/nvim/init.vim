@@ -177,6 +177,8 @@ let g:airline_powerline_fonts = 1
 autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
 autocmd BufEnter * ++nested if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
 
+colorscheme yowish
+
 autocmd! BufEnter *.hs call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})
 autocmd! BufEnter *.js call timer_start(50, { tid -> execute('colorscheme yowish')})
 autocmd! BufEnter *.c,*.ts,*.tsx, *.lua call timer_start(50, { tid -> execute('colorscheme iceberg')})
