@@ -119,7 +119,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     -- deincrement the number of windows in the master area
     , ((modm,                xK_period), sendMessage (IncMasterN (-1)))
     -- toggle the status bar gap
-    , ((modm,                xK_b     ), sendMessage ToggleStruts)
+    , ((modm,                xK_b     ), spawn "polybar-msg cmd toggle")
     -- restart xmonad
     , ((modm .|. shiftMask,  xK_q     ), spawn "xmonad --recompile; xmonad --restart")
     -- logout 
@@ -203,15 +203,9 @@ myLogHook dbus i s = def {
         formatFocused   = wrap ("%{F" ++ yellow ++ "}") "%{F-}"
         formatOther   = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}"
         formatUnfocused = wrap ("%{F" ++ otherMonitors ++ "}") "%{F-}" 
-
-fixWorkspaces :: String -> [String] -> [String]
-fixWorkspaces cs = foldr (\x xs -> if x /= cs then x:xs else reformat x:xs) []
-
-reformat :: String -> String
-reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-}" (unwrap x !! 2)
-
-unwrap :: String -> [String]
-unwrap = split (dropFinalBlank . dropDelims . oneOf $ "}%")
+        fixWorkspaces cs = foldr (\x xs -> if x /= cs then x:xs else reformat x:xs) []
+        reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-}" (unwrap x !! 2)
+        unwrap = split (dropFinalBlank . dropDelims . oneOf $ "}%")
 
 main :: IO ()
 main = do

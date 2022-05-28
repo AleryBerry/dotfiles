@@ -93,6 +93,8 @@ autocmd VimEnter * TwilightEnable
 
 "Syntax highlighting and autocompletion
 Plug 'neovim/nvim-lspconfig'
+Plug 'rafamadriz/friendly-snippets'
+Plug 'lukas-reineke/lsp-format.nvim'
 Plug 'https://git.sr.ht/~whynothugo/lsp_lines.nvim'
 Plug 'ray-x/lsp_signature.nvim'
 Plug 'onsails/lspkind.nvim'
@@ -181,7 +183,7 @@ colorscheme yowish
 
 autocmd! BufEnter *.hs call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})
 autocmd! BufEnter *.js call timer_start(50, { tid -> execute('colorscheme yowish')})
-autocmd! BufEnter *.c,*.ts,*.tsx, *.lua call timer_start(50, { tid -> execute('colorscheme iceberg')})
+autocmd! BufEnter *.c,*.ts,*.tsx,*.lua call timer_start(50, { tid -> execute('colorscheme iceberg')})
 autocmd! BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme nord')})
 autocmd! BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('colorscheme tender')})
 
@@ -213,7 +215,6 @@ cal wildfire#triggers#Add("<ENTER>", {
     \ "html,xml" : ["at", "it"],
 \ })
 
-nmap <silent> <C-t> :tab sball <CR>
 nmap <C-q> :BufferClose <CR>
 :nmap <silent> J :BufferNext <CR>
 :nmap <silent> K :BufferPrevious <CR>
@@ -369,6 +370,7 @@ ft_to_parser.purescript = "haskell"
 ft_to_parser.gd = "gdscript"
 require("lsp_config")
 
+require("luasnip.loaders.from_vscode").lazy_load()
 EOF
 let g:cursorhold_updatetime = 100
 
@@ -376,3 +378,15 @@ nmap <leftmouse> <plug>(ScrollViewLeftMouse)
 vmap <leftmouse> <plug>(ScrollViewLeftMouse)
 imap <leftmouse> <plug>(ScrollViewLeftMouse)
 
+" press <Tab> to expand or jump in a snippet. These can also be mapped separately
+" via <Plug>luasnip-expand-snippet and <Plug>luasnip-jump-next.
+imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>' 
+" -1 for jumping backwards.
+inoremap <silent> <S-Tab> <cmd>lua require'luasnip'.jump(-1)<Cr>
+
+snoremap <silent> <Tab> <cmd>lua require('luasnip').jump(1)<Cr>
+snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
+
+" For changing choices in choiceNodes (not strictly necessary for a basic setup).
+imap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
+smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'

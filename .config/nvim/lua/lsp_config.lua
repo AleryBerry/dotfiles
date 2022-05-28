@@ -3,7 +3,11 @@ vim.opt.list = true
 vim.opt.listchars:append("space:⋅")
 vim.opt.listchars:append("eol:↴")
 
+require("luasnip.loaders.from_vscode").lazy_load()
+
 require'lspconfig'.hls.setup{}
+require'lspconfig'.stylelint_lsp.setup{}
+require'lspconfig'.denols.setup{}
 
 local nvim_tree_events = require('nvim-tree.events')
 local bufferline_state = require('bufferline.state')
@@ -14,6 +18,29 @@ require('nvim-autopairs').setup({
 })
 
 local npairs = require("nvim-autopairs")
+
+require'lspconfig'.sumneko_lua.setup {
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = {'vim'},
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+}
 
 npairs.setup({
     check_ts = true,
@@ -184,7 +211,7 @@ require'nvim-tree'.setup { -- BEGIN_DEFAULT_OPTS
       restrict_above_cwd = false,
     },
     open_file = {
-      quit_on_open = false,
+      quit_on_open = true,
       resize_window = false,
       window_picker = {
         enable = true,
@@ -359,10 +386,10 @@ vim.api.nvim_set_keymap('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<C
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
+local custom_attach = function(client, bufnr)
+  require "lsp-format".on_attach(client)
   -- Enable completion triggered by <c-x><c-o>
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
   -- Mappings.
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
@@ -380,13 +407,56 @@ local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 end
 
+require "lsp-format".setup {
+    typescript = { tab_width = 4 },
+    yaml = { tab_width = 2 },
+}
+local prettier = {
+    formatCommand = [[prettier --stdin-filepath ${INPUT} ${--tab-width:tab_width}]],
+    formatStdin = true,
+}
 
--- Use a loop to conveniently call 'setup' on multiple servers and
+require'lspconfig'.eslint.setup{
+  codeAction = {
+    disableRuleComment = {
+      enable = true,
+      location = "separateLine"
+    },
+    showDocumentation = {
+      enable = true
+    }
+  },
+  codeActionOnSave = {
+    enable = true,
+    mode = "all"
+  },
+  format = true,
+  nodePath = "",
+  onIgnoredFiles = "off",
+  packageManager = "npm",
+  quiet = false,
+  rulesCustomizations = {},
+  run = "onType",
+  useESLintClass = false,
+  validate = "on",
+  workingDirectory = {
+    mode = "location"
+  }
+
+}
+
 -- map buffer local keybindings when the language server attaches
 local servers = { 'pyright', 'rust_analyzer', 'tsserver', 'clangd', 'eslint' }
 for _, lsp in pairs(servers) do
   require('lspconfig')[lsp].setup {
     on_attach = custom_attach,
+    init_options = { documentFormatting = true },
+    settings = {
+      languages = {
+        typescript = { prettier },
+        yaml = { prettier },
+      },
+    },
     flags = {
       -- This will be the default in neovim 0.7+
       debounce_text_changes = 150,
@@ -437,8 +507,8 @@ cmp.setup {
     ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
+      elseif luasnip.jumpable(1) then
+        luasnip.jump(1)
       else
         fallback()
       end
@@ -454,9 +524,9 @@ cmp.setup {
     end, { 'i', 's' }),
   }),
   sources = {
+    { name = 'luasnip' },
     { name = 'nvim_lsp_signature_help' },
     { name = 'nvim_lsp' },
-    { name = 'luasnip' },
     { name = 'buffer' },
     { name = 'cmp_tabnine' },
     { name = 'path' }
@@ -482,7 +552,7 @@ tabnine:setup({
 		-- uncomment to ignore in lua:
 		-- lua = true
 	};
-	show_prediction_strength = false;
+	show_prediction_strength = true;
 })
 
 require("clangd_extensions").setup {
