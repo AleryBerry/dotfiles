@@ -25,14 +25,16 @@ set wrap
 
 set title
 set titlestring=Neovim
+set guifont=fira\ code:h11
 " Uncomment below to set the max textwidth. Use a value corresponding to the width of your screen.
 set textwidth=79
 set formatoptions=tcqrn1
 set tabstop=2
 set shiftwidth=2
 set softtabstop=2
-set expandtab
+set noexpandtab
 set noshiftround
+set smartindent
 
 " Display 5 lines above/below the cursor when scrolling with a mouse.
 set scrolloff=5
@@ -93,10 +95,16 @@ autocmd VimEnter * TwilightEnable
 
 "Syntax highlighting and autocompletion
 Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/cmp-omni'
+Plug 'ThePrimeagen/refactoring.nvim'
+Plug 'rcarriga/nvim-notify'
+Plug 'michaelb/sniprun', {'do': 'bash install.sh'}
 Plug 'rafamadriz/friendly-snippets'
+Plug 'abecodes/tabout.nvim'
 Plug 'lukas-reineke/lsp-format.nvim'
 Plug 'https://git.sr.ht/~whynothugo/lsp_lines.nvim'
 Plug 'ray-x/lsp_signature.nvim'
+Plug 'jose-elias-alvarez/null-ls.nvim'
 Plug 'onsails/lspkind.nvim'
 Plug 'weilbith/nvim-code-action-menu'
 Plug 'kosayoda/nvim-lightbulb'
@@ -135,12 +143,16 @@ Plug 'windwp/nvim-autopairs'
 Plug 'windwp/nvim-ts-autotag'
 Plug 'p00f/nvim-ts-rainbow'
 Plug 'JoosepAlviste/nvim-ts-context-commentstring'
+Plug 'nvim-lua/plenary.nvim'
 
 "File search and navigation
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'matze/vim-move'
+Plug 'ahmedkhalf/project.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
 "Editor interface and theming
 Plug 'sainnhe/gruvbox-material'
@@ -174,7 +186,11 @@ set completeopt=menu,menuone,noselect
 "
 let g:suda_smart_edit = 1
 let g:airline_powerline_fonts = 1
-
+let g:neovide_cursor_vfx_mode = "torpedo"
+let g:neovide_cursor_vfx_particle_density=20.0
+let g:neovide_cursor_vfx_particle_speed=20.0
+let g:neovide_cursor_vfx_opacity=200.0
+let g:neovide_refresh_rate=60
 
 autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
 autocmd BufEnter * ++nested if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
@@ -190,16 +206,18 @@ autocmd! BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('colorscheme
 nnoremap <silent> <C-n> :NvimTreeToggle<CR>
 
 let g:VM_maps = {}
-let g:VM_maps['Find Under'] = '<C-d>'           " replace visual C-n
-let g:VM_maps['Find Subword Under'] = '<C-d>'           " replace visual C-n
+let g:VM_maps['Find Under'] = '<C-g>'           " replace visual C-n
+let g:VM_maps['Find Subword Under'] = '<C-g>'           " replace visual C-n
 
-vmap <C-v> <Esc>"+gp
-vmap <C-c> "+y
+vmap <silent> <C-v> <Esc>"+gp
+vmap <silent> <C-c> "+y
 "Misc
 :imap II <Esc>
 nnoremap <TAB> w
 nnoremap <S-TAB> b
-nmap <C-a> \\
+nnoremap <C-a> :CodeActionMenu<CR>
+nnoremap <silent> <C-p> ggVG:SnipRun<CR><C-o>
+vnoremap <silent> <C-p> :SnipRun<CR>
 
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
@@ -215,18 +233,18 @@ cal wildfire#triggers#Add("<ENTER>", {
     \ "html,xml" : ["at", "it"],
 \ })
 
-nmap <C-q> :BufferClose <CR>
-:nmap <silent> J :BufferNext <CR>
-:nmap <silent> K :BufferPrevious <CR>
+nnoremap <silent> <C-q> :BufferClose <CR>
+:nnoremap <silent> J :BufferNext <CR>
+:nnoremap <silent> K :BufferPrevious <CR>
+nnoremap <silent> <C-t> :Twilight<CR>
 
 vnoremap <C-n> :norm
 
 "Search shortcuts
 let mapleader = ","
-noremap <leader>w :w<cr>
-noremap <leader>gs :CocSearch
 noremap <leader>fs :Files<cr>
-noremap <leader><cr> <cr><c-w>h:q<cr>
+nnoremap <leader>fp <cmd>Telescope projects<cr>
+
 
 autocmd TextChangedI,TextChangedP * call s:on_complete_check()
 function! s:on_complete_check() abort
@@ -278,7 +296,7 @@ require'nvim-treesitter.configs'.setup {
       enable = true
   }, 
   indent = {
-		enable = true
+		enable = true,
 	},
 }
 
@@ -330,7 +348,7 @@ require("filetype").setup({
 
 require'treesitter-context'.setup{
     enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-    max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+    max_lines = 1, -- How many lines the window should span. Values <= 0 mean no limit.
     patterns = { -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
         -- For all filetypes
         -- Note that setting an entry here replaces all other patterns for this entry.
@@ -377,15 +395,6 @@ let g:cursorhold_updatetime = 100
 nmap <leftmouse> <plug>(ScrollViewLeftMouse)
 vmap <leftmouse> <plug>(ScrollViewLeftMouse)
 imap <leftmouse> <plug>(ScrollViewLeftMouse)
-
-" press <Tab> to expand or jump in a snippet. These can also be mapped separately
-" via <Plug>luasnip-expand-snippet and <Plug>luasnip-jump-next.
-imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>' 
-" -1 for jumping backwards.
-inoremap <silent> <S-Tab> <cmd>lua require'luasnip'.jump(-1)<Cr>
-
-snoremap <silent> <Tab> <cmd>lua require('luasnip').jump(1)<Cr>
-snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
 
 " For changing choices in choiceNodes (not strictly necessary for a basic setup).
 imap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'

@@ -13,12 +13,12 @@ git clone 'https://github.com/AleryBerry/lightdm-webkit2-monoarch'
 sudo cp ./lightdm-webkit2-monoarch /usr/share/lightdm-webkit/themes/monoarch -r
 sudo rm ./lightdm-webkit2-monoarch -r
 mkdir ~/.config/ncmpcpp ~/.config/sxhkd ~/.config/bspwm ~/.config/alacritty ~/.config/nvim/ ~/.config/qutebrowser/ ~/.config/mpd/ ~/.config/berry ~/.config/polybar
-ln -srf ./config/bspwm/* ~/.config/bspwm
-ln -srf ./config/sxhkd/* ~/.config/sxhkd
-ln -srf ./config/alacritty/* ~/.config/alacritty
-ln -srf ./config/nvim/* ~/.config/nvim
-ln -srf ./config/qutebrowser/* ~/.config/qutebrowser
-ln -srf ./config/mpd/* ~/.config/mpd
+ln -srf ./.config/bspwm/* ~/.config/bspwm
+ln -srf ./.config/sxhkd/* ~/.config/sxhkd
+ln -srf ./.config/alacritty/* ~/.config/alacritty
+ln -srf ./.config/nvim/* ~/.config/nvim
+ln -srf ./.config/qutebrowser/* ~/.config/qutebrowser
+ln -srf ./.config/mpd/* ~/.config/mpd
 sudo ln -srf ./00-keyboard.conf /etc/X11/xorg.conf.d/
 ln -srf ./.zshrc ~/
 ln -srf ./.aliasrc ~/

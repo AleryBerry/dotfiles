@@ -118,4 +118,7 @@ lfcd () {
 }
 bindkey -s '^o' 'lfcd\n'
 
+#[ -f "/home/hibiscus-tea/.ghcup/env" ] && source "/home/hibiscus-tea/.ghcup/env" # ghcup-env
+
+#[ -f "/home/hibiscus-tea/.ghcup/env" ] && source "/home/hibiscus-tea/.ghcup/env" # ghcup-env
 [ -f "/home/hibiscus-tea/.ghcup/env" ] && source "/home/hibiscus-tea/.ghcup/env" # ghcup-env

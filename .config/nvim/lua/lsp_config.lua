@@ -2,24 +2,60 @@ vim.opt.mouse = "a"
 vim.opt.list = true
 vim.opt.listchars:append("space:⋅")
 vim.opt.listchars:append("eol:↴")
+local lspconfig = require('lspconfig')
+local notify = vim.notify
+vim.notify = function(msg, ...)
+  if msg:match("warning: multiple different client offset_encodings") then
+    return
+  end
+
+  notify(msg, ...)
+end
+
+require 'sniprun'.setup({
+  display = { "NvimNotify" },
+})
+
+require('tabout').setup {}
+
+require("null-ls").setup({
+  sources = {
+    require("null-ls").builtins.code_actions.refactoring,
+    require("null-ls").builtins.code_actions.xo,
+    require("null-ls").builtins.formatting.fourmolu,
+    require("null-ls").builtins.diagnostics.cppcheck,
+    require("null-ls").builtins.diagnostics.djlint,
+    require("null-ls").builtins.diagnostics.gdlint,
+    require("null-ls").builtins.formatting.gdformat,
+  },
+  on_init = function(new_client, _)
+    new_client.offset_encoding = 'utf-32'
+  end,
+})
 
 require("luasnip.loaders.from_vscode").lazy_load()
 
-require'lspconfig'.hls.setup{}
-require'lspconfig'.stylelint_lsp.setup{}
-require'lspconfig'.denols.setup{}
+require'luasnip'.filetype_extend("dart", {"flutter"})
 
 local nvim_tree_events = require('nvim-tree.events')
 local bufferline_state = require('bufferline.state')
 
-require'lspconfig'.tailwindcss.setup{}
 require('nvim-autopairs').setup({
-  enable_check_bracket_line = false
+  enable_check_bracket_line = false,
+  check_ts = true,
+  fast_wrap = {
+    map = '<C-e>',
+    chars = { '{', '[', '(', '"', "'", "`" },
+    pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], '%s+', ''),
+    end_key = '$',
+    keys = 'qwertyuiopzxcvbnmasdfghjkl',
+    check_comma = true,
+    highlight = 'Search',
+    highlight_grey = 'Comment'
+  }
 })
 
-local npairs = require("nvim-autopairs")
-
-require'lspconfig'.sumneko_lua.setup {
+lspconfig.sumneko_lua.setup {
   settings = {
     Lua = {
       runtime = {
@@ -28,7 +64,7 @@ require'lspconfig'.sumneko_lua.setup {
       },
       diagnostics = {
         -- Get the language server to recognize the `vim` global
-        globals = {'vim'},
+        globals = { 'vim' },
       },
       workspace = {
         -- Make the server aware of Neovim runtime files
@@ -42,19 +78,6 @@ require'lspconfig'.sumneko_lua.setup {
   },
 }
 
-npairs.setup({
-    check_ts = true,
-    fast_wrap = {
-      map = '<M-e>',
-      chars = { '{', '[', '(', '"', "'" },
-      pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], '%s+', ''),
-      end_key = '$',
-      keys = 'qwertyuiopzxcvbnmasdfghjkl',
-      check_comma = true,
-      highlight = 'Search',
-      highlight_grey='Comment'
-    },
-})
 
 vim.g.bufferline = {
   -- Enable/disable animations
@@ -119,15 +142,15 @@ vim.g.bufferline = {
   no_name_title = nil,
 }
 
-nvim_tree_events.on_tree_open(function ()
-    bufferline_state.set_offset(31, "File Tree")
+nvim_tree_events.on_tree_open(function()
+  bufferline_state.set_offset(31, "File Tree")
 end)
 
-nvim_tree_events.on_tree_close(function ()
-    bufferline_state.set_offset(0)
+nvim_tree_events.on_tree_close(function()
+  bufferline_state.set_offset(0)
 end)
 
-require'nvim-tree'.setup { -- BEGIN_DEFAULT_OPTS
+require 'nvim-tree'.setup { -- BEGIN_DEFAULT_OPTS
   auto_reload_on_write = true,
   disable_netrw = false,
   hijack_cursor = false,
@@ -138,7 +161,7 @@ require'nvim-tree'.setup { -- BEGIN_DEFAULT_OPTS
   open_on_setup_file = false,
   open_on_tab = false,
   sort_by = "name",
-  update_cwd = false,
+  update_cwd = true,
   view = {
     width = 30,
     height = 30,
@@ -175,7 +198,7 @@ require'nvim-tree'.setup { -- BEGIN_DEFAULT_OPTS
   },
   update_focused_file = {
     enable = true,
-    update_cwd = false,
+    update_cwd = true,
     ignore_list = {},
   },
   ignore_ft_on_setup = {},
@@ -239,35 +262,31 @@ require'nvim-tree'.setup { -- BEGIN_DEFAULT_OPTS
       profile = false,
     },
   },
-} 
-
-require'lspconfig'.tsserver.setup{}
-
-require'lspconfig'.tailwindcss.setup{}
+}
 
 require('lualine').setup {
   options = {
     icons_enabled = true,
     theme = 'auto',
-    component_separators = { left = '', right = ''},
-    section_separators = { left = '', right = ''},
+    component_separators = { left = '', right = '' },
+    section_separators = { left = '', right = '' },
     disabled_filetypes = {},
     always_divide_middle = true,
     globalstatus = false,
   },
   sections = {
-    lualine_a = {'mode'},
-    lualine_b = {'branch', 'diff', 'diagnostics'},
-    lualine_c = {'filename'},
-    lualine_x = {'encoding', 'fileformat', 'filetype'},
-    lualine_y = {'progress'},
-    lualine_z = {'location'}
+    lualine_a = { 'mode' },
+    lualine_b = { 'branch', 'diff', 'diagnostics' },
+    lualine_c = { 'filename' },
+    lualine_x = { 'encoding', 'fileformat', 'filetype' },
+    lualine_y = { 'progress' },
+    lualine_z = { 'location' }
   },
   inactive_sections = {
     lualine_a = {},
     lualine_b = {},
-    lualine_c = {'filename'},
-    lualine_x = {'location'},
+    lualine_c = { 'filename' },
+    lualine_x = { 'location' },
     lualine_y = {},
     lualine_z = {}
   },
@@ -275,24 +294,24 @@ require('lualine').setup {
   extensions = {}
 }
 
-require('nvim_context_vt').setup{}
+require('nvim_context_vt').setup {}
 
-require('specs').setup{ 
-    show_jumps  = true,
-    min_jump = 30,
-    popup = {
-        delay_ms = 0, -- delay before popup displays
-        inc_ms = 10, -- time increments used for fade/resize effects 
-        blend = 10, -- starting blend, between 0-100 (fully transparent), see :h winblend
-        width = 10,
-        winhl = "PMenu",
-        fader = require('specs').linear_fader,
-        resizer = require('specs').shrink_resizer
-    },
-    ignore_filetypes = {},
-    ignore_buftypes = {
-        nofile = true,
-    },
+require('specs').setup {
+  show_jumps       = true,
+  min_jump         = 30,
+  popup            = {
+    delay_ms = 0, -- delay before popup displays
+    inc_ms = 10, -- time increments used for fade/resize effects
+    blend = 10, -- starting blend, between 0-100 (fully transparent), see :h winblend
+    width = 10,
+    winhl = "PMenu",
+    fader = require('specs').linear_fader,
+    resizer = require('specs').shrink_resizer
+  },
+  ignore_filetypes = {},
+  ignore_buftypes  = {
+    nofile = true,
+  },
 }
 
 require("indent_blankline").setup {
@@ -301,9 +320,9 @@ require("indent_blankline").setup {
   show_current_context_start = true,
 }
 
-require("twilight").setup{}
+require("twilight").setup {}
 
-require'colorizer'.setup()
+require 'colorizer'.setup()
 cfg = {
   debug = false, -- set to true to enable debug logging
   log_path = vim.fn.stdpath("cache") .. "/lsp_signature.log", -- log dir when debug is on
@@ -311,11 +330,11 @@ cfg = {
   verbose = false, -- show debug line number
 
   bind = true, -- This is mandatory, otherwise border config won't get registered.
-               -- If you want to hook lspsaga or other signature handler, pls set to false
+  -- If you want to hook lspsaga or other signature handler, pls set to false
   doc_lines = 10, -- will show two lines of comment/doc(if there are more than two lines in doc, will be truncated);
-                 -- set to 0 if you DO NOT want any API comments be shown
-                 -- This setting only take effect in insert mode, it does not affect signature help in normal
-                 -- mode, 10 by default
+  -- set to 0 if you DO NOT want any API comments be shown
+  -- This setting only take effect in insert mode, it does not affect signature help in normal
+  -- mode, 10 by default
 
   floating_window = true, -- show hint in a floating window, set to false for virtual text only mode
 
@@ -327,22 +346,22 @@ cfg = {
   floating_window_off_y = 1, -- adjust float windows y position.
 
 
-  fix_pos = false,  -- set to true, the floating window will not auto-close until finish all parameters
+  fix_pos = false, -- set to true, the floating window will not auto-close until finish all parameters
   hint_enable = true, -- virtual hint enable
-  hint_prefix = "🐼 ",  -- Panda for parameter
+  hint_prefix = "🐼 ", -- Panda for parameter
   hint_scheme = "String",
   hi_parameter = "LspSignatureActiveParameter", -- how your parameter will be highlight
   max_height = 12, -- max height of signature floating_window, if content is more than max_height, you can scroll down
-                   -- to view the hiding contents
+  -- to view the hiding contents
   max_width = 80, -- max_width of signature floating_window, line will be wrapped if exceed max_width
   handler_opts = {
-    border = "rounded"   -- double, rounded, single, shadow, none
+    border = "rounded" -- double, rounded, single, shadow, none
   },
 
   always_trigger = false, -- sometime show signature on new line or in middle of parameter can be confusing, set it to false for #58
 
   auto_close_after = nil, -- autoclose signature float win after x sec, disabled if nil.
-  extra_trigger_chars = {"(", ","}, -- Array of extra characters that will trigger signature completion, e.g., {"(", ","}
+  extra_trigger_chars = { "(", "," }, -- Array of extra characters that will trigger signature completion, e.g., {"(", ","}
   zindex = 200, -- by default it will be on top of all floating windows, set to <= 50 send it to bottom
 
   padding = '', -- character to pad on left and right of signature can be ' ', or '|'  etc
@@ -368,21 +387,11 @@ vim.diagnostic.config({
 
 require('hlargs').setup()
 
-require("nvim-lsp-installer").setup {
-  automatic_installation = true
-}
-require("luasnip.loaders.from_vscode").lazy_load()
-
-local lspconfig = require('lspconfig')
-
-lspconfig.sumneko_lua.setup {}
-lspconfig.rust_analyzer.setup {}
-
-local opts = { noremap=true, silent=true }
-vim.api.nvim_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+local opts = { noremap = true, silent = true }
+vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
 vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
 vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
-vim.api.nvim_set_keymap('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -394,29 +403,29 @@ local custom_attach = function(client, bufnr)
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', ',K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ra', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 end
 
 require "lsp-format".setup {
-    typescript = { tab_width = 4 },
-    yaml = { tab_width = 2 },
+  typescript = { tab_width = 4 },
+  yaml = { tab_width = 2 },
 }
 local prettier = {
-    formatCommand = [[prettier --stdin-filepath ${INPUT} ${--tab-width:tab_width}]],
-    formatStdin = true,
+  formatCommand = [[prettier --stdin-filepath ${INPUT} ${--tab-width:tab_width}]],
+  formatStdin = true,
 }
 
-require'lspconfig'.eslint.setup{
+lspconfig.eslint.setup {
   codeAction = {
     disableRuleComment = {
       enable = true,
@@ -445,10 +454,18 @@ require'lspconfig'.eslint.setup{
 
 }
 
+lspconfig.gdscript.setup {
+  on_attach = on_attach,
+  flags = {
+    debounce_text_changes = 500,
+  }
+}
 -- map buffer local keybindings when the language server attaches
-local servers = { 'pyright', 'rust_analyzer', 'tsserver', 'clangd', 'eslint' }
+local servers = { 'pyright', 'rust_analyzer', 'tailwindcss',
+  'hls', 'stylelint_lsp', 'denols', 'tsserver',
+  'clangd', 'eslint', 'sumneko_lua', 'dartls' }
 for _, lsp in pairs(servers) do
-  require('lspconfig')[lsp].setup {
+  lspconfig[lsp].setup {
     on_attach = custom_attach,
     init_options = { documentFormatting = true },
     settings = {
@@ -457,17 +474,20 @@ for _, lsp in pairs(servers) do
         yaml = { prettier },
       },
     },
+    capabilities = capabilities,
     flags = {
       -- This will be the default in neovim 0.7+
-      debounce_text_changes = 150,
+      debounce_text_changes = 500,
     }
   }
-  
+
 
 end
 
 -- luasnip setup
 local luasnip = require 'luasnip'
+
+luasnip.config.set_config({ history = true, updateevents = "TextChanged,TextChangedI" })
 
 -- nvim-cmp setup
 local cmp = require 'cmp'
@@ -478,9 +498,9 @@ cmp.setup {
       luasnip.lsp_expand(args.body)
     end,
   },
-  view = {                                                        
-    entries = {name = 'custom', selection_order = 'near_cursor' } 
-  },                                                               
+  view = {
+    entries = { name = 'custom', selection_order = 'near_cursor' }
+  },
   formatting = {
     format = lspkind.cmp_format({
       mode = 'symbol', -- show only symbol annotations
@@ -488,36 +508,32 @@ cmp.setup {
 
       -- The function below will be called before any actual modifications from lspkind
       -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
-      before = function (entry, vim_item)
+      before = function(entry, vim_item)
         return vim_item
       end
     })
   },
   window = {
-      completion = cmp.config.window.bordered(),
-      documentation = cmp.config.window.bordered(),
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
   },
   mapping = cmp.mapping.preset.insert({
     ['<C-k>'] = cmp.mapping.scroll_docs(-4),
     ['<C-j>'] = cmp.mapping.scroll_docs(4),
     ['<CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
+      select = false,
     },
     ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
-      elseif luasnip.jumpable(1) then
-        luasnip.jump(1)
       else
-        fallback()
+        vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>(Tabout)", true, true, true), "")
       end
     end, { 'i', 's' }),
     ['<S-Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
       else
         fallback()
       end
@@ -525,106 +541,123 @@ cmp.setup {
   }),
   sources = {
     { name = 'luasnip' },
-    { name = 'nvim_lsp_signature_help' },
     { name = 'nvim_lsp' },
-    { name = 'buffer' },
+    { name = 'omni' },
+    { name = 'nvim_lsp_signature_help' },
+    { name = 'buffer', max_item_count = 5 },
     { name = 'cmp_tabnine' },
     { name = 'path' }
   },
 }
 
 cmp.setup.cmdline('/', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = {
-      { name = 'buffer' }
-    }
-  })
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {
+    { name = 'buffer' }
+  }
+})
 
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done({ map_char = { tex = '' } }))
+
+cmp_autopairs.lisp[#cmp_autopairs.lisp + 1] = "racket"
 
 local tabnine = require('cmp_tabnine.config')
 tabnine:setup({
-	max_lines = 1000;
-	max_num_results = 20;
-	sort = true;
-	run_on_every_keystroke = true;
-	snippet_placeholder = '..';
-	ignored_file_types = { -- default is not to ignore
-		-- uncomment to ignore in lua:
-		-- lua = true
-	};
-	show_prediction_strength = true;
+  max_lines = 1000;
+  max_num_results = 20;
+  sort = true;
+  run_on_every_keystroke = true;
+  snippet_placeholder = '..';
+  ignored_file_types = { -- default is not to ignore
+    -- uncomment to ignore in lua:
+    -- lua = true
+  };
+  show_prediction_strength = true;
 })
 
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+capabilities.textDocument.completion.completionItem.resolveSupport = {
+  properties = { "documentation", "detail", "additionalTextEdits" },
+}
+capabilities.offsetEncoding = { "utf-16" }
+
 require("clangd_extensions").setup {
-    server = {
-        -- options to pass to nvim-lspconfig
-        -- i.e. the arguments to require("lspconfig").clangd.setup({})
+  server = {
+    -- options to pass to nvim-lspconfig
+    -- i.e. the arguments to require("lspconfig").clangd.setup({})
+    capabilities = capabilities
+  },
+  extensions = {
+    -- defaults:
+    -- Automatically set inlay hints (type hints)
+    autoSetHints = true,
+    -- Whether to show hover actions inside the hover window
+    -- This overrides the default hover handler
+    hover_with_actions = true,
+    -- These apply to the default ClangdSetInlayHints command
+    inlay_hints = {
+      -- Only show inlay hints for the current line
+      only_current_line = false,
+      -- Event which triggers a refersh of the inlay hints.
+      -- You can make this "CursorMoved" or "CursorMoved,CursorMovedI" but
+      -- not that this may cause  higher CPU usage.
+      -- This option is only respected when only_current_line and
+      -- autoSetHints both are true.
+      only_current_line_autocmd = "CursorHold",
+      -- whether to show parameter hints with the inlay hints or not
+      show_parameter_hints = true,
+      -- prefix for parameter hints
+      parameter_hints_prefix = "<- ",
+      -- prefix for all the other hints (type, chaining)
+      other_hints_prefix = "=> ",
+      -- whether to align to the length of the longest line in the file
+      max_len_align = false,
+      -- padding from the left if max_len_align is true
+      max_len_align_padding = 1,
+      -- whether to align to the extreme right or not
+      right_align = false,
+      -- padding from the right if right_align is true
+      right_align_padding = 7,
+      -- The color of the hints
+      highlight = "Comment",
+      -- The highlight group priority for extmark
+      priority = 100,
     },
-    extensions = {
-        -- defaults:
-        -- Automatically set inlay hints (type hints)
-        autoSetHints = true,
-        -- Whether to show hover actions inside the hover window
-        -- This overrides the default hover handler
-        hover_with_actions = true,
-        -- These apply to the default ClangdSetInlayHints command
-        inlay_hints = {
-            -- Only show inlay hints for the current line
-            only_current_line = false,
-            -- Event which triggers a refersh of the inlay hints.
-            -- You can make this "CursorMoved" or "CursorMoved,CursorMovedI" but
-            -- not that this may cause  higher CPU usage.
-            -- This option is only respected when only_current_line and
-            -- autoSetHints both are true.
-            only_current_line_autocmd = "CursorHold",
-            -- whether to show parameter hints with the inlay hints or not
-            show_parameter_hints = true,
-            -- prefix for parameter hints
-            parameter_hints_prefix = "<- ",
-            -- prefix for all the other hints (type, chaining)
-            other_hints_prefix = "=> ",
-            -- whether to align to the length of the longest line in the file
-            max_len_align = false,
-            -- padding from the left if max_len_align is true
-            max_len_align_padding = 1,
-            -- whether to align to the extreme right or not
-            right_align = false,
-            -- padding from the right if right_align is true
-            right_align_padding = 7,
-            -- The color of the hints
-            highlight = "Comment",
-            -- The highlight group priority for extmark
-            priority = 100,
-        },
-        ast = {
-            role_icons = {
-                type = "",
-                declaration = "",
-                expression = "",
-                specifier = "",
-                statement = "",
-                ["template argument"] = "",
-            },
+    ast = {
+      role_icons = {
+        type = "",
+        declaration = "",
+        expression = "",
+        specifier = "",
+        statement = "",
+        ["template argument"] = "",
+      },
 
-            kind_icons = {
-                Compound = "",
-                Recovery = "",
-                TranslationUnit = "",
-                PackExpansion = "",
-                TemplateTypeParm = "",
-                TemplateTemplateParm = "",
-                TemplateParamObject = "",
-            },
+      kind_icons = {
+        Compound = "",
+        Recovery = "",
+        TranslationUnit = "",
+        PackExpansion = "",
+        TemplateTypeParm = "",
+        TemplateTemplateParm = "",
+        TemplateParamObject = "",
+      },
 
-            highlights = {
-                detail = "Comment",
-            },
-        memory_usage = {
-            border = "none",
-        },
-        symbol_info = {
-            border = "none",
-        },
+      highlights = {
+        detail = "Comment",
+      },
+      memory_usage = {
+        border = "none",
+      },
+      symbol_info = {
+        border = "none",
+      },
     },
   }
 }
+vim.g.nvim_tree_respect_buf_cwd = 1
+
+require('telescope').load_extension('projects')
+require("project_nvim").setup {}
