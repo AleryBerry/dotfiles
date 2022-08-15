@@ -91,8 +91,6 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
-autocmd VimEnter * TwilightEnable
-
 "Syntax highlighting and autocompletion
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/cmp-omni'
@@ -155,6 +153,7 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 
 "Editor interface and theming
+Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'sainnhe/gruvbox-material'
 Plug 'KabbAmine/yowish.vim'
 Plug 'jacoborus/tender.vim'
@@ -191,6 +190,7 @@ let g:neovide_cursor_vfx_particle_density=20.0
 let g:neovide_cursor_vfx_particle_speed=20.0
 let g:neovide_cursor_vfx_opacity=200.0
 let g:neovide_refresh_rate=60
+let g:neovide_scroll_animation_length = 1
 
 autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
 autocmd BufEnter * ++nested if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
@@ -200,7 +200,7 @@ colorscheme yowish
 autocmd! BufEnter *.hs call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})
 autocmd! BufEnter *.js call timer_start(50, { tid -> execute('colorscheme yowish')})
 autocmd! BufEnter *.c,*.ts,*.tsx,*.lua call timer_start(50, { tid -> execute('colorscheme iceberg')})
-autocmd! BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme nord')})
+autocmd! BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme dracula')})
 autocmd! BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('colorscheme tender')})
 
 nnoremap <silent> <C-n> :NvimTreeToggle<CR>
@@ -244,17 +244,6 @@ vnoremap <C-n> :norm
 let mapleader = ","
 noremap <leader>fs :Files<cr>
 nnoremap <leader>fp <cmd>Telescope projects<cr>
-
-
-autocmd TextChangedI,TextChangedP * call s:on_complete_check()
-function! s:on_complete_check() abort
-lua <<EOF
-  local before_line = string.sub(vim.api.nvim_get_current_line(), 1, vim.api.nvim_win_get_cursor(0)[2] + 1)
-  if string.match(before_line, '%s$') then
-    require('cmp').complete()
-  end
-EOF
-endfunction
 
 let g:user_emmet_leader_key=','
 let g:user_emmet_settings = {

@@ -121,7 +121,12 @@ scratchpads =
       "alacritty --title 'ncmpcpp' -e ncmpcppalbum"
       (title =? "ncmpcpp")
       (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4))),
-    NS "neovim" "neovide --multigrid" (className =? "neovide") doFullFloat
+    NS "neovim" "neovide --multigrid" (className =? "neovide") doFullFloat,
+    NS
+      "monero_node"
+      "alacritty --title 'monero_node' -e monerod --data-dir ~/External/Monero/BlockChain --max-concurrency 1 --block-sync-size 10 --limit-rate 500"
+      (title =? "monero_node")
+      (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4)))
   ]
 
 myKeys conf@XConfig {XMonad.modMask = modm} =
@@ -162,6 +167,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
       -- scratchpads
       ((modm, xK_m), namedScratchpadAction scratchpads "ncmpcpp"),
       ((modm, xK_n), namedScratchpadAction scratchpads "neovim"),
+      ((modm, xK_o), namedScratchpadAction scratchpads "monero_node"),
       -- directional navigation of windows | no arrowkeys
       ((modm .|. shiftMask, xK_l), windowSwap R True),
       ((modm .|. shiftMask, xK_h), windowSwap L True),
