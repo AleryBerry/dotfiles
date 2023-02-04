@@ -84,7 +84,7 @@ map("n", "<C-p>", "ggVG:SnipRun<CR><C-o>", { silent = true })
 map("v", "<C-p>", ":SnipRun<CR>", { silent = true })
 
 vim.cmd "autocmd BufWritePre * lua vim.lsp.buf.format({ async = false })"
-vim.cmd "autocmd BufEnter *.hs call timer_start(50, { tid -> execute('colorscheme gruvbox-material)})"
+vim.cmd "autocmd BufEnter *.hs call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})"
 vim.cmd "autocmd BufEnter *.js,*.dart call timer_start(50, { tid -> execute('colorscheme yowish')})"
 vim.cmd "autocmd BufEnter *.c,*.ts,*.tsx,*.lua call timer_start(50, { tid -> execute('colorscheme iceberg')})"
 vim.cmd "autocmd BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme dracula')})"
@@ -94,9 +94,8 @@ require('nvim-lightbulb').setup({ autocmd = { enabled = true } })
 
 if g.neovide then
   g.neovide_fullscreen = true
-  g.neovide_transparency = 0.8
-  g.neovide_floating_blur_amount_x = 2.0
-  g.neovide_floating_blur_amount_y = 2.0
+  g.neovide_transparency = 0.9
+  opt.guifont = "Fira_Code:h14"
 end
 
 vim.diagnostic.config({

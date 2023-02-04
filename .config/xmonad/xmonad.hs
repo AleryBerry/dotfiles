@@ -118,15 +118,15 @@ toggleFull =
 scratchpads =
   [ NS
       "ncmpcpp"
-      "alacritty --title 'ncmpcpp' -e ncmpcppalbum"
+      "alacritty --title 'ncmpcpp' -e ncmpcpp"
       (title =? "ncmpcpp")
       (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4))),
-    NS "neovim" "neovide --multigrid" (className =? "neovide") doFullFloat,
+    NS "neovim" "neovide" (className =? "neovide") doCenterFloat,
     NS
       "monero_node"
       "alacritty --title 'monero_node' -e monerod --data-dir ~/External/Monero/BlockChain --max-concurrency 1 --block-sync-size 10 --limit-rate 500"
       (title =? "monero_node")
-      (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4)))
+      (nonFloating)
   ]
 
 myKeys conf@XConfig {XMonad.modMask = modm} =
