@@ -27,6 +27,8 @@ opt.mouse = "a"
 
 -- Numbers
 opt.relativenumber = true
+opt.number = true
+opt.ignorecase = true
 
 -- disable nvim intro
 opt.shortmess:append "sI"
@@ -44,6 +46,7 @@ opt.updatetime = 250
 -- go to previous/next line with h,l,left arrow and right arrow
 -- when cursor reaches end/beginning of line
 opt.whichwrap:append "<>[]hl"
+opt.wrap = true
 
 vim.cmd("colorscheme yowish")
 
