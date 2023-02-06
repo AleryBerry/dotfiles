@@ -3,11 +3,6 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local luasnip = require 'luasnip'
 local cmp = require 'cmp'
 
-require("flutter-tools").setup {
-  lsp = {
-    capabilities = capabilities,
-  }
-}
 
 local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -15,6 +10,13 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<space>ca', ":CodeActionMenu<CR>", bufopts)
 end
+
+require("flutter-tools").setup {
+  lsp = {
+    capabilities = capabilities,
+    on_attach = on_attach,
+  }
+}
 
 local servers = { 'pyright', 'rust_analyzer', 'tailwindcss',
   'hls', 'denols', 'tsserver',
