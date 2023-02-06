@@ -102,8 +102,14 @@ if g.neovide then
 end
 
 vim.diagnostic.config({
-  virtual_text = false
+  virtual_lines = {
+    source = "always",
+  },
+  severity_sort = true,
+  virtual_text = false,
+  update_in_insert = false,
 })
+
 
 g.VM_default_mappings = 0
 g.VM_leader = '\\'

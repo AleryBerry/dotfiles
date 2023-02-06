@@ -38,17 +38,16 @@ return require('packer').startup(function(use)
     requires = {
       'nvim-tree/nvim-web-devicons', -- optional, for file icons
     },
-    use 'neovim/nvim-lspconfig',
-    use 'hrsh7th/cmp-nvim-lsp',
-    use 'hrsh7th/cmp-buffer',
-    use 'hrsh7th/cmp-path',
-    use 'hrsh7th/cmp-cmdline',
-    use 'hrsh7th/nvim-cmp',
+    use { 'neovim/nvim-lspconfig' },
+    use { 'hrsh7th/cmp-nvim-lsp' },
+    use { 'hrsh7th/cmp-buffer' },
+    use { 'hrsh7th/cmp-path' },
+    use { 'hrsh7th/cmp-cmdline' },
+    use { 'hrsh7th/nvim-cmp' },
     use({ "L3MON4D3/LuaSnip", tag = "v<CurrentMajor>.*" }),
-    use 'sainnhe/gruvbox-material',
-    use 'hrsh7th/cmp-nvim-lsp-signature-help',
-    use 'akinsho/flutter-tools.nvim',
-    use 'nvim-lua/plenary.nvim',
+    use { 'hrsh7th/cmp-nvim-lsp-signature-help' },
+    use { 'akinsho/flutter-tools.nvim' },
+    use { 'nvim-lua/plenary.nvim' },
     use { 'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons' },
     use {
       'abecodes/tabout.nvim',
@@ -68,7 +67,8 @@ return require('packer').startup(function(use)
             { open = '`', close = '`' },
             { open = '(', close = ')' },
             { open = '[', close = ']' },
-            { open = '{', close = '}' }
+            { open = '{', close = '}' },
+            { open = '<', close = '>' }
           },
           ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
           exclude = {} -- tabout will ignore these filetypes
@@ -80,14 +80,12 @@ return require('packer').startup(function(use)
     use { 'echasnovski/mini.jump', branch = 'stable' },
     use { 'mg979/vim-visual-multi', branch = 'master' },
     use { 'lambdalisue/suda.vim' },
-    use { 'KabbAmine/yowish.vim' },
     use { 'tpope/vim-surround' },
     use { 'terryma/vim-expand-region' },
     use { 'michaelb/sniprun', run = 'bash ./install.sh',
       config = function() require('sniprun').setup({ display = { "NvimNotify" } }) end },
     use { 'rcarriga/nvim-notify' },
     use { 'mattn/emmet-vim' },
-    use({ "https://git.sr.ht/~whynothugo/lsp_lines.nvim", config = function() require("lsp_lines").setup() end, }),
     use({ 'weilbith/nvim-code-action-menu', cmd = 'CodeActionMenu', }),
     use { 'kosayoda/nvim-lightbulb' },
     use {
@@ -110,15 +108,21 @@ return require('packer').startup(function(use)
     use { 'romgrk/barbar.nvim', requires = 'nvim-web-devicons' },
     use { 'nvim-tree/nvim-web-devicons' },
 
+    use({
+      "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+      config = function()
+        require("lsp_lines").setup()
+      end,
+    }),
     -- Themes
     use { 'KabbAmine/yowish.vim' },
     use { 'cocopon/iceberg.vim' },
     use { 'Mofiqul/dracula.nvim' },
     use { 'jacoborus/tender.vim' },
+    use { 'sainnhe/gruvbox-material' },
 
     tag = 'nightly'
   }
-
 
   require('config.lspconfig')
   require('config.treesitter')
