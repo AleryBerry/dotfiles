@@ -120,6 +120,7 @@ return require('packer').startup(function(use)
     use { 'Mofiqul/dracula.nvim' },
     use { 'jacoborus/tender.vim' },
     use { 'sainnhe/gruvbox-material' },
+    use { 'mrcjkb/haskell-tools.nvim' },
 
     tag = 'nightly'
   }

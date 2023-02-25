@@ -17,10 +17,16 @@ require("flutter-tools").setup {
     on_attach = on_attach,
   }
 }
+require("haskell-tools").setup {
+  lsp = {
+    capabilities = capabilities,
+    on_attach = on_attach,
+  }
+}
 
 local servers = { 'pyright', 'rust_analyzer', 'tailwindcss',
-  'hls', 'denols', 'tsserver',
-  'clangd', 'sumneko_lua', 'java_language_server',
+  'denols', 'tsserver', 'haskell_tools',
+  'clangd', 'gdscript', 'lua_ls', 'java_language_server',
   'html' }
 
 for _, lsp in pairs(servers) do
@@ -42,7 +48,7 @@ cmp.setup({
     -- documentation = cmp.config.window.bordered(),
   },
   mapping = cmp.mapping.preset.insert({
-    ['<C-k>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-k>'] = cmp.mapping.scroll_docs( -4),
 
     ['<C-j>'] = cmp.mapping.scroll_docs(4),
     ['<CR>'] = cmp.mapping.confirm {
@@ -66,7 +72,6 @@ cmp.setup({
       end
     end, { 'i', 's' }),
   }),
-
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
     { name = 'nvim_lsp_signature_help' },
