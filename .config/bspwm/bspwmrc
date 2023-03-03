@@ -4,7 +4,7 @@ bash ~/.config/polybar/launch.sh --cuts &
 feh --bg-scale ~/Images/7.jpg &
 lightscreen -i &
 dunst &
-pgrep -x sxhkd > /dev/null || sxhkd -c ~/.config/sxhkd/sxhkdrc_bspwm &
+sxhkd -c ~/.config/sxhkd/sxhkdrc_bspwm &
 
 bspc monitor -d I II III IV V VI VII VIII IX X
 

@@ -9,7 +9,7 @@ sudo cp ./pacman/pacman.conf /etc/
 sudo pacman -Syu networkmanager xclip dmenu dunst feh devilspie bc grub os-prober linux-lqx linux-lqx-headers yay lightdm lightdm-webkit2-greeter numlockx qutebrowser bspwm sxhkd alacritty ncmpcpp mpd zsh polybar light $(pacman -Ssq xorg | grep -v git)
 yay -S sysfex tstock lightscreen xcompmgr xorg python-pip tabnine unzip 7-zip npm neovim-git
 chsh -s /usr/bin/zsh
-git clone 'https://github.com/AleryBerry/lightdm-webkit2-monoarch'
+git clone 'https://github.com/timberhill/lightdm-webkit2-monoarch'
 sudo cp ./lightdm-webkit2-monoarch /usr/share/lightdm-webkit/themes/monoarch -r
 sudo rm ./lightdm-webkit2-monoarch -r
 mkdir ~/.config/ncmpcpp ~/.config/sxhkd ~/.config/bspwm ~/.config/alacritty ~/.config/nvim/ ~/.config/qutebrowser/ ~/.config/mpd/ ~/.config/berry ~/.config/polybar

@@ -1,6 +1,7 @@
 local opt = vim.opt
 local g = vim.g
 
+g.suda_smart_edit = 1
 g.toggle_theme_icon = "   "
 g.theme_switcher_loaded = false
 
