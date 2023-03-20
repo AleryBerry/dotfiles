@@ -13,19 +13,14 @@ end
 
 require("flutter-tools").setup {
   lsp = {
-    capabilities = capabilities,
-    on_attach = on_attach,
-  }
-}
-require("haskell-tools").setup {
-  lsp = {
-    capabilities = capabilities,
     on_attach = on_attach,
   }
 }
 
+require('haskell-tools').setup {}
+
 local servers = { 'pyright', 'rust_analyzer', 'tailwindcss',
-  'denols', 'tsserver', 'haskell_tools',
+  'denols', 'tsserver',
   'clangd', 'gdscript', 'lua_ls', 'java_language_server',
   'html' }
 
@@ -48,8 +43,7 @@ cmp.setup({
     -- documentation = cmp.config.window.bordered(),
   },
   mapping = cmp.mapping.preset.insert({
-    ['<C-k>'] = cmp.mapping.scroll_docs( -4),
-
+    ['<C-k>'] = cmp.mapping.scroll_docs(-4),
     ['<C-j>'] = cmp.mapping.scroll_docs(4),
     ['<CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,

@@ -53,14 +53,14 @@ return require('packer').startup(function(use)
       'abecodes/tabout.nvim',
       config = function()
         require('tabout').setup {
-          tabkey = '<Tab>', -- key to trigger tabout, set to an empty string to disable
+          tabkey = '<Tab>',             -- key to trigger tabout, set to an empty string to disable
           backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout, set to an empty string to disable
-          act_as_tab = true, -- shift content if tab out is not possible
-          act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
-          default_tab = '<C-t>', -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
-          default_shift_tab = '<C-d>', -- reverse shift default action,
-          enable_backwards = true, -- well ...
-          completion = true, -- if the tabkey is used in a completion pum
+          act_as_tab = true,            -- shift content if tab out is not possible
+          act_as_shift_tab = false,     -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+          default_tab = '<C-t>',        -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
+          default_shift_tab = '<C-d>',  -- reverse shift default action,
+          enable_backwards = true,      -- well ...
+          completion = true,            -- if the tabkey is used in a completion pum
           tabouts = {
             { open = "'", close = "'" },
             { open = '"', close = '"' },
@@ -75,7 +75,7 @@ return require('packer').startup(function(use)
         }
       end,
       wants = { 'nvim-treesitter' }, -- or require if not used so far
-      after = { 'nvim-cmp' } -- if a completion plugin is using tabs load it before
+      after = { 'nvim-cmp' }         -- if a completion plugin is using tabs load it before
     },
     use { 'echasnovski/mini.jump', branch = 'stable' },
     use { 'mg979/vim-visual-multi', branch = 'master' },
@@ -121,6 +121,8 @@ return require('packer').startup(function(use)
     use { 'jacoborus/tender.vim' },
     use { 'sainnhe/gruvbox-material' },
     use { 'mrcjkb/haskell-tools.nvim' },
+    use { 'nathom/filetype.nvim' },
+
 
     tag = 'nightly'
   }

@@ -5,6 +5,10 @@ g.suda_smart_edit = 1
 g.toggle_theme_icon = "   "
 g.theme_switcher_loaded = false
 
+vim.filetype.on = true
+vim.g.do_filetype_lua = 1
+vim.g.did_load_filetypes = 0
+
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1
 
@@ -121,3 +125,26 @@ g.VM_maps = {
   ['Add Cursor Down'] = '<C-j>',
 }
 g.user_emmet_leader_key = ','
+
+print('hello')
+require("filetype").setup({
+  overrides = {
+    extensions = {
+      -- Set the filetype of *.pn files to potion
+      gd = "gdscript",
+    },
+    shebang = {
+      -- Set the filetype of files with a dash shebang to sh
+      dash = "sh",
+    },
+  },
+})
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "gdscript",
+  callback = function()
+    vim.opt.expandtab = false
+    vim.opt.smartindent = true
+    vim.opt.tabstop = 2
+    vim.opt.softtabstop = 2
+  end
+})
