@@ -123,6 +123,8 @@ return require('packer').startup(function(use)
     use { 'mrcjkb/haskell-tools.nvim' },
     use { 'nathom/filetype.nvim' },
 
+    use { 'udalov/kotlin-vim' },
+    use { 'mfussenegger/nvim-jdtls' },
 
     tag = 'nightly'
   }
