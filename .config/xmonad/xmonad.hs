@@ -118,7 +118,7 @@ toggleFull =
 scratchpads =
   [ NS
       "ncmpcpp"
-      "alacritty --title 'ncmpcpp' -e ncmpcpp"
+      "alacritty --title 'ncmpcpp' -e gomp"
       (title =? "ncmpcpp")
       (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4))),
     NS "neovim" "neovide" (className =? "neovide") doCenterFloat,
