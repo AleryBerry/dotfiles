@@ -126,7 +126,6 @@ g.VM_maps = {
 }
 g.user_emmet_leader_key = ','
 
-print('hello')
 require("filetype").setup({
   overrides = {
     extensions = {
