@@ -14,6 +14,7 @@
 
 -- Focus Hooks
 import Control.Monad
+
 import DBus.Client qualified as DC
 import Data.List
 import Data.List.Split
@@ -30,7 +31,10 @@ import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Layout.EqualSpacing
+import XMonad.Layout.LayoutModifier
 import XMonad.Layout.NoBorders
+import XMonad.Layout.ToggleLayouts
+
 import XMonad.StackSet qualified as W
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.Loggers
@@ -38,41 +42,35 @@ import XMonad.Util.NamedScratchpad
 import XMonad.Util.Run
 import XMonad.Util.WorkspaceCompare
 
+myBorderWidth :: Dimension
 myBorderWidth = 1
 
 myClickJustFocuses :: Bool
 myClickJustFocuses = True
 
+myTerminal :: String
 myTerminal = "kitty"
 
 myWorkspaces :: [String]
 myWorkspaces = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"]
 
--- myWorkspaces         = ["1","2","3","4","5","6","7","8"]
-
 -- Colours
+myFocusedBorderColor :: String
 myFocusedBorderColor = "#ffbe3c"
 
+myNormalBorderColor :: String
 myNormalBorderColor = "#6699cc"
 
+gray :: String
 gray = "#6e6e6e"
-
+yellow :: String
 yellow = "#ffbe3c"
-
+yellow2 :: String
 yellow2 = "#6699cc"
-
+otherMonitors :: String
 otherMonitors = "#d09cea"
 
-myLayoutHook =
-  avoidStruts $
-    smartBorders $
-      equalSpacing
-        10
-        4
-        0
-        20
-        ( tiled ||| Mirror tiled ||| Full
-        )
+myLayoutHook = avoidStruts $ smartBorders $ toggleLayouts Full (equalSpacing 10 4 0 20 $ tiled ||| Mirror tiled)
  where
   tiled = Tall nmaster delta ratio
   nmaster = 1
@@ -102,19 +100,7 @@ myManageHook =
   myGameLaunchers = ["Steam", "heroic"]
   viewShift = doF . liftM2 (.) W.greedyView W.shift
 
-toggleFull =
-  withFocused
-    ( \windowId -> do
-        floats <- gets (W.floating . windowset)
-        if windowId `M.member` floats
-          then do
-            withFocused toggleBorder
-            withFocused $ windows . W.sink
-          else do
-            withFocused toggleBorder
-            withFocused $ windows . flip W.float (W.RationalRect 0 0 1 1)
-    )
-
+scratchpads :: [NamedScratchpad]
 scratchpads =
   [ NS
       "ncmpcpp"
@@ -158,7 +144,7 @@ myKeys conf@XConfig{XMonad.modMask = modm} =
     , -- logout
       ((modm .|. controlMask, xK_q), spawn "loginctl terminate-user hibiscus-tea")
     , -- toggle fullscreen
-      ((modm .|. shiftMask, xK_m), toggleFull)
+      ((modm .|. shiftMask, xK_m), sendMessage ToggleLayout)
     , -- swap adjacent windows             | no arrowkeys
       ((modm, xK_l), windowGo R True)
     , ((modm, xK_h), windowGo L True)
@@ -241,7 +227,7 @@ myLogHook dbus i s =
   formatUnfocused = wrap ("%{F" ++ otherMonitors ++ "}") "%{F-}"
   fixWorkspaces cs = foldr (\x xs -> if x /= cs then x : xs else reformat x : xs) []
   reformat x = wrap ("%{F" ++ yellow ++ "}") "%{F-}" (unwrap x !! 2)
-  unwrap = split (dropFinalBlank . dropDelims . oneOf $ "}%")
+  unwrap = split . dropFinalBlank . dropDelims . oneOf $ "}%"
 
 main :: IO ()
 main = do
