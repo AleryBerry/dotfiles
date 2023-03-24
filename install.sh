@@ -6,8 +6,8 @@ sudo pacman-key --keyserver hkps://keyserver.ubuntu.com --recv-keys 9AE4078033F8
 sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 sudo cp ./pacman/pacman.conf /etc/
 
-sudo pacman -Syu networkmanager xclip dmenu dunst feh devilspie bc grub os-prober linux-lqx linux-lqx-headers yay lightdm lightdm-webkit2-greeter numlockx qutebrowser bspwm sxhkd alacritty ncmpcpp mpd zsh polybar light $(pacman -Ssq xorg | grep -v git)
-yay -S sysfex tstock lightscreen xcompmgr xorg python-pip tabnine unzip 7-zip npm neovim-git
+sudo pacman -Syu efibootmgr networkmanager xclip dmenu dunst feh devilspie bc grub os-prober linux-lqx linux-lqx-headers yay lightdm lightdm-webkit2-greeter numlockx qutebrowser bspwm sxhkd alacritty ncmpcpp mpd zsh light $(pacman -Ssq xorg | grep -v git)
+yay -S sysfex tstock lightscreen polybar-git xcompmgr xorg python-pip tabnine unzip 7-zip npm neovim-git
 chsh -s /usr/bin/zsh
 git clone 'https://github.com/timberhill/lightdm-webkit2-monoarch'
 sudo cp ./lightdm-webkit2-monoarch /usr/share/lightdm-webkit/themes/monoarch -r
