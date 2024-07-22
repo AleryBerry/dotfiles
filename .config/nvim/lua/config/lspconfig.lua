@@ -17,16 +17,13 @@ require("flutter-tools").setup {
   }
 }
 
-require('haskell-tools').setup {}
-
 local servers = { 'pyright', 'rust_analyzer', 'tailwindcss',
   'denols', 'tsserver',
   'clangd', 'gdscript', 'lua_ls', 'java_language_server',
-  'html' }
+  'html', 'csharp_ls', }
 
 for _, lsp in pairs(servers) do
   lspconfig[lsp].setup {
-    init_options = { documentFormatting = true },
     capabitilies = capabilities,
     on_attach = on_attach,
   }
