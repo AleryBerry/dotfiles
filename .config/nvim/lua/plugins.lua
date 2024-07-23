@@ -1,7 +1,3 @@
-local function pconf(plugin)
-  return "require(\"config." .. plugin .. "\")"
-end
-
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -36,12 +32,25 @@ require("lazy").setup({
     },
     -- Lazy loading:
     -- Load on specific commands
-    { 'tpope/vim-dispatch',              opt = true,        cmd = { 'Dispatch', 'Make', 'Focus', 'Start' } },
+    { 'tpope/vim-dispatch',   lazy = true,       cmd = { 'Dispatch', 'Make', 'Focus', 'Start' } },
 
     -- Load on an autocommand event
-    { 'andymass/vim-matchup',            event = 'VimEnter' },
+    { 'andymass/vim-matchup', event = 'VimEnter' },
     -- Post-install/update hook with neovim command
-    { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' },
+    {
+      "nvim-treesitter/nvim-treesitter",
+      build = ":TSUpdate",
+      config = function()
+        local configs = require("nvim-treesitter.configs")
+
+        configs.setup({
+          ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "elixir", "heex", "javascript", "html" },
+          sync_install = false,
+          highlight = { enable = true },
+          indent = { enable = true },
+        })
+      end
+    },
 
     --  specific branch, dependency and run lua file after load
     {
@@ -51,126 +60,257 @@ require("lazy").setup({
     --  dependency and run lua function after load
     {
       'lewis6991/gitsigns.nvim',
-      requires = { 'nvim-lua/plenary.nvim' },
+      dependencies = { 'nvim-lua/plenary.nvim' },
       opts = {},
     },
 
     {
-      'nvim-tree/nvim-tree.lua',
-      requires = {
-        'nvim-tree/nvim-web-devicons', -- optional, for file icons
+      "nvim-tree/nvim-tree.lua",
+      version = "*",
+      lazy = false,
+      dependencies = {
+        "nvim-tree/nvim-web-devicons",
       },
-      { 'neovim/nvim-lspconfig' },
-      { 'hrsh7th/cmp-nvim-lsp' },
-      { 'hrsh7th/cmp-buffer' },
-      { 'hrsh7th/cmp-path' },
-      { 'hrsh7th/cmp-cmdline' },
-      { 'hrsh7th/nvim-cmp' },
-      {
-        "L3MON4D3/LuaSnip",
-        -- follow latest release.
-        version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-        -- install jsregexp (optional!).
-        build = "make install_jsregexp"
-      },
-      { 'hrsh7th/cmp-nvim-lsp-signature-help' },
-      { 'akinsho/flutter-tools.nvim' },
-      { 'nvim-lua/plenary.nvim' },
-      { 'akinsho/bufferline.nvim',            tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons' },
-      {
-        'abecodes/tabout.nvim',
-        config = function()
-          require('tabout').setup {
-            tabkey = '<Tab>',             -- key to trigger tabout, set to an empty string to disable
-            backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout, set to an empty string to disable
-            act_as_tab = true,            -- shift content if tab out is not possible
-            act_as_shift_tab = false,     -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
-            default_tab = '<C-t>',        -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
-            default_shift_tab = '<C-d>',  -- reverse shift default action,
-            enable_backwards = true,      -- well ...
-            completion = true,            -- if the tabkey is used in a completion pum
-            tabouts = {
-              { open = "'", close = "'" },
-              { open = '"', close = '"' },
-              { open = '`', close = '`' },
-              { open = '(', close = ')' },
-              { open = '[', close = ']' },
-              { open = '{', close = '}' },
-              { open = '<', close = '>' }
+      config = function()
+        require("nvim-tree").setup({
+
+
+          auto_reload_on_write = true,
+          disable_netrw = false,
+          hijack_cursor = false,
+          hijack_netrw = true,
+          hijack_unnamed_buffer_when_opening = false,
+          open_on_tab = false,
+          sort_by = "name",
+          update_cwd = true,
+          sync_root_with_cwd = true,
+          respect_buf_cwd = true,
+          view = {
+            width = 30,
+            side = "right",
+            preserve_window_proportions = false,
+            number = false,
+            relativenumber = false,
+            signcolumn = "yes",
+          },
+          renderer = {
+            indent_markers = {
+              enable = true,
+              icons = {
+                corner = "└ ",
+                edge = "│ ",
+                none = "  ",
+              },
             },
-            ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
-            exclude = {} -- tabout will ignore these filetypes
-          }
-        end,
-        wants = { 'nvim-treesitter' }, -- or require if not used so far
-        after = { 'nvim-cmp' }         -- if a completion plugin is using tabs load it before
-      },
-      { 'echasnovski/mini.jump',    branch = 'stable' },
-      { 'mg979/vim-visual-multi',   branch = 'master' },
-      { 'lambdalisue/suda.vim' },
-      { 'tpope/vim-surround' },
-      { 'terryma/vim-expand-region' },
-      {
-        'michaelb/sniprun',
-        run = 'bash ./install.sh',
-        config = function() require('sniprun').setup({ display = { "NvimNotify" } }) end
-      },
-      { 'rcarriga/nvim-notify' },
-      { 'mattn/emmet-vim' },
-      ({ 'weilbith/nvim-code-action-menu', cmd = 'CodeActionMenu', }),
-      { 'kosayoda/nvim-lightbulb' },
-      {
-        'm-demare/hlargs.nvim',
-        requires = { 'nvim-treesitter/nvim-treesitter' }
-      },
-      {
-        'numToStr/Comment.nvim',
-        config = function()
-          require('Comment').setup()
-        end
-      },
-      { 'fedepujol/move.nvim' },
-      { "ahmedkhalf/project.nvim",      config = function() require("project_nvim").setup {} end },
-      { 'nvim-telescope/telescope.nvim' },
-      {
-        "startup-nvim/startup.nvim",
-        requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
-        config = function() require "startup".setup({ theme = "startify" }) end
-      },
-      { "lukas-reineke/indent-blankline.nvim" },
-      { 'dstein64/nvim-scrollview' },
-      { 'romgrk/barbar.nvim',                 requires = 'nvim-web-devicons' },
-      { 'nvim-tree/nvim-web-devicons' },
-
-      ({
-        "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
-        config = function()
-          require("lsp_lines").setup()
-        end,
-      }),
-      -- Themes
-      { 'KabbAmine/yowish.vim' },
-      { 'cocopon/iceberg.vim' },
-      { 'Mofiqul/dracula.nvim' },
-      { 'jacoborus/tender.vim' },
-      { 'sainnhe/gruvbox-material' },
-      { 'mrcjkb/haskell-tools.nvim' },
-      { 'nathom/filetype.nvim' },
-
-      { 'udalov/kotlin-vim' },
-      { 'mfussenegger/nvim-jdtls' },
+            icons = {
+              webdev_colors = true,
+              git_placement = "before",
+            }
+          },
+          hijack_directories = {
+            enable = true,
+            auto_open = true,
+          },
+          update_focused_file = {
+            enable = true,
+            update_cwd = true,
+            update_root = true,
+            ignore_list = {},
+          },
+          system_open = {
+            cmd = "",
+            args = {},
+          },
+          diagnostics = {
+            enable = false,
+            show_on_dirs = false,
+            icons = {
+              hint = "",
+              info = "",
+              warning = "",
+              error = "",
+            },
+          },
+          filters = {
+            dotfiles = false,
+            custom = {},
+            exclude = {},
+          },
+          git = {
+            enable = true,
+            ignore = true,
+            timeout = 400,
+          },
+          actions = {
+            use_system_clipboard = true,
+            change_dir = {
+              enable = true,
+              global = true,
+              restrict_above_cwd = false,
+            },
+            open_file = {
+              quit_on_open = true,
+              resize_window = false,
+              window_picker = {
+                enable = true,
+                chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+                exclude = {
+                  filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame" },
+                  buftype = { "nofile", "terminal", "help" },
+                },
+              },
+            },
+          },
+          trash = {
+            cmd = "trash",
+            require_confirm = true,
+          },
+          log = {
+            enable = false,
+            truncate = false,
+            types = {
+              all = false,
+              config = false,
+              copy_paste = false,
+              diagnostics = false,
+              git = false,
+              profile = false,
+            },
+          },
+        })
+      end,
     },
-    -- Configure any other settings here. See the documentation for more details.
-    -- colorscheme that will be used when installing plugins.
-    install = { colorscheme = { "habamax" } },
-    -- automatically check for plugin updates
-    checker = { enabled = true },
-  }
-})
+    {
+      'neovim/nvim-lspconfig',
+      event = { "BufReadPost", "BufNewFile" },
+      cmd = { "LspInfo", "LspInstall", "LspUninstall" },
+    },
+    { 'hrsh7th/cmp-nvim-lsp' },
+    { 'hrsh7th/cmp-buffer' },
+    { 'hrsh7th/cmp-path' },
+    { 'hrsh7th/cmp-cmdline' },
+    {
+      'hrsh7th/nvim-cmp',
+      dependencies = { "saadparwaiz1/cmp_luasnip", },
+
+      event = { "InsertEnter" },
+      config = function()
+        require 'cmp'.setup {
+          snippet = {
+            expand = function(args)
+              require 'luasnip'.lsp_expand(args.body)
+            end
+          },
+
+          sources = {
+            { name = 'luasnip' },
+            -- more sources
+          },
+        }
+      end
+    },
+    {
+      "L3MON4D3/LuaSnip",
+      -- follow latest release.
+      version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+      -- install jsregexp (optional!).
+      build = "make install_jsregexp"
+    },
+    { 'hrsh7th/cmp-nvim-lsp-signature-help' },
+    { 'akinsho/flutter-tools.nvim' },
+    { 'nvim-lua/plenary.nvim' },
+    { 'akinsho/bufferline.nvim',            tag = "v3.*", dependencies = 'nvim-tree/nvim-web-devicons' },
+    {
+      'abecodes/tabout.nvim',
+      config = function()
+        require('tabout').setup {
+          tabkey = '<Tab>',             -- key to trigger tabout, set to an empty string to disable
+          backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout, set to an empty string to disable
+          act_as_tab = true,            -- shift content if tab out is not possible
+          act_as_shift_tab = false,     -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+          default_tab = '<C-t>',        -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
+          default_shift_tab = '<C-d>',  -- reverse shift default action,
+          enable_backwards = true,      -- well ...
+          completion = true,            -- if the tabkey is used in a completion pum
+          tabouts = {
+            { open = "'", close = "'" },
+            { open = '"', close = '"' },
+            { open = '`', close = '`' },
+            { open = '(', close = ')' },
+            { open = '[', close = ']' },
+            { open = '{', close = '}' },
+            { open = '<', close = '>' }
+          },
+          ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
+          exclude = {} -- tabout will ignore these filetypes
+        }
+      end,
+      dependencies = { 'nvim-treesitter', 'nvim-cmp' }, -- or require if not used so far
+    },
+    { 'echasnovski/mini.jump',    branch = 'stable' },
+    { 'mg979/vim-visual-multi',   branch = 'master' },
+    { 'lambdalisue/suda.vim' },
+    { 'tpope/vim-surround' },
+    { 'terryma/vim-expand-region' },
+    {
+      'michaelb/sniprun',
+      build = 'bash ./install.sh',
+      config = function() require('sniprun').setup({ display = { "NvimNotify" } }) end
+    },
+    { 'rcarriga/nvim-notify' },
+    { 'mattn/emmet-vim' },
+    ({ 'weilbith/nvim-code-action-menu', cmd = 'CodeActionMenu', }),
+    { 'kosayoda/nvim-lightbulb' },
+    {
+      'm-demare/hlargs.nvim', dependencies = { 'nvim-treesitter/nvim-treesitter' } }, {
+    'numToStr/Comment.nvim',
+    opts = {},
+  },
+    { 'fedepujol/move.nvim' },
+    {
+      "ahmedkhalf/project.nvim",
+      config = function()
+        require("project_nvim").setup {
+        }
+      end
+    },
+    { 'nvim-telescope/telescope.nvim' },
+    {
+      "startup-nvim/startup.nvim",
+      dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+      opts = {},
+    },
+    { "lukas-reineke/indent-blankline.nvim" },
+    { 'dstein64/nvim-scrollview' },
+    { 'romgrk/barbar.nvim',                 dependencies = 'nvim-web-devicons' },
+    { 'nvim-tree/nvim-web-devicons' },
+
+    {
+      "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+      opts = {},
+    },
+    -- Themes
+    { 'KabbAmine/yowish.vim' },
+    { 'cocopon/iceberg.vim' },
+    { 'Mofiqul/dracula.nvim' },
+    { 'jacoborus/tender.vim' },
+    { 'sainnhe/gruvbox-material' },
+    { 'mrcjkb/haskell-tools.nvim' },
+    { 'nathom/filetype.nvim' },
+
+    { 'udalov/kotlin-vim' },
+    { 'mfussenegger/nvim-jdtls' },
+  },
+  -- Configure any other settings here. See the documentation for more details.
+  -- colorscheme that will be used when installing plugins.
+  install = { colorscheme = { "habamax" } },
+  -- automatically check for plugin updates
+  checker = { enabled = true },
+}
+)
 
 require('config.lspconfig')
 require('config.treesitter')
 require('config.autopairs')
-require('config.nvim-tree')
 require('config.telescope')
 require('config.lualine')

@@ -30,11 +30,6 @@ for _, lsp in pairs(servers) do
 end
 
 cmp.setup({
-  snippet = {
-    expand = function(args)
-      require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-    end,
-  },
   window = {
     -- completion = cmp.config.window.bordered(),
     -- documentation = cmp.config.window.bordered(),
@@ -100,4 +95,4 @@ cmp.setup.cmdline(':', {
   })
 })
 
-require 'luasnip'.filetype_extend("dart", { "flutter" })
+luasnip.filetype_extend("dart", { "flutter" })

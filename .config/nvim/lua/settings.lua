@@ -138,6 +138,7 @@ require("filetype").setup({
     },
   },
 })
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "gdscript",
   callback = function()
