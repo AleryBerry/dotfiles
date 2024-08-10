@@ -18,8 +18,7 @@ vim.opt.rtp:prepend(lazypath)
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
+require('settings')
 
 -- Setup lazy.nvim
 require("lazy").setup({
@@ -44,7 +43,7 @@ require("lazy").setup({
         local configs = require("nvim-treesitter.configs")
 
         configs.setup({
-          ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "elixir", "heex", "javascript", "html" },
+          ensure_installed = { "c", "gdscript", "lua", "zig", "vim", "vimdoc", "query", "elixir", "heex", "javascript", "html" },
           sync_install = false,
           highlight = { enable = true },
           indent = { enable = true },
@@ -62,6 +61,16 @@ require("lazy").setup({
       'lewis6991/gitsigns.nvim',
       dependencies = { 'nvim-lua/plenary.nvim' },
       opts = {},
+    },
+    {
+      'dgagn/diagflow.nvim',
+      event = 'LspAttach',
+      opts = {
+        placement = 'top',
+        inline_padding_left = 1,
+        scope = 'line',
+        max_height = 600,
+      },
     },
 
     {
@@ -216,10 +225,26 @@ require("lazy").setup({
       -- install jsregexp (optional!).
       build = "make install_jsregexp"
     },
+    {
+      "goolord/alpha-nvim",
+      event = "VimEnter",
+      dependencies = {
+        "ozthemagician/alpha-cowsays-nvim",
+      },
+      config = function()
+        local alpha = require("alpha")
+        local startify = require("alpha.themes.startify")
+        local cow = require("alpha-cowsays-nvim")
+
+        startify.section.header.val = cow.cowsays()
+
+        alpha.setup(startify.config)
+      end,
+    },
     { 'hrsh7th/cmp-nvim-lsp-signature-help' },
     { 'akinsho/flutter-tools.nvim' },
     { 'nvim-lua/plenary.nvim' },
-    { 'akinsho/bufferline.nvim',            tag = "v3.*", dependencies = 'nvim-tree/nvim-web-devicons' },
+    { 'akinsho/bufferline.nvim',            version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
     {
       'abecodes/tabout.nvim',
       config = function()
@@ -275,20 +300,11 @@ require("lazy").setup({
       end
     },
     { 'nvim-telescope/telescope.nvim' },
-    {
-      "startup-nvim/startup.nvim",
-      dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
-      opts = {},
-    },
     { "lukas-reineke/indent-blankline.nvim" },
     { 'dstein64/nvim-scrollview' },
     { 'romgrk/barbar.nvim',                 dependencies = 'nvim-web-devicons' },
     { 'nvim-tree/nvim-web-devicons' },
 
-    {
-      "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
-      opts = {},
-    },
     -- Themes
     { 'KabbAmine/yowish.vim' },
     { 'cocopon/iceberg.vim' },
@@ -296,7 +312,6 @@ require("lazy").setup({
     { 'jacoborus/tender.vim' },
     { 'sainnhe/gruvbox-material' },
     { 'mrcjkb/haskell-tools.nvim' },
-    { 'nathom/filetype.nvim' },
 
     { 'udalov/kotlin-vim' },
     { 'mfussenegger/nvim-jdtls' },
@@ -308,6 +323,8 @@ require("lazy").setup({
   checker = { enabled = true },
 }
 )
+require('nvim-lightbulb').setup({ autocmd = { enabled = true } })
+vim.cmd("colorscheme yowish")
 
 require('config.lspconfig')
 require('config.treesitter')

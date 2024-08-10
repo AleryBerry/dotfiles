@@ -6,8 +6,6 @@ g.toggle_theme_icon = "   "
 g.theme_switcher_loaded = false
 
 vim.filetype.on = true
-vim.g.do_filetype_lua = 1
-vim.g.did_load_filetypes = 0
 
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1
@@ -53,7 +51,6 @@ opt.updatetime = 250
 opt.whichwrap:append "<>[]hl"
 opt.wrap = true
 
-vim.cmd("colorscheme yowish")
 
 function map(mode, lhs, rhs, opts)
   local options = { noremap = true }
@@ -98,7 +95,6 @@ vim.cmd "autocmd BufEnter *.c,*.ts,*.tsx,*.lua call timer_start(50, { tid -> exe
 vim.cmd "autocmd BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme dracula')})"
 vim.cmd "autocmd BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('colorscheme tender')})"
 
-require('nvim-lightbulb').setup({ autocmd = { enabled = true } })
 
 if g.neovide then
   g.neovide_fullscreen = true
@@ -107,37 +103,24 @@ if g.neovide then
 end
 
 vim.diagnostic.config({
-  virtual_lines = {
-    source = "always",
-  },
-  severity_sort = true,
+  virtual_lines = true,
   virtual_text = false,
   update_in_insert = false,
 })
 
 
+vim.g.mapleader = ","
+
+map("i", "<leader>,", "<Plug>(emmet-expand-abbr)", { silent = true })
+vim.g.emmet_install_only_plug = 1
+
 g.VM_default_mappings = 0
-g.VM_leader = '\\'
 g.VM_maps = {
   ['Find Under'] = '<C-g>',
   ['Find Subword Under'] = '<C-g>',
   ['Add Cursor Up'] = '<C-k>',
   ['Add Cursor Down'] = '<C-j>',
 }
-g.user_emmet_leader_key = ','
-
-require("filetype").setup({
-  overrides = {
-    extensions = {
-      -- Set the filetype of *.pn files to potion
-      gd = "gdscript",
-    },
-    shebang = {
-      -- Set the filetype of files with a dash shebang to sh
-      dash = "sh",
-    },
-  },
-})
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "gdscript",

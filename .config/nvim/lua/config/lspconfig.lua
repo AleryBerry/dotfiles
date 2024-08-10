@@ -7,8 +7,8 @@ local cmp = require 'cmp'
 local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
   local bufopts = { noremap = true, silent = true, buffer = bufnr }
-  vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', '<space>ca', ":CodeActionMenu<CR>", bufopts)
+  vim.keymap.set('n', '<C-Space>rn', vim.lsp.buf.rename, bufopts)
+  vim.keymap.set('n', '<C-Space>ca', ":CodeActionMenu<CR>", bufopts)
 end
 
 require("flutter-tools").setup {
@@ -18,9 +18,9 @@ require("flutter-tools").setup {
 }
 
 local servers = { 'pyright', 'rust_analyzer', 'tailwindcss',
-  'denols', 'tsserver',
+  'tsserver',
   'clangd', 'gdscript', 'lua_ls', 'java_language_server',
-  'html', 'csharp_ls', }
+   'csharp_ls', 'zls', 'htmx' }
 
 for _, lsp in pairs(servers) do
   lspconfig[lsp].setup {
