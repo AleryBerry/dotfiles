@@ -6,18 +6,43 @@ local cmp = require 'cmp'
 
 local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+  require("better-diagnostic-virtual-text.api").setup_buf(bufnr, {
+    inline = false,
+  })
   local bufopts = { noremap = true, silent = true, buffer = bufnr }
   vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<leader>c', require("actions-preview").code_actions, bufopts)
 end
 
+local handlers = {
+  ['textDocument/typeDefinition'] = require 'lsputil.locations'.typeDefinition_handler,
+  ['textDocument/implementation'] = require 'lsputil.locations'.implementation_handler,
+  ['textDocument/documentSymbol'] = require 'lsputil.symbols'.document_handler,
+}
+
+require("actions-preview").setup {
+  diff = {
+    algorithm = "patience",
+    ignore_whitespace = true,
+  },
+  telescope = require("telescope.themes").get_dropdown { winblend = 10 },
+}
+
 require("flutter-tools").setup {
   lsp = {
-    on_attach = on_attach
+    on_attach = on_attach,
+    handlers = handlers
   }
 }
 
-local servers = { 'pyright', 'rust_analyzer', 'tailwindcss',
+require("haskell-tools").setup {
+  lsp = {
+    on_attach = on_attach,
+    handlers = handlers
+  }
+}
+
+local servers = { 'pyright', 'rust_analyzer', 'tailwindcss', 'haskell-tools',
   'tsserver', 'clangd', 'gdscript', 'lua_ls', 'java_language_server',
   'csharp_ls', 'zls', 'htmx', 'biome', 'cssls', 'superhtml', 'eslint', }
 
@@ -59,9 +84,8 @@ cmp.setup({
   }),
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
-    { name = 'nvim_lsp_signature_help' },
-    { name = 'nvim_lua' },
     { name = 'luasnip' },
+    { name = 'nvim_lua' },
     { name = 'buffer' },
     { name = 'path' }
   })

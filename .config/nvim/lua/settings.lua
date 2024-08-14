@@ -61,6 +61,7 @@ function map(mode, lhs, rhs, opts)
 end
 
 map("n", "<C-n>", ":NvimTreeToggle<CR>", { silent = true })
+map("n", "<C-a>", ":<cmd>AerialToggle!<CR>", { silent = true })
 map("i", "JJ", "<Esc>", { silent = true })
 map("v", "<C-v>", "<Esc>\"+gp", { silent = true })
 map("v", "<C-c>", "\"+y", { silent = true })
@@ -97,11 +98,10 @@ vim.cmd "autocmd BufEnter *.c,*.ts,*.tsx,*.lua call timer_start(50, { tid -> exe
 vim.cmd "autocmd BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme dracula')})"
 vim.cmd "autocmd BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('colorscheme tender')})"
 
-
 if g.neovide then
   g.neovide_fullscreen = true
-  g.neovide_transparency = 0.9
-  opt.guifont = "Fira_Code:h14"
+  g.neovide_transparency = 0.95
+  opt.guifont = "Iosevka Nerd Font,Noto Color Emoji:h14"
 end
 
 vim.diagnostic.config({
@@ -109,7 +109,6 @@ vim.diagnostic.config({
   virtual_text = false,
   update_in_insert = false,
 })
-
 
 vim.g.mapleader = ","
 

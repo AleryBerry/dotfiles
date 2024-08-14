@@ -63,16 +63,9 @@ require("lazy").setup({
       opts = {},
     },
     {
-      'dgagn/diagflow.nvim',
-      event = 'LspAttach',
-      opts = {
-        placement = 'top',
-        inline_padding_left = 1,
-        scope = 'line',
-        max_height = 600,
-      },
+      'sontungexpt/better-diagnostic-virtual-text',
+      lazy = true,
     },
-
     {
       "nvim-tree/nvim-tree.lua",
       version = "*",
@@ -241,7 +234,21 @@ require("lazy").setup({
         alpha.setup(startify.config)
       end,
     },
-    { 'hrsh7th/cmp-nvim-lsp-signature-help' },
+    {
+      'stevearc/aerial.nvim',
+      opts = {},
+      -- Optional dependencies
+      dependencies = {
+        "nvim-treesitter/nvim-treesitter",
+        "nvim-tree/nvim-web-devicons"
+      },
+    },
+    {
+      "ray-x/lsp_signature.nvim",
+      event = "VeryLazy",
+      opts = {},
+      config = function(_, opts) require 'lsp_signature'.setup(opts) end
+    },
     {
       'akinsho/flutter-tools.nvim',
       lazy = false,
@@ -252,7 +259,7 @@ require("lazy").setup({
       config = true,
     },
     { 'nvim-lua/plenary.nvim' },
-    { 'akinsho/bufferline.nvim',            version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
+    { 'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
     {
       'abecodes/tabout.nvim',
       config = function()
@@ -299,7 +306,12 @@ require("lazy").setup({
     'numToStr/Comment.nvim',
     opts = {},
   },
-    { 'fedepujol/move.nvim' },
+    {
+      'fedepujol/move.nvim',
+      opts = {
+        --- Config
+      }
+    },
     {
       "ahmedkhalf/project.nvim",
       config = function()
@@ -312,6 +324,8 @@ require("lazy").setup({
     { 'dstein64/nvim-scrollview' },
     { 'romgrk/barbar.nvim',                 dependencies = 'nvim-web-devicons' },
     { 'nvim-tree/nvim-web-devicons' },
+    { 'RishabhRD/nvim-lsputils' },
+    { 'RishabhRD/popfix' },
 
     -- Themes
     { 'KabbAmine/yowish.vim' },
@@ -319,8 +333,11 @@ require("lazy").setup({
     { 'Mofiqul/dracula.nvim' },
     { 'jacoborus/tender.vim' },
     { 'sainnhe/gruvbox-material' },
-    { 'mrcjkb/haskell-tools.nvim' },
-
+    {
+      'mrcjkb/haskell-tools.nvim',
+      version = '^4', -- Recommended
+      lazy = false,   -- This plugin is already lazy
+    },
     { 'udalov/kotlin-vim' },
     { 'mfussenegger/nvim-jdtls' },
   },
@@ -331,7 +348,37 @@ require("lazy").setup({
   checker = { enabled = true },
 }
 )
-require('nvim-lightbulb').setup({ autocmd = { enabled = true } })
+require('nvim-lightbulb').setup(
+  {
+    autocmd = { enabled = true },
+    sign = {
+      enabled = false,
+      -- Text to show in the sign column.
+      -- Must be between 1-2 characters.
+      text = "💡",
+      -- Highlight group to highlight the sign column text.
+      hl = "LightBulbSign",
+    },
+    virtual_text = {
+      enabled = true,
+      -- Text to show in the virt_text.
+      text = "💡",
+      -- Position of virtual text given to |nvim_buf_set_extmark|.
+      -- Can be a number representing a fixed column (see `virt_text_pos`).
+      -- Can be a string representing a position (see `virt_text_win_col`).
+      pos = "eol",
+      -- Highlight group to highlight the virtual text.
+      hl = "LightBulbVirtualText",
+      -- How to combine other highlights with text highlight.
+      -- See `hl_mode` of |nvim_buf_set_extmark|.
+      hl_mode = "combine",
+    },
+    number = {
+      enabled = true,
+      -- Highlight group to highlight the number column if there is a lightbulb.
+      hl = "LightBulbNumber",
+    },
+  })
 vim.cmd("colorscheme yowish")
 
 local parser_config = require "nvim-treesitter.parsers".get_parser_configs()

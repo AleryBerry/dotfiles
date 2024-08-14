@@ -407,7 +407,7 @@ c.content.javascript.alert = True
 ## QtWebEngine, writing the clipboard as response to a user interaction
 ## is always allowed.
 ## Type: Bool
-c.content.javascript.can_access_clipboard = False
+#c.content.javascript.clipboard = True
 
 ## Allow JavaScript to close tabs.
 ## Type: Bool
@@ -1606,8 +1606,8 @@ config.bind("'", 'mode-enter jump_mark')
 config.bind('+', 'zoom-in')
 config.bind('-', 'zoom-out')
 config.bind('.', 'repeat-command')
-config.bind('/', 'set-cmd-text /')
-config.bind(':', 'set-cmd-text :')
+config.bind('/', 'cmd-set-text /')
+config.bind(':', 'cmd-set-text :')
 config.bind(';I', 'hint images tab')
 config.bind(';O', 'hint links fill :open -t -r {hint-url}')
 config.bind(';R', 'hint --rapid links window')
