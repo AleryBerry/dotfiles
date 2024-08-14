@@ -35,14 +35,8 @@ require("flutter-tools").setup {
   }
 }
 
-require("haskell-tools").setup {
-  lsp = {
-    on_attach = on_attach,
-    handlers = handlers
-  }
-}
 
-local servers = { 'pyright', 'rust_analyzer', 'tailwindcss', 'haskell-tools',
+local servers = { 'pyright', 'rust_analyzer', 'tailwindcss', 
   'tsserver', 'clangd', 'gdscript', 'lua_ls', 'java_language_server',
   'csharp_ls', 'zls', 'htmx', 'biome', 'cssls', 'superhtml', 'eslint', }
 
