@@ -242,7 +242,15 @@ require("lazy").setup({
       end,
     },
     { 'hrsh7th/cmp-nvim-lsp-signature-help' },
-    { 'akinsho/flutter-tools.nvim' },
+    {
+      'akinsho/flutter-tools.nvim',
+      lazy = false,
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+        'stevearc/dressing.nvim', -- optional for vim.ui.select
+      },
+      config = true,
+    },
     { 'nvim-lua/plenary.nvim' },
     { 'akinsho/bufferline.nvim',            version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
     {
@@ -283,8 +291,8 @@ require("lazy").setup({
       config = function() require('sniprun').setup({ display = { "NvimNotify" } }) end
     },
     { 'rcarriga/nvim-notify' },
+    { 'aznhe21/actions-preview.nvim' },
     { 'mattn/emmet-vim' },
-    ({ 'weilbith/nvim-code-action-menu', cmd = 'CodeActionMenu', }),
     { 'kosayoda/nvim-lightbulb' },
     {
       'm-demare/hlargs.nvim', dependencies = { 'nvim-treesitter/nvim-treesitter' } }, {
@@ -325,6 +333,16 @@ require("lazy").setup({
 )
 require('nvim-lightbulb').setup({ autocmd = { enabled = true } })
 vim.cmd("colorscheme yowish")
+
+local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+parser_config.html = {
+  install_info = {
+    url = "~/Git/superhtml/tree-sitter-superhtml", -- local path or git repo
+    files = { "src/parser.c" },                    -- note that some parsers also require src/scanner.c or src/scanner.cc
+  },
+  filetype = "html",                               -- if filetype does not match the parser name
+}
+vim.treesitter.language.register('superhtml', 'html')
 
 require('config.lspconfig')
 require('config.treesitter')

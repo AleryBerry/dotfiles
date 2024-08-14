@@ -88,6 +88,8 @@ map('v', '<A-l>', ':MoveHBlock(1)<CR>', { silent = true })
 map("n", "<C-p>", "ggVG:SnipRun<CR><C-o>", { silent = true })
 map("v", "<C-p>", ":SnipRun<CR>", { silent = true })
 
+map("n", ",p", ":Telescope projects<CR>", { silent = true })
+
 vim.cmd "autocmd BufWritePre * lua vim.lsp.buf.format({ async = false })"
 vim.cmd "autocmd BufEnter *.hs call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})"
 vim.cmd "autocmd BufEnter *.js,*.dart call timer_start(50, { tid -> execute('colorscheme yowish')})"
