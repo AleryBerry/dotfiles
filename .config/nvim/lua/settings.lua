@@ -122,6 +122,18 @@ g.VM_maps = {
   ['Add Cursor Up'] = '<C-k>',
   ['Add Cursor Down'] = '<C-j>',
 }
+vim.api.nvim_create_autocmd("InsertEnter", {
+  pattern = "*",
+  callback = function()
+    vim.diagnostic.enable(false, {})
+  end
+})
+vim.api.nvim_create_autocmd("InsertLeave", {
+  pattern = "*",
+  callback = function()
+    vim.diagnostic.enable(true, {})
+  end
+})
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "gdscript",

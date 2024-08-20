@@ -5,9 +5,9 @@ local cmp = require 'cmp'
 
 
 local on_attach = function(client, bufnr)
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
   require("better-diagnostic-virtual-text.api").setup_buf(bufnr, {
     inline = false,
+    priority = 2003,
   })
   local bufopts = { noremap = true, silent = true, buffer = bufnr }
   vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, bufopts)
@@ -36,7 +36,7 @@ require("flutter-tools").setup {
 }
 
 
-local servers = { 'pyright', 'rust_analyzer', 'tailwindcss', 
+local servers = { 'pyright', 'rust_analyzer', 'tailwindcss',
   'tsserver', 'clangd', 'gdscript', 'lua_ls', 'java_language_server',
   'csharp_ls', 'zls', 'htmx', 'biome', 'cssls', 'superhtml', 'eslint', }
 

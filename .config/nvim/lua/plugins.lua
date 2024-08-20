@@ -50,7 +50,9 @@ require("lazy").setup({
         })
       end
     },
-
+    {
+      'mfussenegger/nvim-dap',
+    },
     --  specific branch, dependency and run lua file after load
     {
       'nvim-lualine/lualine.nvim',
