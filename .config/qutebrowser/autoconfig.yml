@@ -9,9 +9,10 @@ settings:
   content.blocking.method:
     global: both
   content.notifications.enabled:
-    https://forbidden-den.nifty.pm: true
     https://www.chess.com: true
     https://www.reddit.com: true
-    https://www.seaart.ai: true
   content.register_protocol_handler:
     https://mail.google.com?extsrc=mailto&url=%25s: true
+  qt.args:
+    global:
+    - enable-gpu-accelerated-video-decode
