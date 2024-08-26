@@ -1,0 +1,24 @@
+cabal-version: 1.12
+
+name:               xmonad-aleryberry
+version:            0.1.0.0
+build-type:         Simple
+
+library
+    exposed-modules: 
+      XMonad.Layout.EqualSpacing
+    hs-source-dirs: 
+      lib
+    build-depends: base, xmonad, xmonad-contrib, xmonad-dbus, X11
+
+executable xmonad-x86_64-linux
+    -- Import common warning flags.
+    import:           warnings
+    main-is:          xmonad.hs
+    default-extensions: 
+      ImportQualifiedPost
+
+    build-depends: base, xmonad, xmonad-contrib, xmonad-dbus, X11, containers, dbus, split, xmonad-aleryberry
+
+    default-language: Haskell2010
+
