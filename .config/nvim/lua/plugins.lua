@@ -18,23 +18,132 @@ vim.opt.rtp:prepend(lazypath)
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
-require('settings')
+require("settings")
 
 -- Setup lazy.nvim
 require("lazy").setup({
-  spec = {
-    'wbthomason/packer.nvim',
+  git = {
+    -- defaults for the `Lazy log` command
+    log = { "--since=2 days ago" }, -- show commits from the last 3 days
+    timeout = 120,
+    0,                            -- kill processes that take more than 2 minutes
 
-    {
-      'windwp/nvim-autopairs',
-      opts = {}
-    },
+    -- url_format = "rit@github.com:%s.git",
+    -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
+    -- then set the below to false. This should work, but is NOT supported and will
+    -- increase downloads a lot.
+    filter = true,
+  },
+  spec = {
+    "wbthomason/packer.nvim",
+
     -- Lazy loading:
     -- Load on specific commands
-    { 'tpope/vim-dispatch',   lazy = true,       cmd = { 'Dispatch', 'Make', 'Focus', 'Start' } },
-
+    { "tpope/vim-dispatch",             lazy = true, cmd = { "Dispatch", "Make", "Focus", "Start" } },
+    {
+      "altermo/ultimate-autopair.nvim",
+      event = { "InsertEnter", "CmdlineEnter" },
+      branch = "v0.6", --recommended as each new version will have breaking changes
+      opts = {
+        --Config goes here
+      },
+    },
+    { "eandrju/cellular-automaton.nvim" },
+    {
+      "mrcjkb/haskell-tools.nvim",
+      version = "^4", -- Recommended
+      lazy = false, -- This plugin is already lazy
+    },
     -- Load on an autocommand event
-    { 'andymass/vim-matchup', event = 'VimEnter' },
+    { "andymass/vim-matchup", event = "VimEnter" },
+    {
+      "j-hui/fidget.nvim",
+      config = function()
+        require("fidget").setup({
+          progress = {
+            poll_rate = 0,         -- How and when to poll for progress messages
+            suppress_on_insert = true, -- Suppress new messages while in insert mode
+            ignore_done_already = true, -- Ignore new tasks that are already complete
+            ignore_empty_message = true, -- Ignore new tasks that don't contain a message
+            -- Clear notification group when LSP server detaches
+            clear_on_detach = function(client_id)
+              local client = vim.lsp.get_client_by_id(client_id)
+              return client and client.name or nil
+            end,
+            -- How to get a progress message's notification group key
+            notification_group = function(msg)
+              return msg.lsp_client.name
+            end,
+            ignore = {}, -- List of LSP servers to ignore
+
+            -- Options related to how LSP progress messages are displayed as notifications
+            display = {
+              render_limit = 16, -- How many LSP messages to show at once
+              done_ttl = 3, -- How long a message should persist after completion
+              done_icon = "✔", -- Icon shown when all LSP progress tasks are complete
+              done_style = "Constant", -- Highlight group for completed LSP tasks
+              progress_ttl = math.huge, -- How long a message should persist when in progress
+              -- Icon shown when LSP progress tasks are in progress
+              progress_icon = { pattern = "dots", period = 1 },
+              -- Highlight group for in-progress LSP tasks
+              progress_style = "WarningMsg",
+              group_style = "Title", -- Highlight group for group name (LSP server name)
+              icon_style = "Question", -- Highlight group for group icons
+              priority = 30,    -- Ordering priority for LSP notification group
+              skip_history = true, -- Whether progress notifications should be omitted from history
+              -- How to format a progress message
+              format_message = require("fidget.progress.display").default_format_message,
+              -- How to format a progress annotation
+              format_annote = function(msg)
+                return msg.title
+              end,
+              -- How to format a progress notification group's name
+              format_group_name = function(group)
+                return tostring(group)
+              end,
+              overrides = { -- Override options from the default notification config
+                rust_analyzer = { name = "rust-analyzer" },
+              },
+            },
+
+            -- Options related to Neovim's built-in LSP client
+            lsp = {
+              progress_ringbuf_size = 0, -- Configure the nvim's LSP progress ring buffer size
+              log_handler = true, -- Log `$/progress` handler invocations (for debugging)
+            },
+
+            -- Options related to notification subsystem
+            notification = {
+              poll_rate = 10,         -- How frequently to update and render notifications
+              filter = vim.log.levels.ERROR, -- Minimum notifications level
+              history_size = 128,     -- Number of removed messages to retain in history
+              override_vim_notify = true, -- Automatically override vim.notify() with Fidget
+              -- Conditionally redirect notifications to another backend
+              redirect = function(msg, level, opts)
+                if opts and opts.on_open then
+                  return require("fidget.integration.nvim-notify").delegate(msg, level, opts)
+                end
+              end,
+            },
+
+            -- Options related to integrating with other plugins
+            integration = {
+              ["nvim-tree"] = {
+                enable = true, -- Integrate with nvim-tree/nvim-tree.lua (if installed)
+              },
+            },
+
+            logger = {
+              level = vim.log.levels.ERROR, -- Minimum logging level
+              max_size = 10000,      -- Maximum log file size, in KB
+              float_precision = 0.01, -- Limit the number of decimals displayed for floats
+              -- Where Fidget writes its logs to
+              path = string.format("%s/fidget.nvim.log", vim.fn.stdpath("cache")),
+            },
+          }, -- options
+        })
+      end,
+    },
     -- Post-install/update hook with neovim command
     {
       "nvim-treesitter/nvim-treesitter",
@@ -42,30 +151,55 @@ require("lazy").setup({
       config = function()
         local configs = require("nvim-treesitter.configs")
 
+        ---@diagnostic disable-next-line: missing-fields
         configs.setup({
-          ensure_installed = { "c", "gdscript", "lua", "zig", "vim", "vimdoc", "query", "elixir", "heex", "javascript", "html" },
+          ensure_installed = {
+            "c",
+            "gdscript",
+            "lua",
+            "zig",
+            "vim",
+            "vimdoc",
+            "query",
+            "elixir",
+            "heex",
+            "javascript",
+            "html",
+          },
           sync_install = false,
           highlight = { enable = true },
           indent = { enable = true },
         })
-      end
+      end,
     },
     {
-      'mfussenegger/nvim-dap',
+      "mfussenegger/nvim-dap",
     },
     --  specific branch, dependency and run lua file after load
     {
-      'nvim-lualine/lualine.nvim',
-      dependencies = { 'nvim-tree/nvim-web-devicons' }
+      "nvim-lualine/lualine.nvim",
+      dependencies = { "nvim-tree/nvim-web-devicons" },
     },
     --  dependency and run lua function after load
     {
-      'lewis6991/gitsigns.nvim',
-      dependencies = { 'nvim-lua/plenary.nvim' },
+      "lewis6991/gitsigns.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
       opts = {},
     },
     {
-      'sontungexpt/better-diagnostic-virtual-text',
+      "folke/lazydev.nvim",
+      ft = "lua", -- only load on lua files
+      opts = {
+        library = {
+          -- See the configuration section for more details
+          -- Load luvit types when the `vim.uv` word is found
+          { path = "luvit-meta/library", words = { "vim%.uv" } },
+        },
+      },
+    },
+    { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
+    {
+      "sontungexpt/better-diagnostic-virtual-text",
       lazy = true,
     },
     {
@@ -77,7 +211,6 @@ require("lazy").setup({
       },
       config = function()
         require("nvim-tree").setup({
-
 
           auto_reload_on_write = true,
           disable_netrw = false,
@@ -109,7 +242,7 @@ require("lazy").setup({
             icons = {
               webdev_colors = true,
               git_placement = "before",
-            }
+            },
           },
           hijack_directories = {
             enable = true,
@@ -185,40 +318,57 @@ require("lazy").setup({
       end,
     },
     {
-      'neovim/nvim-lspconfig',
+      "neovim/nvim-lspconfig",
       event = { "BufReadPost", "BufNewFile" },
       cmd = { "LspInfo", "LspInstall", "LspUninstall" },
     },
-    { 'hrsh7th/cmp-nvim-lsp' },
-    { 'hrsh7th/cmp-buffer' },
-    { 'hrsh7th/cmp-path' },
-    { 'hrsh7th/cmp-cmdline' },
     {
-      'hrsh7th/nvim-cmp',
-      dependencies = { "saadparwaiz1/cmp_luasnip", },
-
+      "hrsh7th/nvim-cmp",
       event = { "InsertEnter" },
-      config = function()
-        require 'cmp'.setup {
-          snippet = {
-            expand = function(args)
-              require 'luasnip'.lsp_expand(args.body)
-            end
-          },
-
-          sources = {
-            { name = 'luasnip' },
-            -- more sources
-          },
-        }
-      end
     },
+    { "hrsh7th/cmp-nvim-lsp" },
+    { "hrsh7th/cmp-buffer" },
+    { "hrsh7th/cmp-path" },
+    { "hrsh7th/cmp-cmdline" },
     {
       "L3MON4D3/LuaSnip",
       -- follow latest release.
       version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
       -- install jsregexp (optional!).
-      build = "make install_jsregexp"
+      build = "make install_jsregexp",
+      dependencies = {
+        "rafamadriz/friendly-snippets",
+        "Nash0x7E2/awesome-flutter-snippets",
+      },
+      config = function()
+        require("luasnip/loaders/from_vscode").load({ paths = { "~/.local/share/nvim/lazy/friendly-snippets" } })
+      end,
+    },
+
+    {
+      "chrisgrieser/nvim-scissors",
+      dependencies = { "nvim-telescope/telescope.nvim", "garymjr/nvim-snippets" },
+      opts = {
+        snippetDir = "./snippets/",
+      },
+    },
+    { "saadparwaiz1/cmp_luasnip" },
+    { "mrcjkb/haskell-snippets.nvim" },
+    { "Nash0x7E2/awesome-flutter-snippets" },
+    { "rafamadriz/friendly-snippets" },
+    {
+      "folke/twilight.nvim",
+      opts = {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      },
+    },
+    { "ggandor/leap.nvim" },
+    { "ggandor/flit.nvim" },
+    {
+      "stevearc/conform.nvim",
+      opts = {},
     },
     {
       "goolord/alpha-nvim",
@@ -237,164 +387,164 @@ require("lazy").setup({
       end,
     },
     {
-      'stevearc/aerial.nvim',
+      "stevearc/aerial.nvim",
       opts = {},
       -- Optional dependencies
       dependencies = {
         "nvim-treesitter/nvim-treesitter",
-        "nvim-tree/nvim-web-devicons"
+        "nvim-tree/nvim-web-devicons",
       },
     },
     {
       "ray-x/lsp_signature.nvim",
       event = "VeryLazy",
       opts = {},
-      config = function(_, opts) require 'lsp_signature'.setup(opts) end
+      config = function(_, opts)
+        require("lsp_signature").setup(opts)
+      end,
     },
     {
-      'akinsho/flutter-tools.nvim',
+      "akinsho/flutter-tools.nvim",
       lazy = false,
       dependencies = {
-        'nvim-lua/plenary.nvim',
-        'stevearc/dressing.nvim', -- optional for vim.ui.select
+        "nvim-lua/plenary.nvim",
+        "stevearc/dressing.nvim", -- optional for vim.ui.select
       },
       config = true,
     },
-    { 'nvim-lua/plenary.nvim' },
-    { 'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
+    { "nvim-lua/plenary.nvim" },
+    { "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
     {
-      'abecodes/tabout.nvim',
+      "abecodes/tabout.nvim",
       config = function()
-        require('tabout').setup {
-          tabkey = '<Tab>',             -- key to trigger tabout, set to an empty string to disable
-          backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout, set to an empty string to disable
-          act_as_tab = true,            -- shift content if tab out is not possible
-          act_as_shift_tab = false,     -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
-          default_tab = '<C-t>',        -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
-          default_shift_tab = '<C-d>',  -- reverse shift default action,
-          enable_backwards = true,      -- well ...
-          completion = true,            -- if the tabkey is used in a completion pum
+        require("tabout").setup({
+          tabkey = "<Tab>",        -- key to trigger tabout, set to an empty string to disable
+          backwards_tabkey = "<S-Tab>", -- key to trigger backwards tabout, set to an empty string to disable
+          act_as_tab = true,       -- shift content if tab out is not possible
+          act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+          default_tab = "<C-t>",   -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
+          default_shift_tab = "<C-d>", -- reverse shift default action,
+          enable_backwards = true, -- well ...
+          completion = true,       -- if the tabkey is used in a completion pum
           tabouts = {
             { open = "'", close = "'" },
             { open = '"', close = '"' },
-            { open = '`', close = '`' },
-            { open = '(', close = ')' },
-            { open = '[', close = ']' },
-            { open = '{', close = '}' },
-            { open = '<', close = '>' }
+            { open = "`", close = "`" },
+            { open = "(", close = ")" },
+            { open = "[", close = "]" },
+            { open = "{", close = "}" },
+            { open = "<", close = ">" },
           },
           ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
-          exclude = {} -- tabout will ignore these filetypes
-        }
+          exclude = {}, -- tabout will ignore these filetypes
+        })
       end,
-      dependencies = { 'nvim-treesitter', 'nvim-cmp' }, -- or require if not used so far
+      dependencies = { "nvim-treesitter", "nvim-cmp" }, -- or require if not used so far
     },
-    { 'echasnovski/mini.jump',    branch = 'stable' },
-    { 'mg979/vim-visual-multi',   branch = 'master' },
-    { 'lambdalisue/suda.vim' },
-    { 'tpope/vim-surround' },
-    { 'terryma/vim-expand-region' },
+    { "echasnovski/mini.jump",    branch = "stable" },
+    { "mg979/vim-visual-multi",   branch = "master" },
+    { "lambdalisue/suda.vim" },
+    { "tpope/vim-surround" },
+    { "terryma/vim-expand-region" },
     {
-      'michaelb/sniprun',
-      build = 'bash ./install.sh',
-      config = function() require('sniprun').setup({ display = { "NvimNotify" } }) end
+      "michaelb/sniprun",
+      build = "bash ./install.sh",
+      config = function()
+        require("sniprun").setup({ display = { "NvimNotify" } })
+      end,
     },
-    { 'rcarriga/nvim-notify' },
-    { 'aznhe21/actions-preview.nvim' },
-    { 'mattn/emmet-vim' },
-    { 'kosayoda/nvim-lightbulb' },
+    { "rcarriga/nvim-notify" },
+    { "aznhe21/actions-preview.nvim" },
+    { "mattn/emmet-vim" },
+    { "aleryberry/nvim-lightbulb" },
     {
-      'm-demare/hlargs.nvim', dependencies = { 'nvim-treesitter/nvim-treesitter' } }, {
-    'numToStr/Comment.nvim',
-    opts = {},
-  },
+      "m-demare/hlargs.nvim",
+      dependencies = { "nvim-treesitter/nvim-treesitter" },
+    },
     {
-      'fedepujol/move.nvim',
+      "numToStr/Comment.nvim",
+      opts = {},
+    },
+    {
+      "fedepujol/move.nvim",
       opts = {
         --- Config
-      }
+      },
     },
     {
-      "ahmedkhalf/project.nvim",
+      "LennyPhoenix/project.nvim",
+      branch = "fix-get_clients",
       config = function()
-        require("project_nvim").setup {
-        }
-      end
+        require("project_nvim").setup({})
+      end,
     },
-    { 'nvim-telescope/telescope.nvim' },
+    { "nvim-telescope/telescope.nvim" },
     { "lukas-reineke/indent-blankline.nvim" },
-    { 'dstein64/nvim-scrollview' },
-    { 'romgrk/barbar.nvim',                 dependencies = 'nvim-web-devicons' },
-    { 'nvim-tree/nvim-web-devicons' },
-    { 'RishabhRD/nvim-lsputils' },
-    { 'RishabhRD/popfix' },
+    { "dstein64/nvim-scrollview" },
+    { "romgrk/barbar.nvim",                 dependencies = "nvim-web-devicons" },
+    { "nvim-tree/nvim-web-devicons" },
+    { "RishabhRD/nvim-lsputils" },
+    { "RishabhRD/popfix" },
 
     -- Themes
-    { 'KabbAmine/yowish.vim' },
-    { 'cocopon/iceberg.vim' },
-    { 'Mofiqul/dracula.nvim' },
-    { 'jacoborus/tender.vim' },
-    { 'sainnhe/gruvbox-material' },
-    {
-      'mrcjkb/haskell-tools.nvim',
-      version = '^4', -- Recommended
-      lazy = false,   -- This plugin is already lazy
-    },
-    { 'udalov/kotlin-vim' },
-    { 'mfussenegger/nvim-jdtls' },
+    { "KabbAmine/yowish.vim",               lazy = true },
+    { "cocopon/iceberg.vim",                lazy = true },
+    { "Mofiqul/dracula.nvim",               lazy = true },
+    { "jacoborus/tender.vim",               lazy = true },
+    { "sainnhe/gruvbox-material",           lazy = true },
+    { "udalov/kotlin-vim",                  lazy = true },
+    { "mfussenegger/nvim-jdtls",            lazy = true },
   },
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "habamax" } },
   -- automatically check for plugin updates
   checker = { enabled = true },
-}
-)
-require('nvim-lightbulb').setup(
-  {
-    autocmd = { enabled = true },
-    sign = {
-      enabled = false,
-      -- Text to show in the sign column.
-      -- Must be between 1-2 characters.
-      text = "💡",
-      -- Highlight group to highlight the sign column text.
-      hl = "LightBulbSign",
-    },
-    virtual_text = {
-      enabled = true,
-      -- Text to show in the virt_text.
-      text = "💡",
-      -- Position of virtual text given to |nvim_buf_set_extmark|.
-      -- Can be a number representing a fixed column (see `virt_text_pos`).
-      -- Can be a string representing a position (see `virt_text_win_col`).
-      pos = "eol",
-      -- Highlight group to highlight the virtual text.
-      hl = "LightBulbVirtualText",
-      -- How to combine other highlights with text highlight.
-      -- See `hl_mode` of |nvim_buf_set_extmark|.
-      hl_mode = "combine",
-    },
-    number = {
-      enabled = true,
-      -- Highlight group to highlight the number column if there is a lightbulb.
-      hl = "LightBulbNumber",
-    },
-  })
+})
+require("nvim-lightbulb").setup({
+  autocmd = { enabled = true },
+  sign = {
+    enabled = false,
+    -- Text to show in the sign column.
+    -- Must be between 1-2 characters.
+    text = "💡",
+    -- Highlight group to highlight the sign column text.
+    hl = "LightBulbSign",
+  },
+  virtual_text = {
+    enabled = true,
+    -- Text to show in the virt_text.
+    text = "💡",
+    -- Position of virtual text given to |nvim_buf_set_extmark|.
+    -- Can be a number representing a fixed column (see `virt_text_pos`).
+    -- Can be a string representing a position (see `virt_text_win_col`).
+    pos = "eol",
+    -- Highlight group to highlight the virtual text.
+    hl = "LightBulbVirtualText",
+    -- How to combine other highlights with text highlight.
+    -- See `hl_mode` of |nvim_buf_set_extmark|.
+    hl_mode = "combine",
+  },
+  number = {
+    enabled = true,
+    -- Highlight group to highlight the number column if there is a lightbulb.
+    hl = "LightBulbNumber",
+  },
+})
 vim.cmd("colorscheme yowish")
 
-local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 parser_config.html = {
   install_info = {
     url = "~/Git/superhtml/tree-sitter-superhtml", -- local path or git repo
-    files = { "src/parser.c" },                    -- note that some parsers also require src/scanner.c or src/scanner.cc
+    files = { "src/parser.c" },                  -- note that some parsers also require src/scanner.c or src/scanner.cc
   },
-  filetype = "html",                               -- if filetype does not match the parser name
+  filetype = "html",                             -- if filetype does not match the parser name
 }
-vim.treesitter.language.register('superhtml', 'html')
+vim.treesitter.language.register("superhtml", "html")
 
-require('config.lspconfig')
-require('config.treesitter')
-require('config.autopairs')
-require('config.telescope')
-require('config.lualine')
+require("config.lspconfig")
+require("config.treesitter")
+require("config.telescope")
+require("config.lualine")
+require("config.flutter-tools")

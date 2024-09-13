@@ -7,6 +7,9 @@ g.theme_switcher_loaded = false
 
 vim.filetype.on = true
 
+opt.hlsearch = false
+opt.scrolloff = 10
+
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1
 
@@ -19,7 +22,7 @@ opt.cursorline = true
 -- Indenting
 opt.expandtab = true
 opt.shiftwidth = 2
-opt.smartindent = true
+opt.smartindent = false
 opt.tabstop = 2
 opt.softtabstop = 2
 
@@ -34,7 +37,7 @@ opt.number = true
 opt.ignorecase = true
 
 -- disable nvim intro
-opt.shortmess:append "sI"
+opt.shortmess:append("sI")
 
 opt.signcolumn = "yes"
 opt.splitbelow = true
@@ -48,9 +51,8 @@ opt.updatetime = 250
 
 -- go to previous/next line with h,l,left arrow and right arrow
 -- when cursor reaches end/beginning of line
-opt.whichwrap:append "<>[]hl"
+opt.whichwrap:append("<>[]hl")
 opt.wrap = true
-
 
 function map(mode, lhs, rhs, opts)
   local options = { noremap = true }
@@ -63,40 +65,69 @@ end
 map("n", "<C-n>", ":NvimTreeToggle<CR>", { silent = true })
 map("n", "<C-a>", ":<cmd>AerialToggle!<CR>", { silent = true })
 map("i", "JJ", "<Esc>", { silent = true })
-map("v", "<C-v>", "<Esc>\"+gp", { silent = true })
-map("v", "<C-c>", "\"+y", { silent = true })
+map("v", "<C-v>", '<Esc>"+gp', { silent = true })
+map("v", "<C-c>", '"+y', { silent = true })
 
 map("n", "<C-q>", ":BufferClose<CR>", { silent = true })
 
-map('n', '<A-w>', '<Cmd>BufferPrevious<CR>', opts)
-map('n', '<A-q>', '<Cmd>BufferNext<CR>', opts)
+map("n", "<A-w>", "<Cmd>BufferPrevious<CR>", opts)
+map("n", "<A-q>", "<Cmd>BufferNext<CR>", opts)
 
 map("v", "<SPACE>", "<Plug>(expand_region_expand)", { silent = true })
 map("n", "<SPACE>", "<Plug>(expand_region_expand)", { silent = true })
 map("v", "<C-SPACE>", "<Plug>(expand_region_shrink)", { silent = true })
 map("n", "<C-SPACE>", "<Plug>(expand_region_shrink)", { silent = true })
 
-map('n', '<A-j>', ':MoveLine(1)<CR>', { silent = true })
-map('n', '<A-k>', ':MoveLine(-1)<CR>', { silent = true })
-map('n', '<A-h>', ':MoveHChar(-1)<CR>', { silent = true })
-map('n', '<A-l>', ':MoveHChar(1)<CR>', { silent = true })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll downwards" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll upwards" })
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next result" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous result" })
 
-map('v', '<A-j>', ':MoveBlock(1)<CR>', { silent = true })
-map('v', '<A-k>', ':MoveBlock(-1)<CR>', { silent = true })
-map('v', '<A-h>', ':MoveHBlock(-1)<CR>', { silent = true })
-map('v', '<A-l>', ':MoveHBlock(1)<CR>', { silent = true })
+vim.keymap.set({ "n", "x", "o" }, "S", "<Plug>(leap)")
+
+vim.api.nvim_create_user_command("ClearFormatLog", function()
+  local stat = vim.uv.fs_open(require("conform.log").get_logfile(), "w", 0)
+  vim.uv.fs_ftruncate(stat, 0)
+  vim.uv.fs_close(stat)
+end, { nargs = 0 })
+
+vim.keymap.set("n", "]g", function()
+  vim.diagnostic.jump({ count = vim.v.count1, float = false })
+end)
+vim.keymap.set("n", "[g", function()
+  vim.diagnostic.jump({ count = -vim.v.count1, float = false })
+end)
+
+map("i", "II", "<ESC>", { silent = true })
+map("v", "II", "<ESC>", { silent = true })
+
+map("n", "<A-j>", ":MoveLine(1)<CR>", { silent = true })
+map("n", "<A-k>", ":MoveLine(-1)<CR>", { silent = true })
+map("n", "<A-h>", ":MoveHChar(-1)<CR>", { silent = true })
+map("n", "<A-l>", ":MoveHChar(1)<CR>", { silent = true })
+
+map("v", "<A-j>", ":MoveBlock(1)<CR>", { silent = true })
+map("v", "<A-k>", ":MoveBlock(-1)<CR>", { silent = true })
+map("v", "<A-h>", ":MoveHBlock(-1)<CR>", { silent = true })
+map("v", "<A-l>", ":MoveHBlock(1)<CR>", { silent = true })
 
 map("n", "<C-p>", "ggVG:SnipRun<CR><C-o>", { silent = true })
 map("v", "<C-p>", ":SnipRun<CR>", { silent = true })
 
 map("n", ",p", ":Telescope projects<CR>", { silent = true })
+vim.keymap.set("n", ",f", function()
+  require("telescope.builtin").find_files({ hidden = true })
+end, {})
+vim.keymap.set("n", ",/", function()
+  require("telescope.builtin").live_grep({ additional_args = { "--hidden" } })
+end, {})
 
-vim.cmd "autocmd BufWritePre * lua vim.lsp.buf.format({ async = false })"
-vim.cmd "autocmd BufEnter *.hs call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})"
-vim.cmd "autocmd BufEnter *.js,*.dart call timer_start(50, { tid -> execute('colorscheme yowish')})"
-vim.cmd "autocmd BufEnter *.c,*.ts,*.tsx,*.lua call timer_start(50, { tid -> execute('colorscheme iceberg')})"
-vim.cmd "autocmd BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme dracula')})"
-vim.cmd "autocmd BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('colorscheme tender')})"
+vim.cmd("autocmd BufWritePre * lua vim.lsp.buf.format({ async = false })")
+vim.cmd("autocmd BufEnter *.hs call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})")
+vim.cmd("autocmd BufEnter *.js,*.dart call timer_start(50, { tid -> execute('colorscheme yowish')})")
+vim.cmd("autocmd BufEnter *.c,*.ts,*.tsx,*.lua call timer_start(50, { tid -> execute('colorscheme iceberg')})")
+vim.cmd("autocmd BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme dracula')})")
+vim.cmd("autocmd BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('colorscheme tender')})")
 
 if g.neovide then
   g.neovide_fullscreen = true
@@ -117,22 +148,31 @@ vim.g.emmet_install_only_plug = 1
 
 g.VM_default_mappings = 0
 g.VM_maps = {
-  ['Find Under'] = '<C-g>',
-  ['Find Subword Under'] = '<C-g>',
-  ['Add Cursor Up'] = '<C-k>',
-  ['Add Cursor Down'] = '<C-j>',
+  ["Find Under"] = "<C-g>",
+  ["Find Subword Under"] = "<C-g>",
+  ["Add Cursor Up"] = "<C-k>",
+  ["Add Cursor Down"] = "<C-j>",
 }
 vim.api.nvim_create_autocmd("InsertEnter", {
   pattern = "*",
   callback = function()
     vim.diagnostic.enable(false, {})
-  end
+  end,
 })
 vim.api.nvim_create_autocmd("InsertLeave", {
   pattern = "*",
   callback = function()
     vim.diagnostic.enable(true, {})
-  end
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "hs",
+  callback = function()
+    vim.diagnostic.config({
+      virtual_text = true,
+    })
+  end,
 })
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -142,5 +182,5 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt.smartindent = true
     vim.opt.tabstop = 2
     vim.opt.softtabstop = 2
-  end
+  end,
 })

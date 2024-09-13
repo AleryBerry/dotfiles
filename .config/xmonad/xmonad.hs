@@ -14,7 +14,6 @@
 
 -- Focus Hooks
 import Control.Monad
-
 import DBus.Client qualified as DC
 import Data.List
 import Data.List.Split
@@ -34,7 +33,6 @@ import XMonad.Layout.EqualSpacing
 import XMonad.Layout.LayoutModifier
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ToggleLayouts
-
 import XMonad.StackSet qualified as W
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.Loggers
@@ -51,6 +49,9 @@ myClickJustFocuses = True
 myTerminal :: String
 myTerminal = "kitty"
 
+myScreens :: [String]
+myScreens = ["DVI", "HDMI"]
+
 myWorkspaces :: [String]
 myWorkspaces = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"]
 
@@ -63,10 +64,13 @@ myNormalBorderColor = "#6699cc"
 
 gray :: String
 gray = "#6e6e6e"
+
 yellow :: String
 yellow = "#ffbe3c"
+
 yellow2 :: String
 yellow2 = "#6699cc"
+
 otherMonitors :: String
 otherMonitors = "#d09cea"
 
@@ -81,32 +85,34 @@ myManageHook :: ManageHook
 myManageHook =
   composeAll . concat $
     [ [className =? b --> viewShift "I" | b <- myBrowsers]
-    , [className =? c --> viewShift "II" | c <- myComs]
-    , [className =? f --> viewShift "III" | f <- ["Alacritty", "kitty"]]
-    , [className =? "Deadbeef" --> viewShift "IV"]
-    , [className =? d --> viewShift "V" | d <- myGames]
+    , [className =? c --> doShift "II" | c <- myComs]
+    , [className =? f --> viewShift "III" | f <- myTerminals]
+    , [className =? g --> viewShift "IV" | g <- myEditors]
+    , [isPrefixOf d <$> className --> viewShift "V" | d <- myGames]
     , [className =? e --> doShift "VI" | e <- myGameLaunchers]
-    , [className =? "Github Desktop" --> viewShift "VII"]
+    , [className =? "GitHub Desktop" --> viewShift "VII"]
     , [className =? "Bitwarden" --> viewShift "VIII"]
-    , [isFullscreen --> doF W.focusDown <+> doFullFloat <+> hasBorder False]
+    , [isFullscreen --> doF W.focusUp <+> doFullFloat <+> hasBorder False]
     , [isDialog --> doFloat]
-    , [appName =? g --> doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4)) | g <- myFloats]
+    , [appName =? g --> doRectFloat (W.RationalRect (1 % 8) (1 % 6) (3 % 4) (2 % 3)) | g <- myFloats]
     ]
  where
   myBrowsers = ["qutebrowser", "Falkon", "Vivaldi-stable", "firefox"]
-  myGames = ["dota2", "clonehero", "Dwarf_Fortress", "Blender"]
   myComs = ["TelegramDesktop", "Element", "discord"]
+  myTerminals = ["kitty", "Alacritty"]
+  myEditors = ["Godot"]
+  myGames = ["dota2", "clonehero", "Dwarf_Fortress", "Blender", "Minecraft"]
   myFloats = ["ranger", "lfrun", "Godot_Engine", "gl"]
-  myGameLaunchers = ["Steam", "heroic"]
+  myGameLaunchers = ["Steam", "heroic", "GDLauncher Carbon", "GDLauncher"]
   viewShift = doF . liftM2 (.) W.greedyView W.shift
 
 scratchpads :: [NamedScratchpad]
 scratchpads =
   [ NS
-      "ncmpcpp"
-      "alacritty --title 'ncmpcpp' -e gomp"
-      (title =? "ncmpcpp")
-      (doRectFloat (W.RationalRect (1 % 8) (1 % 8) (3 % 4) (3 % 4)))
+      "rmpc"
+      "kitty --title 'rmpc' -e rmpc"
+      (title =? "rmpc")
+      (doRectFloat (W.RationalRect (1 % 8) (1 % 6) (3 % 4) (2 % 3)))
   , NS "neovim" "neovide" (className =? "neovide") doCenterFloat
   , NS
       "monero_node"
@@ -151,7 +157,7 @@ myKeys conf@XConfig{XMonad.modMask = modm} =
     , ((modm, xK_k), windowGo U True)
     , ((modm, xK_j), windowGo D True)
     , -- scratchpads
-      ((modm, xK_m), namedScratchpadAction scratchpads "ncmpcpp")
+      ((modm, xK_m), namedScratchpadAction scratchpads "rmpc")
     , ((modm, xK_n), namedScratchpadAction scratchpads "neovim")
     , ((modm, xK_o), namedScratchpadAction scratchpads "monero_node")
     , -- directional navigation of windows | no arrowkeys
@@ -207,8 +213,8 @@ myMouseBindings XConfig{XMonad.modMask = modm} =
       )
     ]
 
-myLogHook :: DC.Client -> ScreenId -> String -> PP
-myLogHook dbus i s =
+myLogHook :: DC.Client -> (ScreenId, String) -> PP
+myLogHook dbus (i, s) =
   def
     { ppCurrent = formatUnfocused
     , ppVisible = formatUnfocused
@@ -217,11 +223,11 @@ myLogHook dbus i s =
     , ppOutput = D.sendToPath dbus s
     , ppSep = "  "
     , ppOrder = \(ws : _ : _ : wins : cs) -> fixWorkspaces (head cs) (words ws) <> [wins]
-    , ppExtras = [titlesOnScreen, currentOnScreen]
+    , ppExtras = [titlesOnScreen, currentScreen]
     }
  where
   titlesOnScreen = logDefault (shortenL 70 $ logTitlesOnScreen i formatFocused formatUnfocused) (logConst "Hey, you, you're finally awake.")
-  currentOnScreen = wrapL ("%{F" ++ otherMonitors ++ "}") "%{F-}" $ logCurrentOnScreen i
+  currentScreen = wrapL ("%{F" ++ otherMonitors ++ "}") "%{F-}" $ logCurrentOnScreen i
   formatFocused = wrap ("%{F" ++ yellow ++ "}") "%{F-}"
   formatOther = wrap ("%{F" ++ yellow2 ++ "}") "%{F-}"
   formatUnfocused = wrap ("%{F" ++ otherMonitors ++ "}") "%{F-}"
@@ -231,19 +237,13 @@ myLogHook dbus i s =
 
 main :: IO ()
 main = do
-  -- Connect to DBus
   dbus <- D.connect
-  -- Request Access (needed when sending messages)
   D.requestAccess dbus
-  -- Start XMonad
-  xmonad . docks . ewmhFullscreen . ewmh $
-    myConfig
-      { logHook =
-          (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 0 "DVI")
-            >> (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myLogHook dbus 1 "HDMI")
-      }
 
-myConfig =
+  xmonad . docks . ewmhFullscreen . ewmh $
+    myConfig dbus
+
+myConfig dbus =
   def
     { terminal = myTerminal
     , clickJustFocuses = myClickJustFocuses
@@ -256,4 +256,5 @@ myConfig =
     , normalBorderColor = myNormalBorderColor
     , focusedBorderColor = myFocusedBorderColor
     , mouseBindings = myMouseBindings
+    , logHook = mapM_ (dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] . myLogHook dbus) (zip [0 ..] myScreens)
     }
