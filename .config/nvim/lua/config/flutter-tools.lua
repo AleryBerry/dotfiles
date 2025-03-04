@@ -3,6 +3,14 @@ require("flutter-tools").setup({
   widget_guides = {
     enabled = true,
   },
+  closing_tags = {
+    -- highlight = "ErrorMsg", -- highlight for the closing tag
+    prefix = "", -- character to use for close tag e.g. > Widget
+    priority = 10, -- priority of virtual text in current line
+    -- consider to configure this when there is a possibility of multiple virtual text items in one line
+    -- see `priority` option in |:help nvim_buf_set_extmark| for more info
+    enabled = true -- set to false to disable
+  },
   lsp = {
     color = { -- show the derived colours for dart variables
       enabled = true, -- whether or not to highlight color variables at all, only supported on flutter >= 2.10
@@ -19,7 +27,7 @@ require("flutter-tools").setup({
       completeFunctionCalls = true,
       renameFilesWithClasses = "always", -- "always"
       enableSnippets = true,
-      updateImportsOnRename = true,   -- Whether to update imports and other directives when files are renamed. Required for `FlutterRename` command.
+      updateImportsOnRename = true,      -- Whether to update imports and other directives when files are renamed. Required for `FlutterRename` command.
     },
   },
 })

@@ -21,12 +21,12 @@ vim.opt.rtp:prepend(lazypath)
 require("settings")
 
 -- Setup lazy.nvim
-require("lazy").setup({
+require("lazy").setup {
   git = {
     -- defaults for the `Lazy log` command
     log = { "--since=2 days ago" }, -- show commits from the last 3 days
     timeout = 120,
-    0,                            -- kill processes that take more than 2 minutes
+    0,                              -- kill processes that take more than 2 minutes
 
     -- url_format = "rit@github.com:%s.git",
     -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
@@ -35,11 +35,8 @@ require("lazy").setup({
     filter = true,
   },
   spec = {
-    "wbthomason/packer.nvim",
-
     -- Lazy loading:
     -- Load on specific commands
-    { "tpope/vim-dispatch",             lazy = true, cmd = { "Dispatch", "Make", "Focus", "Start" } },
     {
       "altermo/ultimate-autopair.nvim",
       event = { "InsertEnter", "CmdlineEnter" },
@@ -52,18 +49,18 @@ require("lazy").setup({
     {
       "mrcjkb/haskell-tools.nvim",
       version = "^4", -- Recommended
-      lazy = false, -- This plugin is already lazy
+      lazy = false,   -- This plugin is already lazy
     },
     -- Load on an autocommand event
-    { "andymass/vim-matchup", event = "VimEnter" },
+    { "andymass/vim-matchup",           event = "VimEnter" },
     {
       "j-hui/fidget.nvim",
       config = function()
         require("fidget").setup({
           progress = {
-            poll_rate = 0,         -- How and when to poll for progress messages
-            suppress_on_insert = true, -- Suppress new messages while in insert mode
-            ignore_done_already = true, -- Ignore new tasks that are already complete
+            poll_rate = 0,               -- How and when to poll for progress messages
+            suppress_on_insert = true,   -- Suppress new messages while in insert mode
+            ignore_done_already = true,  -- Ignore new tasks that are already complete
             ignore_empty_message = true, -- Ignore new tasks that don't contain a message
             -- Clear notification group when LSP server detaches
             clear_on_detach = function(client_id)
@@ -87,10 +84,10 @@ require("lazy").setup({
               progress_icon = { pattern = "dots", period = 1 },
               -- Highlight group for in-progress LSP tasks
               progress_style = "WarningMsg",
-              group_style = "Title", -- Highlight group for group name (LSP server name)
+              group_style = "Title",   -- Highlight group for group name (LSP server name)
               icon_style = "Question", -- Highlight group for group icons
-              priority = 30,    -- Ordering priority for LSP notification group
-              skip_history = true, -- Whether progress notifications should be omitted from history
+              priority = 30,           -- Ordering priority for LSP notification group
+              skip_history = true,     -- Whether progress notifications should be omitted from history
               -- How to format a progress message
               format_message = require("fidget.progress.display").default_format_message,
               -- How to format a progress annotation
@@ -109,15 +106,15 @@ require("lazy").setup({
             -- Options related to Neovim's built-in LSP client
             lsp = {
               progress_ringbuf_size = 0, -- Configure the nvim's LSP progress ring buffer size
-              log_handler = true, -- Log `$/progress` handler invocations (for debugging)
+              log_handler = true,        -- Log `$/progress` handler invocations (for debugging)
             },
 
             -- Options related to notification subsystem
             notification = {
-              poll_rate = 10,         -- How frequently to update and render notifications
+              poll_rate = 10,                -- How frequently to update and render notifications
               filter = vim.log.levels.ERROR, -- Minimum notifications level
-              history_size = 128,     -- Number of removed messages to retain in history
-              override_vim_notify = true, -- Automatically override vim.notify() with Fidget
+              history_size = 128,            -- Number of removed messages to retain in history
+              override_vim_notify = true,    -- Automatically override vim.notify() with Fidget
               -- Conditionally redirect notifications to another backend
               redirect = function(msg, level, opts)
                 if opts and opts.on_open then
@@ -135,8 +132,8 @@ require("lazy").setup({
 
             logger = {
               level = vim.log.levels.ERROR, -- Minimum logging level
-              max_size = 10000,      -- Maximum log file size, in KB
-              float_precision = 0.01, -- Limit the number of decimals displayed for floats
+              max_size = 10000,             -- Maximum log file size, in KB
+              float_precision = 0.01,       -- Limit the number of decimals displayed for floats
               -- Where Fidget writes its logs to
               path = string.format("%s/fidget.nvim.log", vim.fn.stdpath("cache")),
             },
@@ -180,11 +177,9 @@ require("lazy").setup({
       "nvim-lualine/lualine.nvim",
       dependencies = { "nvim-tree/nvim-web-devicons" },
     },
-    --  dependency and run lua function after load
     {
-      "lewis6991/gitsigns.nvim",
-      dependencies = { "nvim-lua/plenary.nvim" },
-      opts = {},
+      "kevinhwang91/nvim-ufo",
+      dependencies = { "kevinhwang91/promise-async" },
     },
     {
       "folke/lazydev.nvim",
@@ -410,41 +405,51 @@ require("lazy").setup({
         "nvim-lua/plenary.nvim",
         "stevearc/dressing.nvim", -- optional for vim.ui.select
       },
-      config = true,
+      config = false,
     },
     { "nvim-lua/plenary.nvim" },
     { "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
     {
       "abecodes/tabout.nvim",
-      config = function()
-        require("tabout").setup({
-          tabkey = "<Tab>",        -- key to trigger tabout, set to an empty string to disable
-          backwards_tabkey = "<S-Tab>", -- key to trigger backwards tabout, set to an empty string to disable
-          act_as_tab = true,       -- shift content if tab out is not possible
-          act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
-          default_tab = "<C-t>",   -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
-          default_shift_tab = "<C-d>", -- reverse shift default action,
-          enable_backwards = true, -- well ...
-          completion = true,       -- if the tabkey is used in a completion pum
-          tabouts = {
-            { open = "'", close = "'" },
-            { open = '"', close = '"' },
-            { open = "`", close = "`" },
-            { open = "(", close = ")" },
-            { open = "[", close = "]" },
-            { open = "{", close = "}" },
-            { open = "<", close = ">" },
-          },
-          ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
-          exclude = {}, -- tabout will ignore these filetypes
-        })
+      event = 'InsertEnter',
+      config = function(_, opts)
+        require('tabout').setup(opts)
       end,
+      opts = {
+        tabkey = "<Tab>",             -- key to trigger tabout, set to an empty string to disable
+        backwards_tabkey = "<S-Tab>", -- key to trigger backwards tabout, set to an empty string to disable
+        act_as_tab = false,           -- shift content if tab out is not possible
+        act_as_shift_tab = false,     -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+        default_tab = "<C-t>",        -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
+        default_shift_tab = "<C-d>",  -- reverse shift default action,
+        enable_backwards = true,      -- well ...
+        completion = false,           -- if the tabkey is used in a completion pum
+        tabouts = {
+          { open = "'", close = "'" },
+          { open = '"', close = '"' },
+          { open = "`", close = "`" },
+          { open = "(", close = ")" },
+          { open = "[", close = "]" },
+          { open = "{", close = "}" },
+          { open = "<", close = ">" },
+        },
+        ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
+        exclude = {},                                   -- tabout will ignore these filetypes
+      },
       dependencies = { "nvim-treesitter", "nvim-cmp" }, -- or require if not used so far
     },
-    { "echasnovski/mini.jump",    branch = "stable" },
-    { "mg979/vim-visual-multi",   branch = "master" },
+    { "mg979/vim-visual-multi", branch = "master" },
     { "lambdalisue/suda.vim" },
-    { "tpope/vim-surround" },
+    {
+      "kylechui/nvim-surround",
+      version = "*", -- Use for stability; omit to use `main` branch for the latest features
+      event = "VeryLazy",
+      config = function()
+        require("nvim-surround").setup({
+          -- Configuration here, or leave empty to use defaults
+        })
+      end
+    },
     { "terryma/vim-expand-region" },
     {
       "michaelb/sniprun",
@@ -456,7 +461,7 @@ require("lazy").setup({
     { "rcarriga/nvim-notify" },
     { "aznhe21/actions-preview.nvim" },
     { "mattn/emmet-vim" },
-    { "aleryberry/nvim-lightbulb" },
+    { "kosayoda/nvim-lightbulb" },
     {
       "m-demare/hlargs.nvim",
       dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -468,7 +473,9 @@ require("lazy").setup({
     {
       "fedepujol/move.nvim",
       opts = {
-        --- Config
+        char = {
+          enable = true
+        }
       },
     },
     {
@@ -478,31 +485,83 @@ require("lazy").setup({
         require("project_nvim").setup({})
       end,
     },
+    {
+      "aleryberry/hlchunk.nvim",
+      event = { "BufReadPre", "BufNewFile" },
+      config = function()
+        require("hlchunk").setup({})
+      end
+    },
     { "nvim-telescope/telescope.nvim" },
-    { "lukas-reineke/indent-blankline.nvim" },
+    { "HiPhish/rainbow-delimiters.nvim" },
     { "dstein64/nvim-scrollview" },
-    { "romgrk/barbar.nvim",                 dependencies = "nvim-web-devicons" },
+    { "romgrk/barbar.nvim",             dependencies = "nvim-web-devicons" },
     { "nvim-tree/nvim-web-devicons" },
-    { "RishabhRD/nvim-lsputils" },
-    { "RishabhRD/popfix" },
+    -- { "RishabhRD/nvim-lsputils" },
+    -- { "RishabhRD/popfix" },
 
     -- Themes
-    { "KabbAmine/yowish.vim",               lazy = true },
-    { "cocopon/iceberg.vim",                lazy = true },
-    { "Mofiqul/dracula.nvim",               lazy = true },
-    { "jacoborus/tender.vim",               lazy = true },
-    { "sainnhe/gruvbox-material",           lazy = true },
-    { "udalov/kotlin-vim",                  lazy = true },
-    { "mfussenegger/nvim-jdtls",            lazy = true },
+    { "KabbAmine/yowish.vim",           lazy = true },
+    {
+      "xero/miasma.nvim",
+      lazy = false,
+      priority = 1000,
+      config = function()
+        vim.cmd("colorscheme miasma")
+      end,
+    },
+    {
+      "luukvbaal/statuscol.nvim",
+      config = function()
+        local builtin = require("statuscol.builtin")
+        require("statuscol").setup({
+          segments = {
+            { text = { "%s" },             click = "v:lua.ScSa" },
+            { text = { builtin.lnumfunc }, click = "v:lua.ScLa", },
+            {
+              text = { " ", builtin.foldfunc, " " },
+              condition = { builtin.not_empty, true, builtin.not_empty },
+              click = "v:lua.ScFa"
+            },
+          }
+        })
+      end,
+    },
+    { "cocopon/iceberg.vim",         lazy = true },
+    { "Mofiqul/dracula.nvim",        lazy = true },
+    { "jacoborus/tender.vim",        lazy = true },
+    { "f4z3r/gruvbox-material.nvim", lazy = true },
+    { "PinpongTp/comic",             lazy = true },
+    { "udalov/kotlin-vim",           lazy = true },
+    { "mfussenegger/nvim-jdtls",     lazy = true },
   },
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "habamax" } },
   -- automatically check for plugin updates
   checker = { enabled = true },
-})
+}
 require("nvim-lightbulb").setup({
-  autocmd = { enabled = true },
+  priority = 10,
+  hide_in_unfocused_buffer = true,
+  validate_config = "auto",
+  link_highlights = true,
+  code_lenses = false,
+  float = {
+    enabled = false,
+  },
+  line = {
+    enabled = false,
+  },
+  ignore = {
+    actions_without_kind = false,
+  },
+  autocmd = {
+    enabled = true,
+  },
+  status_text = {
+    enabled = false,
+  },
   sign = {
     enabled = false,
     -- Text to show in the sign column.
@@ -531,17 +590,66 @@ require("nvim-lightbulb").setup({
     hl = "LightBulbNumber",
   },
 })
-vim.cmd("colorscheme yowish")
+vim.cmd("colorscheme miasma")
 
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-parser_config.html = {
+parser_config['html'] = {
   install_info = {
     url = "~/Git/superhtml/tree-sitter-superhtml", -- local path or git repo
-    files = { "src/parser.c" },                  -- note that some parsers also require src/scanner.c or src/scanner.cc
+    files = { "src/parser.c" },                    -- note that some parsers also require src/scanner.c or src/scanner.cc
   },
-  filetype = "html",                             -- if filetype does not match the parser name
+  filetype = "html",                               -- if filetype does not match the parser name
 }
 vim.treesitter.language.register("superhtml", "html")
+
+local handler = function(virtText, lnum, endLnum, width, truncate)
+  local newVirtText = {}
+  local suffix = (' 󰁂 %d '):format(endLnum - lnum)
+  local sufWidth = vim.fn.strdisplaywidth(suffix)
+  local targetWidth = width - sufWidth
+  local curWidth = 0
+  for _, chunk in ipairs(virtText) do
+    local chunkText = chunk[1]
+    local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+    if targetWidth > curWidth + chunkWidth then
+      table.insert(newVirtText, chunk)
+    else
+      chunkText = truncate(chunkText, targetWidth - curWidth)
+      local hlGroup = chunk[2]
+      table.insert(newVirtText, { chunkText, hlGroup })
+      chunkWidth = vim.fn.strdisplaywidth(chunkText)
+      -- str width returned from truncate() may less than 2nd argument, need padding
+      if curWidth + chunkWidth < targetWidth then
+        suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
+      end
+      break
+    end
+    curWidth = curWidth + chunkWidth
+  end
+  table.insert(newVirtText, { suffix, 'MoreMsg' })
+  return newVirtText
+end
+require('ufo').setup({
+  ---@diagnostic disable-next-line: unused-local
+  provider_selector = function(bufnr, filetype, buftype)
+    return { 'treesitter', 'indent' }
+  end,
+  fold_virt_text_handler = handler,
+})
+
+vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
+vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+
+require('hlchunk').setup({
+  chunk = {
+    enable = true,
+    use_treesitter = true,
+    textobject = "ic"
+  },
+  indent = {
+    enable = true
+  }
+})
 
 require("config.lspconfig")
 require("config.treesitter")

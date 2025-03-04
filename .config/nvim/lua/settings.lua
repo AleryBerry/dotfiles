@@ -1,40 +1,49 @@
-local opt = vim.opt
-local g = vim.g
+local opt               = vim.opt
+local g                 = vim.g
 
-g.suda_smart_edit = 1
-g.toggle_theme_icon = "   "
+g.suda_smart_edit       = 1
+g.toggle_theme_icon     = "   "
 g.theme_switcher_loaded = false
+opt.autochdir           = true
 
-vim.filetype.on = true
+opt.foldcolumn          = 'auto:1'
+opt.fillchars           = 'eob: ,fold: ,foldopen:,foldsep:|,foldclose:'
+opt.foldenable          = true
+opt.foldlevel           = 99 -- Using ufo provider need a large value, feel free to decrease the value
+opt.foldlevelstart      = 99
+opt.foldmethod          = "expr"
+opt.foldexpr            = "v:lua.vim.treesitter.foldexpr()"
+opt.foldtext            = "v:lua.vim.treesitter.foldtext()"
 
-opt.hlsearch = false
-opt.scrolloff = 10
+vim.filetype.on         = true
 
-g.loaded_netrw = 1
-g.loaded_netrwPlugin = 1
+opt.hlsearch            = false
+opt.scrolloff           = 10
 
-opt.laststatus = 3 -- global statusline
-opt.showmode = false
+g.loaded_netrw          = 1
+g.loaded_netrwPlugin    = 1
 
-opt.clipboard = "unnamedplus"
-opt.cursorline = true
+opt.laststatus          = 3 -- global statusline
+opt.showmode            = false
+
+opt.clipboard           = "unnamedplus"
+opt.cursorline          = true
 
 -- Indenting
-opt.expandtab = true
-opt.shiftwidth = 2
-opt.smartindent = false
-opt.tabstop = 2
-opt.softtabstop = 2
+opt.expandtab           = true
+opt.shiftwidth          = 2
+opt.smartindent         = false
+opt.tabstop             = 2
+opt.softtabstop         = 2
 
-opt.fillchars = { eob = " " }
-opt.ignorecase = true
-opt.smartcase = true
-opt.mouse = "a"
+opt.ignorecase          = true
+opt.smartcase           = true
+opt.mouse               = "a"
 
 -- Numbers
-opt.relativenumber = true
-opt.number = true
-opt.ignorecase = true
+opt.relativenumber      = true
+opt.number              = true
+opt.ignorecase          = true
 
 -- disable nvim intro
 opt.shortmess:append("sI")
@@ -51,8 +60,8 @@ opt.updatetime = 250
 
 -- go to previous/next line with h,l,left arrow and right arrow
 -- when cursor reaches end/beginning of line
-opt.whichwrap:append("<>[]hl")
-opt.wrap = true
+-- opt.whichwrap:append("<>[]hl")
+-- opt.wrap = true
 
 function map(mode, lhs, rhs, opts)
   local options = { noremap = true }
@@ -63,15 +72,18 @@ function map(mode, lhs, rhs, opts)
 end
 
 map("n", "<C-n>", ":NvimTreeToggle<CR>", { silent = true })
-map("n", "<C-a>", ":<cmd>AerialToggle!<CR>", { silent = true })
+map("n", "<C-a>", ":AerialToggle!<CR>", { silent = true })
 map("i", "JJ", "<Esc>", { silent = true })
 map("v", "<C-v>", '<Esc>"+gp', { silent = true })
+map("n", "<C-S-v>", '"+gp', { silent = true })
+map("i", "<C-S-v>", '<C-r>"', { silent = true })
 map("v", "<C-c>", '"+y', { silent = true })
+map("v", "<C-S-c>", '"+y', { silent = true })
 
 map("n", "<C-q>", ":BufferClose<CR>", { silent = true })
 
-map("n", "<A-w>", "<Cmd>BufferPrevious<CR>", opts)
-map("n", "<A-q>", "<Cmd>BufferNext<CR>", opts)
+map("n", "<A-w>", "<Cmd>BufferPrevious<CR>", { silent = true })
+map("n", "<A-q>", "<Cmd>BufferNext<CR>", { silent = true })
 
 map("v", "<SPACE>", "<Plug>(expand_region_expand)", { silent = true })
 map("n", "<SPACE>", "<Plug>(expand_region_expand)", { silent = true })
@@ -83,13 +95,7 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll upwards" })
 vim.keymap.set("n", "n", "nzzzv", { desc = "Next result" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous result" })
 
-vim.keymap.set({ "n", "x", "o" }, "S", "<Plug>(leap)")
-
-vim.api.nvim_create_user_command("ClearFormatLog", function()
-  local stat = vim.uv.fs_open(require("conform.log").get_logfile(), "w", 0)
-  vim.uv.fs_ftruncate(stat, 0)
-  vim.uv.fs_close(stat)
-end, { nargs = 0 })
+vim.keymap.set({ "n", "x", "o" }, "s", "<Plug>(leap)")
 
 vim.keymap.set("n", "]g", function()
   vim.diagnostic.jump({ count = vim.v.count1, float = false })
@@ -100,6 +106,8 @@ end)
 
 map("i", "II", "<ESC>", { silent = true })
 map("v", "II", "<ESC>", { silent = true })
+
+map("n", "H", "za", { silent = true })
 
 map("n", "<A-j>", ":MoveLine(1)<CR>", { silent = true })
 map("n", "<A-k>", ":MoveLine(-1)<CR>", { silent = true })
@@ -122,26 +130,32 @@ vim.keymap.set("n", ",/", function()
   require("telescope.builtin").live_grep({ additional_args = { "--hidden" } })
 end, {})
 
-vim.cmd("autocmd BufWritePre * lua vim.lsp.buf.format({ async = false })")
-vim.cmd("autocmd BufEnter *.hs call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})")
+
+-- vim.cmd("autocmd BufWritePre * lua vim.lsp.buf.format({ async = false })")
+vim.cmd("autocmd BufEnter *.rs call timer_start(50, { tid -> execute('colorscheme rusty')})")
+vim.cmd("autocmd BufEnter *.gleam call timer_start(50, { tid -> execute('colorscheme comic')})")
+vim.cmd("autocmd BufEnter *.hs,*.swift call timer_start(50, { tid -> execute('colorscheme gruvbox-material')})")
 vim.cmd("autocmd BufEnter *.js,*.dart call timer_start(50, { tid -> execute('colorscheme yowish')})")
 vim.cmd("autocmd BufEnter *.c,*.ts,*.tsx,*.lua call timer_start(50, { tid -> execute('colorscheme iceberg')})")
-vim.cmd("autocmd BufEnter *.cpp,*.gd,*.tsx call timer_start(50, { tid -> execute('colorscheme dracula')})")
+vim.cmd("autocmd BufEnter *.cpp,*.gd,*.tsx,*.go call timer_start(50, { tid -> execute('colorscheme dracula')})")
 vim.cmd("autocmd BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('colorscheme tender')})")
+
 
 if g.neovide then
   g.neovide_fullscreen = true
-  g.neovide_transparency = 0.95
-  opt.guifont = "Iosevka Nerd Font,Noto Color Emoji:h14"
+  g.neovide_transparency = 0.90
+  opt.guifont = "Iosevka Custom,Noto Color Emoji:h14"
 end
 
 vim.diagnostic.config({
+  underline = true,
+  signs = true,
   virtual_lines = true,
   virtual_text = false,
   update_in_insert = false,
 })
 
-vim.g.mapleader = ","
+g.mapleader = ","
 
 map("i", "<leader>,", "<Plug>(emmet-expand-abbr)", { silent = true })
 vim.g.emmet_install_only_plug = 1
@@ -179,7 +193,7 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = "gdscript",
   callback = function()
     vim.opt.expandtab = false
-    vim.opt.smartindent = true
+    vim.opt.smartindent = false
     vim.opt.tabstop = 2
     vim.opt.softtabstop = 2
   end,
