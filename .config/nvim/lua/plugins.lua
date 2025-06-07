@@ -339,14 +339,6 @@ require("lazy").setup {
         require("luasnip/loaders/from_vscode").load({ paths = { "~/.local/share/nvim/lazy/friendly-snippets" } })
       end,
     },
-
-    {
-      "chrisgrieser/nvim-scissors",
-      dependencies = { "nvim-telescope/telescope.nvim", "garymjr/nvim-snippets" },
-      opts = {
-        snippetDir = "./snippets/",
-      },
-    },
     { "saadparwaiz1/cmp_luasnip" },
     { "mrcjkb/haskell-snippets.nvim" },
     { "Nash0x7E2/awesome-flutter-snippets" },
@@ -375,8 +367,15 @@ require("lazy").setup {
         local alpha = require("alpha")
         local startify = require("alpha.themes.startify")
         local cow = require("alpha-cowsays-nvim")
-
+        startify.file_icons.provider = "devicons"
         startify.section.header.val = cow.cowsays()
+
+        startify.section.mru.val[4].val = function()
+          return nil
+        end
+        startify.section.mru_cwd.val[4].val = function()
+          return { startify.mru(0, vim.fn.getcwd(), 20) }
+        end
 
         alpha.setup(startify.config)
       end,
@@ -486,7 +485,7 @@ require("lazy").setup {
       end,
     },
     {
-      "aleryberry/hlchunk.nvim",
+      "shellRaining/hlchunk.nvim",
       event = { "BufReadPre", "BufNewFile" },
       config = function()
         require("hlchunk").setup({})

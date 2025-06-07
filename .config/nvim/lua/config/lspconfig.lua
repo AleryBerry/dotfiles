@@ -90,7 +90,6 @@ local servers = {
   "gleam",
   "zls",
   "gopls",
-  "htmx",
   "biome",
   "cssls",
   "superhtml",
@@ -103,6 +102,13 @@ for _, lsp in pairs(servers) do
     capabilities = capabilities(),
   })
 end
+
+
+lspconfig.htmx.setup({
+  cmd = { "htmx-lsp2" },
+  on_attach = on_attach,
+  capabilities = capabilities(),
+})
 
 cmp.setup({
   window = {

@@ -143,7 +143,7 @@ vim.cmd("autocmd BufEnter *.purs,*.cs call timer_start(50, { tid -> execute('col
 
 if g.neovide then
   g.neovide_fullscreen = true
-  g.neovide_transparency = 0.90
+  g.neovide_opacity = 0.75
   opt.guifont = "Iosevka Custom,Noto Color Emoji:h14"
 end
 
