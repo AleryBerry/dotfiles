@@ -8,9 +8,14 @@ config_version: 2
 settings:
   content.blocking.method:
     global: both
+  content.javascript.clipboard:
+    https://chat.deepseek.com: access-paste
+    https://gemini.google.com: access-paste
+    https://github.com: access-paste
   content.notifications.enabled:
     https://www.chess.com: true
     https://www.reddit.com: true
+    https://www.youtube.com: true
   content.register_protocol_handler:
     https://mail.google.com?extsrc=mailto&url=%25s: true
   qt.args:
