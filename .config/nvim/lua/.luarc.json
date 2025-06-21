@@ -1,8 +1,0 @@
-{
-    "diagnostics.globals": [
-        "map"
-    ],
-    "diagnostics.disable": [
-        "missing-fields"
-    ]
-}
