@@ -1,0 +1,7 @@
+#!/bin/sh
+
+[ -r ./conf ] && . ./conf
+
+export $(dbus-launch)
+exec 12to11 2>&1
+
