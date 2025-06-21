@@ -1,0 +1,4 @@
+packages:
+    ./*.cabal
+    xmonad/*.cabal
+    xmonad-contrib/*.cabal

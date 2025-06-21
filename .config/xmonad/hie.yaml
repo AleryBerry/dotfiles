@@ -1,0 +1,9 @@
+cradle:
+  cabal:
+    - path: "./xmonad.hs"
+      component: "my-xmonad-config:exe:xmonad"
+    - path: "./xmonad"
+      component: "lib:xmonad"
+    - path: "./xmonad-contrib"
+      component: "lib:xmonad-contrib"
+

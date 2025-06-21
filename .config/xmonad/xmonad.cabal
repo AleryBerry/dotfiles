@@ -1,0 +1,16 @@
+cabal-version:      2.4
+name:               my-xmonad-config
+version:            0.1.0.0
+synopsis:           My personal XMonad configuration
+build-type:         Simple
+
+executable xmonad
+    main-is:          xmonad.hs
+    build-depends:
+        base >=4.14,
+        xmonad,
+        xmonad-contrib,
+        containers,
+        ghc
+    hs-source-dirs:   .
+    default-language: Haskell2010
