@@ -2,7 +2,6 @@ return {
   { 'echasnovski/mini.splitjoin',         version = false },
   { "Fildo7525/pretty_hover",             event = "LspAttach", opts = {} },
   { "artemave/workspace-diagnostics.nvim" },
-  { "hinell/lsp-timeout.nvim", },
   {
     'nvim-flutter/flutter-tools.nvim',
     lazy = false,

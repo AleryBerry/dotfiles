@@ -107,9 +107,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
     local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
     require('nvim-navbuddy').attach(client, bufnr)
     require("workspace-diagnostics").populate_workspace_diagnostics(client, bufnr)
-    if client.supports_method('textdocument/completion') then
-      set_completion(client, bufnr)
-    end
+    -- if client.supports_method('textdocument/completion') then
+    --   set_completion(client, bufnr)
+    -- end
     set_keymaps(client, bufnr)
     if not client:supports_method('textDocument/willSaveWaitUntil')
         and client:supports_method('textDocument/formatting') then
