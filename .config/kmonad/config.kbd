@@ -1,0 +1,43 @@
+(defcfg
+  ;; Adjust this to your keyboard's device file
+  input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+  output (uinput-sink "kmonad-output")
+
+  ;; When in our F20-mod layer, unmapped keys will not fall through.
+  fallthrough true
+)
+
+;; Define the source keys for a standard US-QWERTY layout.
+(defsrc
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet rctl
+)
+
+;; ALIAS for CapsLock behavior
+(defalias
+  ;; Tap for Escape, Hold to toggle the 'F20mod' layer.
+  cap (tap-hold-next-release 200 esc (layer-toggle F20mod))
+)
+
+
+;; LAYER DEFINITIONS
+(deflayer default
+  ;; In the default layer, only CapsLock has a custom behavior.
+  ;; All other keys (_) pass through from defsrc.
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  @cap _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _
+)
+
+(deflayer F20mod
+  _ (around F20 1) (around F20 2) (around F20 3) (around F20 4) (around F20 5) (around F20 6) (around F20 7) (around F20 8) (around F20 9) (around F20 0) (around F20 -) (around F20 =) _
+  _      (around F20 q) (around F20 w) (around F20 e) (around F20 r) (around F20 t) (around F20 y) (around F20 u) (around F20 i) (around F20 o) (around F20 p) (around F20 [) (around F20 ]) _
+  @cap     (around F20 a) (around F20 s) (around F20 d) (around F20 f) (around F20 g) (around F20 h) (around F20 j) (around F20 k) (around F20 l) (around F20 ;) (around F20 ') _
+  _     (around F20 z) (around F20 x) (around F20 c) (around F20 v) (around F20 b) (around F20 n) (around F20 m) (around F20 ,) (around F20 .) (around F20 /) _
+  _ _ _ _ _ _ _
+)
