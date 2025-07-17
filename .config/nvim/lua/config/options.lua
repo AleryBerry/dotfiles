@@ -30,22 +30,21 @@ opt.clipboard           = "unnamedplus"
 opt.cursorline          = true
 
 -- Indenting
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
-vim.opt.autoindent = true
-vim.opt.smartindent = false
-vim.g.rust_recommended_style = false
+opt.tabstop = 2
+opt.softtabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.autoindent = true
+opt.smartindent = false
+g.rust_recommended_style = false
 
 opt.ignorecase          = true
 opt.smartcase           = true
 opt.mouse               = "a"
 
 -- Numbers
-opt.relativenumber      = true
+opt.relativenumber      = false
 opt.number              = true
-opt.ignorecase          = true
 
 -- disable nvim intro
 opt.shortmess:append("sI")
@@ -60,9 +59,19 @@ opt.undofile = true
 -- interval for writing swap file to disk, also used by gitsigns
 opt.updatetime = 250
 
-vim.keymap.set('n',        's', '<Plug>(leap-anywhere)')
+vim.keymap.set('n','s', '<Plug>(leap-anywhere)')
 vim.keymap.set({'x', 'o'}, 's', '<Plug>(leap)')
-vim.diagnostic.config({ virtual_text = false })
+vim.keymap.set("i", "<F20>i", '<Esc>')
+vim.keymap.set("n", "<F20>b", '0')
+vim.keymap.set("n", "<F20>w", '$')
+vim.keymap.set("i", "<F20>b", '<Esc>0')
+vim.keymap.set("i", "<F20>w", '<Esc>$')
 
+vim.keymap.set("n", "<F20>f", function() 
+  require('telescope.builtin').find_files({
+    -- cwd = require("root").find() or vim.fn.expand('%:p:h')
+  })
+end)
+vim.diagnostic.config({ virtual_text = false })
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","

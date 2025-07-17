@@ -1,8 +1,36 @@
 return {
+  {
+    'DrKJeff16/project.nvim',
+    lazy = false,  
+    dependencies = {
+        'nvim-lua/plenary.nvim',
+        'nvim-telescope/telescope.nvim',
+    }, 
+    config = function() require('project_nvim').setup({}) end,
+    cond = vim.fn.has('nvim-0.11') == 1,
+  },
+  {
+    "cbochs/grapple.nvim",
+    dependencies = {
+      { "nvim-tree/nvim-web-devicons", lazy = true }
+    },
+    opts = {
+      scope = "git", -- also try out "git_branch"
+    },
+    event = { "BufReadPost", "BufNewFile" },
+    cmd = "Grapple",
+    keys = {
+      { "<leader>a", "<cmd>Grapple toggle<cr>", desc = "Tag a file" },
+      { "<c-n>", "<cmd>Grapple toggle_tags<cr>", desc = "Toggle tags menu" },
+      { "<c-h>", "<cmd>Grapple select index=1<cr>", desc = "Select first tag" },
+      { "<c-j>", "<cmd>Grapple select index=2<cr>", desc = "Select second tag" },
+      { "<c-k>", "<cmd>Grapple select index=3<cr>", desc = "Select third tag" },
+      { "<c-l>", "<cmd>Grapple select index=4<cr>", desc = "Select fourth tag" },
+    }
+  },
   { 'echasnovski/mini.splitjoin',         version = false },
   { "Fildo7525/pretty_hover",             event = "LspAttach", opts = {} },
   { "artemave/workspace-diagnostics.nvim" },
-  { "hinell/lsp-timeout.nvim", },
   {
     'nvim-flutter/flutter-tools.nvim',
     lazy = false,
@@ -65,7 +93,6 @@ return {
   },
   { "ggandor/leap.nvim" },
   { "ggandor/flit.nvim" },
-  { "nvim-telescope/telescope-project.nvim" },
   { "lambdalisue/suda.vim" },
   {
     "kylechui/nvim-surround",
