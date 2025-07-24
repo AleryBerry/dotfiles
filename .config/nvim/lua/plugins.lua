@@ -1,11 +1,15 @@
 return {
   {
+    'echasnovski/mini.ai',
+    version = "*"
+  },
+  {
     'DrKJeff16/project.nvim',
-    lazy = false,  
+    lazy = false,
     dependencies = {
-        'nvim-lua/plenary.nvim',
-        'nvim-telescope/telescope.nvim',
-    }, 
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim',
+    },
     config = function() require('project_nvim').setup({}) end,
     cond = vim.fn.has('nvim-0.11') == 1,
   },
@@ -20,16 +24,23 @@ return {
     event = { "BufReadPost", "BufNewFile" },
     cmd = "Grapple",
     keys = {
-      { "<leader>a", "<cmd>Grapple toggle<cr>", desc = "Tag a file" },
-      { "<c-n>", "<cmd>Grapple toggle_tags<cr>", desc = "Toggle tags menu" },
-      { "<c-h>", "<cmd>Grapple select index=1<cr>", desc = "Select first tag" },
-      { "<c-j>", "<cmd>Grapple select index=2<cr>", desc = "Select second tag" },
-      { "<c-k>", "<cmd>Grapple select index=3<cr>", desc = "Select third tag" },
-      { "<c-l>", "<cmd>Grapple select index=4<cr>", desc = "Select fourth tag" },
+      { "<leader>a", "<cmd>Grapple toggle<cr>",         desc = "Tag a file" },
+      { "<c-n>",     "<cmd>Grapple toggle_tags<cr>",    desc = "Toggle tags menu" },
+      { "<c-h>",     "<cmd>Grapple select index=1<cr>", desc = "Select first tag" },
+      { "<c-j>",     "<cmd>Grapple select index=2<cr>", desc = "Select second tag" },
+      { "<c-k>",     "<cmd>Grapple select index=3<cr>", desc = "Select third tag" },
+      { "<c-l>",     "<cmd>Grapple select index=4<cr>", desc = "Select fourth tag" },
     }
   },
-  { 'echasnovski/mini.splitjoin',         version = false },
-  { "Fildo7525/pretty_hover",             event = "LspAttach", opts = {} },
+  { "echasnovski/mini.splitjoin",         version = false },
+  {
+    "Fildo7525/pretty_hover",
+    event = "LspAttach",
+    opts = {},
+    init = function()
+      vim.keymap.set("n", "K", require('pretty_hover').hover)
+    end
+  },
   { "artemave/workspace-diagnostics.nvim" },
   {
     'nvim-flutter/flutter-tools.nvim',
@@ -39,9 +50,7 @@ return {
       'stevearc/dressing.nvim',
     },
     config = true,
-    init = function()
-      require("flutter-tools").setup({})
-    end
+    init = function() require("flutter-tools").setup({}) end
   },
   {
     "SmiteshP/nvim-navbuddy",
@@ -61,7 +70,8 @@ return {
       transparency = 50,
       handler_opts = {
         border = "rounded"
-      }
+      },
+      zindex = 20,
     },
   },
   {

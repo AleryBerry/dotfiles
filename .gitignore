@@ -2,3 +2,4 @@
 .config/qutebrowser/autoconfig.yml
 .config/nvim/lazy-lock.json
 /.config/xmonad/dist-newstyle
+.config/nvim/lazy-lock.json

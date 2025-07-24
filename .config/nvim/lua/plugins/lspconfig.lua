@@ -3,7 +3,6 @@ vim.opt.completeopt = { "menu", "menuone", "noinsert", "popup" }
 local servers = {
   "pyright",
   "tailwindcss",
-  "ts_ls",
   "clangd",
   "gdscript",
   "nim_langserver",
@@ -47,10 +46,10 @@ local set_keymaps = function(client, bufnr)
 
   if client.supports_method('textdocument/diagnostics') then
     vim.keymap.set('n', '<leader>di', vim.diagnostic.open_float)
-    vim.keymap.set("n", "<leader>w", function()
+    vim.keymap.set("n", "<leader>W", function()
       vim.diagnostic.jump({ count = vim.v.count1, float = false })
     end, bufopts)
-    vim.keymap.set("n", "<leader>q", function()
+    vim.keymap.set("n", "<leader>Q", function()
       vim.diagnostic.jump({ count = -vim.v.count1, float = false })
     end, bufopts)
   end

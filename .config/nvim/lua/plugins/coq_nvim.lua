@@ -8,9 +8,15 @@ return {
   init = function()
     vim.g.coq_settings = {
       keymap = {
-        jump_to_mark = ""
+        jump_to_mark = "",
+        pre_select = true
       },
-      auto_start = true, -- if you want to start COQ at startup
+      auto_start = "shut-up", -- if you want to start COQ at startup
+      completion = {
+        always = true,
+        smart = true,
+        skip_after = { "\t", "\n", " ", "(", ")", "[", "]", "{", "}" },
+      },
       display = {
         preview = {
           border = {
@@ -30,17 +36,10 @@ return {
           helo = false
         }
       },
-      custom_format = function(item)
-        return item
-      end
+      -- custom_format = function(item)
+      --   return item
+      -- end
     }
-    vim.api.nvim_create_autocmd("ColorScheme", {
-      pattern = "*", -- Run for any colorscheme
-      callback = function()
-        vim.api.nvim_set_hl(0, 'PmenuAbbrCustom', { fg = '#FFC8C6' })
-        vim.api.nvim_set_hl(0, 'PmenuKindCustom', { fg = '#000000' })
-      end, -- The function to run
-    })
     require("coq_3p") {
       { src = "builtin/c" },
       { src = "builtin/clojure" },
@@ -55,7 +54,9 @@ return {
     }
   end,
   config = function()
-    local coq = require("coq")                         -- add this
-    vim.lsp.config("*", coq.lsp_ensure_capabilities()) -- after
+    -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+    -- capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
+    -- local coq = require("coq")
+    -- vim.lsp.config("*", coq.lsp_ensure_capabilities())
   end,
 }

@@ -1,8 +1,8 @@
 local init = function()
-  local telescope = require('telescope')
   local builtin = require('telescope.builtin')
   vim.keymap.set('n', '<leader>/', builtin.live_grep, { desc = 'Telescope live grep' })
-  vim.keymap.set('n', '<leader>p', ":Telescope projects", {})
+  vim.keymap.set("n", "<leader>f", builtin.find_files, { desc = 'Telescope find files' })
+  vim.keymap.set('n', '<leader>p', ":Telescope projects<CR>", {})
 end
 
 return {
