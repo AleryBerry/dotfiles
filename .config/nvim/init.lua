@@ -3,9 +3,8 @@ vim.o.relativenumber = true
 vim.o.cursorline = true
 vim.o.scrolloff = 10
 vim.o.sidescrolloff = 5
-vim.o.wrap = false
-
-vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
+vim.o.wrap = true
+vim.o.linebreak = true
 
 vim.o.tabstop = 2
 vim.o.shiftwidth = 2
@@ -50,20 +49,26 @@ vim.keymap.set("v", ">", ">gv", { silent = true })
 vim.o.wildmenu = true
 vim.o.wildmode = "longest:full,full"
 
-vim.g.mapleader = ","
+vim.g.mapleader = vim.keycode("<F20>")
 
 vim.pack.add({
-  { src = "https://github.com/neovim/nvim-lspconfig"},
-  { src = "https://github.com/stevearc/oil.nvim"},
-  "https://github.com/echasnovski/mini.ai",
+	"https://github.com/echasnovski/mini.ai",
 })
 
+vim.g.neovide_opacity = 0.9
+
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "*",
-  callback = function()
-    vim.o.tabstop = 2
-    vim.o.shiftwidth = 2
-    vim.o.softtabstop = 2
-    vim.o.expandtab = false
-  end,
+	pattern = "*",
+	callback = function()
+		vim.o.tabstop = 2
+		vim.o.shiftwidth = 2
+		vim.o.softtabstop = 2
+		vim.o.expandtab = false
+		-- vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+		-- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+	end,
 })
+
+vim.keymap.set('t', '<Esc>', "<C-\\><C-n>", { silent = true })
+require('vim._extui').enable({})
+vim.o.cmdheight = 1

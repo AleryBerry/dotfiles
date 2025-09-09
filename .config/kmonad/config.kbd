@@ -1,6 +1,6 @@
 (defcfg
   ;; Adjust this to your keyboard's device file
-  input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+  input  (device-file "/dev/input/by-id/usb-2a7a_CASUE_USB_KB-event-kbd")
   output (uinput-sink "kmonad-output")
 
   ;; When in our F20-mod layer, unmapped keys will not fall through.

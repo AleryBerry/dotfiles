@@ -5,60 +5,9 @@ vim.pack.add({
 	"https://github.com/aznhe21/actions-preview.nvim",
 	"https://github.com/hasansujon786/nvim-navbuddy",
 	"https://github.com/neovim/nvim-lspconfig",
-	"https://github.com/SmiteshP/nvim-navic",
 	"https://github.com/MunifTanjim/nui.nvim",
+	"https://github.com/mfussenegger/nvim-jdtls",
 })
-
-require("nvim-navbuddy").setup({
-	lsp = {
-		auto_attach = true
-	}
-})
-
-require("nvim-navic").setup {
-	icons = {
-		File          = "󰈙 ",
-		Module        = " ",
-		Namespace     = "󰌗 ",
-		Package       = " ",
-		Class         = "󰌗 ",
-		Method        = "󰆧 ",
-		Property      = " ",
-		Field         = " ",
-		Constructor   = " ",
-		Enum          = "󰕘",
-		Interface     = "󰕘",
-		Function      = "󰊕 ",
-		Variable      = "󰆧 ",
-		Constant      = "󰏿 ",
-		String        = "󰀬 ",
-		Number        = "󰎠 ",
-		Boolean       = "◩ ",
-		Array         = "󰅪 ",
-		Object        = "󰅩 ",
-		Key           = "󰌋 ",
-		Null          = "󰟢 ",
-		EnumMember    = " ",
-		Struct        = "󰌗 ",
-		Event         = " ",
-		Operator      = "󰆕 ",
-		TypeParameter = "󰊄 ",
-	},
-	lsp = {
-		auto_attach = true,
-		preference = nil,
-	},
-	highlight = true,
-	separator = " > ",
-	depth_limit = 0,
-	depth_limit_indicator = "..",
-	safe_output = true,
-	lazy_update_context = false,
-	click = false,
-	format_text = function(text)
-		return text
-	end,
-}
 
 vim.opt.completeopt = { "menu", "menuone", "preinsert" }
 vim.api.nvim_set_hl(0, 'ComplMatchIns', { link = 'Comment' })
@@ -86,12 +35,13 @@ local servers = {
 	"tailwindcss",
 	"clangd",
 	"gdscript",
+	"jdtls",
 	"nim_langserver",
 	"lua_ls",
-	"java_language_server",
 	"csharp_ls",
 	"sourcekit",
 	"gleam",
+	"jdtls",
 	"zls",
 	"gopls",
 	"biome",
@@ -149,7 +99,7 @@ local function pumvisible()
 	return tonumber(vim.fn.pumvisible()) ~= 0
 end
 
-local function lsp(args)
+local function lsp_setup(args)
 	local bufnr = args.buf
 	local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 	local function keymap(lhs, rhs, opts, mode)
@@ -193,10 +143,10 @@ local function lsp(args)
 		keymap('<Tab>', function()
 			if pumvisible() then
 				feedkeys '<C-n>'
-			elseif vim.snippet.active { direction = 1 } then
-				vim.snippet.jump(1)
 			elseif has_words_before() then
 				vim.lsp.completion.get()
+			elseif vim.snippet.active { direction = 1 } then
+				vim.snippet.jump(1)
 			else
 				feedkeys '<Tab>'
 			end
@@ -216,6 +166,6 @@ end
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	pattern = "*",
-	callback = lsp,
+	callback = lsp_setup,
 })
 
