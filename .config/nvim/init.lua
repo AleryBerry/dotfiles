@@ -40,11 +40,16 @@ vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { silent = true })
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { silent = true })
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { silent = true })
 
+
 vim.keymap.set("n", "j", "gj", { silent = true })
 vim.keymap.set("n", "k", "gk", { silent = true })
 
 vim.keymap.set("v", "<", "<gv", { silent = true })
 vim.keymap.set("v", ">", ">gv", { silent = true })
+
+vim.keymap.set('t', '<Esc>', "<C-\\><C-n>", { silent = true })
+
+vim.keymap.set('n', '<c-q>', "<cmd>bdelete<CR>", { silent = true })
 
 vim.o.wildmenu = true
 vim.o.wildmode = "longest:full,full"
@@ -53,6 +58,44 @@ vim.g.mapleader = vim.keycode("<F20>")
 
 vim.pack.add({
 	"https://github.com/echasnovski/mini.ai",
+	"https://github.com/kwkarlwang/bufjump.nvim",
+	"https://github.com/cbochs/grapple.nvim",
+	"https://github.com/nvim-tree/nvim-web-devicons",
+	"https://github.com/sainnhe/gruvbox-material",
+	"https://github.com/shellRaining/hlchunk.nvim",
+	"https://github.com/ggandor/leap.nvim",
+	"https://github.com/gbprod/substitute.nvim",
+	"https://github.com/gbprod/yanky.nvim",
+	"https://github.com/oribarilan/lensline.nvim",
+	-- lspconfig
+	"https://github.com/neovim/nvim-lspconfig",
+	"https://github.com/nvim-lua/plenary.nvim",
+	"https://github.com/pmizio/typescript-tools.nvim",
+	"https://github.com/aznhe21/actions-preview.nvim",
+	"https://github.com/hasansujon786/nvim-navbuddy",
+	"https://github.com/neovim/nvim-lspconfig",
+	"https://github.com/MunifTanjim/nui.nvim",
+	"https://github.com/mfussenegger/nvim-jdtls",
+	-- lualine
+	"https://github.com/nvim-lualine/lualine.nvim",
+	"https://github.com/SmiteshP/nvim-navic",
+	-- multicursors
+	"https://github.com/smoka7/multicursors.nvim",
+	"https://github.com/nvimtools/hydra.nvim",
+
+	"https://github.com/kylechui/nvim-surround",
+
+	"https://github.com/Fildo7525/pretty_hover",
+
+	"https://github.com/rachartier/tiny-inline-diagnostic.nvim",
+	"https://github.com/MeanderingProgrammer/render-markdown.nvim",
+
+	"https://github.com/gbprod/yanky.nvim",
+	-- Treesitter
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter",             version = "main" },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects", version = "main" },
+
+ "https://github.com/folke/snacks.nvim" ,
 })
 
 vim.g.neovide_opacity = 0.9
@@ -69,6 +112,5 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-vim.keymap.set('t', '<Esc>', "<C-\\><C-n>", { silent = true })
 require('vim._extui').enable({})
 vim.o.cmdheight = 1

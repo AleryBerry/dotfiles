@@ -1,8 +1,3 @@
-vim.pack.add({
-	"https://github.com/smoka7/multicursors.nvim",
-	"https://github.com/nvimtools/hydra.nvim"
-})
-
 vim.keymap.set({ "v", "n" }, "<C-g>", "<cmd>MCstart<CR>", { silent = true })
 require("multicursors").setup({
 	DEBUG_MODE = false,

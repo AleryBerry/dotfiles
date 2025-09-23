@@ -1,12 +1,5 @@
-vim.pack.add({ "https://github.com/folke/snacks.nvim" })
-
 -- Add current pwd to projects
 local add_project = function()
-  local name = vim.fn.input("Project name: ")
-  if name == "" then
-    return
-  end
-
   local path = vim.fn.getcwd()
   local data_dir = vim.fn.stdpath("data") .. "/snacks"
   local projects_file = data_dir .. "/custom_projects.json"
@@ -153,6 +146,6 @@ vim.keymap.set("n", "<leader>g", Snacks.picker.grep, { silent = true })
 vim.keymap.set("n", "<leader>e", function() Snacks.explorer() end, { silent = true })
 vim.keymap.set("n", "<leader>b", Snacks.picker.buffers, { silent = true })
 vim.keymap.set("n", "<leader>d", Snacks.picker.diagnostics, { silent = true })
-vim.keymap.set("n", "<leader>r", Snacks.picker.lsp_references, { silent = true })
+vim.keymap.set("n", ",r", Snacks.picker.lsp_references, { silent = true })
 vim.keymap.set("n", "<leader>z", Snacks.picker.zoxide, { silent = true })
 vim.keymap.set("n", "<leader>ad", add_project, { silent = true })

@@ -1,8 +1,3 @@
-vim.pack.add({
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter",             version = "main" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects", version = "main" },
-})
-
 require('nvim-treesitter').setup({
 	ensure_installed = {},
 	auto_install = true,
@@ -65,11 +60,9 @@ require("nvim-treesitter-textobjects").setup {
 }
 
 local move = require("nvim-treesitter-textobjects.move")
--- You can use the capture groups defined in `textobjects.scm`
 vim.keymap.set({ "n", "x", "o" }, "]]", function()
 	require("nvim-treesitter-textobjects.move").goto_next_start("@class.outer", "textobjects")
 end)
--- You can also pass a list to group multiple queries.
 vim.keymap.set({ "n", "x", "o" }, "]o", function()
 	move.goto_next_start({ "@loop.inner", "@loop.outer" }, "textobjects")
 end)
@@ -88,8 +81,6 @@ vim.keymap.set({ "n", "x", "o" }, "[c", function()
 	require("nvim-treesitter-textobjects.move").goto_previous_start("@class.outer", "textobjects")
 end)
 
--- Go to either the start or the end, whichever is closer.
--- Use if you want more granular movements
 vim.keymap.set({ "n", "x", "o" }, "]i", function()
 	require("nvim-treesitter-textobjects.move").goto_next("@conditional.outer", "textobjects")
 end)

@@ -1,4 +1,3 @@
-vim.pack.add({'https://github.com/oribarilan/lensline.nvim'})
 require('lensline').setup({
   'oribarilan/lensline.nvim',
   event = 'LspAttach',

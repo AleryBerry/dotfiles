@@ -1,7 +1,3 @@
-vim.pack.add({
-	"https://github.com/nvim-lualine/lualine.nvim",
-	"https://github.com/SmiteshP/nvim-navic",
-})
 local navic = require("nvim-navic")
 require("nvim-navbuddy").setup({
 	lsp = {

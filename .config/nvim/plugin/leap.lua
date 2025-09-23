@@ -1,12 +1,10 @@
-vim.pack.add({
-	"https://github.com/ggandor/leap.nvim",
-	"https://github.com/gbprod/substitute.nvim",
-	"https://github.com/gbprod/yanky.nvim",
-})
-
 require("substitute").setup({
   on_substitute = require("yanky.integration").substitute(),
 })
+
+vim.keymap.set("n", "<leader>s", require('substitute').operator, { noremap = true })
+vim.keymap.set("x", "<leader>s", require('substitute').visual, { noremap = true })
+
 require('leap').opts.equivalence_classes = { ' \t\r\n', '([{', ')]}', '\'"`' }
 require('leap').opts.preview_filter = function() return false end
 vim.api.nvim_set_hl(0, 'LeapBackdrop', { link = 'Comment' })

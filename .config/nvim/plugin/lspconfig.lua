@@ -1,14 +1,3 @@
-vim.pack.add({
-	"https://github.com/neovim/nvim-lspconfig",
-	"https://github.com/nvim-lua/plenary.nvim",
-	"https://github.com/pmizio/typescript-tools.nvim",
-	"https://github.com/aznhe21/actions-preview.nvim",
-	"https://github.com/hasansujon786/nvim-navbuddy",
-	"https://github.com/neovim/nvim-lspconfig",
-	"https://github.com/MunifTanjim/nui.nvim",
-	"https://github.com/mfussenegger/nvim-jdtls",
-})
-
 vim.opt.completeopt = { "menu", "menuone", "preinsert" }
 vim.api.nvim_set_hl(0, 'ComplMatchIns', { link = 'Comment' })
 
