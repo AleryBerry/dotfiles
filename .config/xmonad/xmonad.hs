@@ -17,7 +17,7 @@ import XMonad.Hooks.UrgencyHook (doAskUrgent)
 import XMonad.Layout
 import XMonad.Layout.Gaps (Direction2D (D, L, R, U), gaps)
 import XMonad.Layout.LayoutModifier (ModifiedLayout)
-import XMonad.Layout.NoBorders (Ambiguity (OnlyScreenFloat), ConfigurableBorder, WithBorder, lessBorders, noBorders)
+import XMonad.Layout.NoBorders (Ambiguity (OnlyScreenFloat), ConfigurableBorder, WithBorder, hasBorder, lessBorders, noBorders)
 import XMonad.Layout.Spacing (Border (Border), Spacing, spacingRaw, spacingWithEdge)
 import XMonad.Prelude (elemIndex, isJust, void)
 import qualified XMonad.StackSet as W
@@ -30,16 +30,17 @@ type KeyCombination = (KeyMask, KeySym)
 
 myStartup :: X ()
 myStartup = do
-  spawnOnce "feh --bg-fill ~/Pictures/girl-reading-book.png"
+  spawnOnce "feh --bg-fill ~/Pictures/wallhaven-6lkyeq_1366x768.png"
   spawnOnce "picom"
   spawnOnce "polybar"
+  spawnOnce "12to11"
   setDefaultCursor xC_left_ptr
 
 vimAnywhere :: X ()
 vimAnywhere = do
   time <- liftIO getCurrentTime
   let tempFile = "/tmp/vim-anywhere/" ++ formatTime defaultTimeLocale "%Y%m%d-%H%M%S" time
-  spawnOnce $ "neovide " ++ tempFile ++ " --x11-wm-class vimAnywhere && cat " ++ tempFile ++ " | xclip -selection clipboard"
+  spawnOnce $ "neovide --x11-wm-class vimAnywhere -- \"-c startinsert\" " ++ tempFile ++ " && cat " ++ tempFile ++ " | xclip -selection clipboard"
 
 createKeyChord :: [KeyCombination] -> X () -> [(KeyCombination, X ())]
 createKeyChord [] f = []
@@ -58,7 +59,7 @@ myKeyChords =
 
 scratchpads :: [NamedScratchpad]
 scratchpads =
-  [ NS "rmpc" "kitty --title 'rmpc' -e rmpc" (title =? "rmpc") doCenterFloat
+  [ NS "rmpc" "kitty --title 'rmpc' -e rmpc" (title =? "rmpc") (doRectFloat (W.RationalRect (1 % 8) (1 % 6) (3 % 4) (2 % 3)))
   , NS "neovim" "neovide --x11-wm-class code-editor" (className =? "code-editor") doFullFloat
   ]
 
@@ -81,7 +82,7 @@ myKeys conf@XConfig{XMonad.modMask = modm, XMonad.terminal = term} =
   M.fromList $
     myKeyChords
       ++ [ ((modm, xK_Return), spawn term)
-         , ((modm, xK_p), spawn "dmenu_run")
+         , ((modm, xK_p), spawn "walker --modules applications,commands")
          , ((modm, xK_b), spawn "polybar-msg cmd toggle")
          , ((modm, xK_q), withFocused killWindow)
          , ((modm .|. shiftMask, xK_q), withFocused forceKill)
@@ -90,11 +91,12 @@ myKeys conf@XConfig{XMonad.modMask = modm, XMonad.terminal = term} =
          , ((modm .|. shiftMask, xK_m), withFocused toggleFullFloat)
          , ((modm, xK_space), sendMessage NextLayout)
          , ((modm, xK_v), vimAnywhere)
+         , ((modm, xK_s), spawn "walker -m clipboard")
          , -- scratchpads
            ((modm, xK_m), namedScratchpadAction scratchpads "rmpc")
          , ((modm, xK_n), namedScratchpadAction scratchpads "neovim")
          , ((modm, xK_Print), spawn "flameshot screen -r | xclip -selection clipboard -t image/png")
-         , ((modm, xK_Print), spawn "flameshot gui -r -s | xclip -selection clipboard -t image/png")
+         , ((0, xK_Print), spawn "flameshot gui -r -s | xclip -selection clipboard -t image/png")
          ]
       ++
       -- mod-[1..9], Switch to workspace N
@@ -109,11 +111,11 @@ myManageHook =
   composeOne
     [ isFullscreen -?> doFullFloat
     , className =? "vimAnywhere" -?> doRectFloat (W.RationalRect (1 % 8) (1 % 6) (3 % 4) (2 % 3))
+    , title =? "walker" -?> doCenterFloat <+> hasBorder False
     ]
 
 main :: IO ()
 main = do
-  spawn $ "echo \"" ++ show (fst <$> myKeyChords) ++ "\" >> /home/aleryberry/mytext.txt"
   xmonad . docks . toggleFullFloatEwmhFullscreen . setEwmhActivateHook doAskUrgent . ewmhFullscreen . ewmh $
     def
       { terminal = "ghostty"
