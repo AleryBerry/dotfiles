@@ -18,9 +18,8 @@ require('nvim-treesitter').setup({
 	},
 })
 -- configuration
-require("nvim-treesitter-textobjects").setup {
+require("nvim-treesitter-textobjects").setup({
 	select = {
-		-- Automatically jump forward to textobj, similar to targets.vim
 		lookahead = true,
 		move = {
 			-- whether to set jumps in the jumplist
@@ -28,7 +27,7 @@ require("nvim-treesitter-textobjects").setup {
 		},
 		include_surrounding_whitespace = false,
 	},
-}
+})
 
 -- keymaps
 -- You can use the capture groups defined in `textobjects.scm`
@@ -68,13 +67,13 @@ vim.keymap.set({ "n", "x", "o" }, "]o", function()
 end)
 
 vim.keymap.set({ "n", "x", "o" }, "]f", function()
-	require("nvim-treesitter-textobjects.move").goto_next_start({"@function.outer", "@call.outer"}, "textobjects")
+	require("nvim-treesitter-textobjects.move").goto_next_start({"@function.outer", }, "textobjects")
 end)
 vim.keymap.set({ "n", "x", "o" }, "]F", function()
-	require("nvim-treesitter-textobjects.move").goto_next_end({"@function.outer", "@call.outer"}, "textobjects")
+	require("nvim-treesitter-textobjects.move").goto_next_end({"@function.outer", }, "textobjects")
 end)
 vim.keymap.set({ "n", "x", "o" }, "[f", function()
-	require("nvim-treesitter-textobjects.move").goto_previous_start({"@function.outer", "@call.outer"}, "textobjects")
+	require("nvim-treesitter-textobjects.move").goto_previous_start({"@function.outer", }, "textobjects")
 end)
 
 vim.keymap.set({ "n", "x", "o" }, "[c", function()
@@ -87,3 +86,4 @@ end)
 vim.keymap.set({ "n", "x", "o" }, "[i", function()
 	require("nvim-treesitter-textobjects.move").goto_previous("@conditional.outer", "textobjects")
 end)
+

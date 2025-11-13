@@ -47,9 +47,9 @@ vim.keymap.set("n", "k", "gk", { silent = true })
 vim.keymap.set("v", "<", "<gv", { silent = true })
 vim.keymap.set("v", ">", ">gv", { silent = true })
 
-vim.keymap.set('t', '<Esc>', "<C-\\><C-n>", { silent = true })
+-- vim.keymap.set('t', '<Esc>', "<C-\\><C-n>", { silent = true })
 
-vim.keymap.set('n', '<c-q>', "<cmd>bdelete<CR>", { silent = true })
+vim.keymap.set('n', '<c-q>', "<cmd>bdelete!<CR>", { silent = true })
 
 vim.o.wildmenu = true
 vim.o.wildmode = "longest:full,full"
@@ -76,6 +76,8 @@ vim.pack.add({
 	"https://github.com/neovim/nvim-lspconfig",
 	"https://github.com/MunifTanjim/nui.nvim",
 	"https://github.com/mfussenegger/nvim-jdtls",
+	"https://github.com/nvim-flutter/flutter-tools.nvim",
+	"https://github.com/mrcjkb/haskell-tools.nvim",
 	-- lualine
 	"https://github.com/nvim-lualine/lualine.nvim",
 	"https://github.com/SmiteshP/nvim-navic",
@@ -90,7 +92,6 @@ vim.pack.add({
 	"https://github.com/rachartier/tiny-inline-diagnostic.nvim",
 	"https://github.com/MeanderingProgrammer/render-markdown.nvim",
 
-	"https://github.com/gbprod/yanky.nvim",
 	-- Treesitter
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter",             version = "main" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects", version = "main" },
@@ -103,14 +104,24 @@ vim.g.neovide_opacity = 0.9
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "*",
 	callback = function()
-		vim.o.tabstop = 2
-		vim.o.shiftwidth = 2
-		vim.o.softtabstop = 2
-		vim.o.expandtab = false
-		-- vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-		-- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+		-- vim.o.tabstop = 2
+		-- vim.o.shiftwidth = 2
+		-- vim.o.softtabstop = 2
+		-- vim.o.expandtab = false
+		vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+		vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 	end,
 })
 
 require('vim._extui').enable({})
 vim.o.cmdheight = 1
+
+vim.api.nvim_create_autocmd("TermOpen", {
+	group = vim.api.nvim_create_augroup("custom-term-open", { clear = true }),
+	callback = function()
+		vim.opt.number = false
+		vim.opt.relativenumber = false
+	end
+})
+
+vim.keymap.set("n", "<leader>t", "Floaterminal", { silent = true})

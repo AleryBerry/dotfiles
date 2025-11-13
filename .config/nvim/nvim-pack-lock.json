@@ -1,0 +1,38 @@
+{
+  "plugins": {
+    "actions-preview.nvim": [],
+    "bufjump.nvim": [],
+    "flutter-tools.nvim": [],
+    "grapple.nvim": [],
+    "gruvbox-material": [],
+    "haskell-tools.nvim": [],
+    "hlchunk.nvim": [],
+    "hydra.nvim": [],
+    "leap.nvim": [],
+    "lensline.nvim": [],
+    "lualine.nvim": [],
+    "mini.ai": [],
+    "multicursors.nvim": [],
+    "nui.nvim": [],
+    "nvim-jdtls": [],
+    "nvim-lspconfig": [],
+    "nvim-navbuddy": [],
+    "nvim-navic": [],
+    "nvim-surround": [],
+    "nvim-treesitter": {
+      "version": "'main'"
+    },
+    "nvim-treesitter-textobjects": {
+      "version": "'main'"
+    },
+    "nvim-web-devicons": [],
+    "plenary.nvim": [],
+    "pretty_hover": [],
+    "render-markdown.nvim": [],
+    "snacks.nvim": [],
+    "substitute.nvim": [],
+    "tiny-inline-diagnostic.nvim": [],
+    "typescript-tools.nvim": [],
+    "yanky.nvim": []
+  }
+}
