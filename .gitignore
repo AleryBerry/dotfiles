@@ -3,3 +3,8 @@
 .config/nvim/lazy-lock.json
 /.config/xmonad/dist-newstyle
 .config/nvim/lazy-lock.json
+/.config/zsh/.zim
+.config/zsh/.zhistory
+.config/zsh/.zcompdump.zwc
+.config/zsh/.zcompdump.dat
+.config/zsh/.zcompdump
