@@ -96,7 +96,7 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter",             version = "main" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects", version = "main" },
 
- "https://github.com/folke/snacks.nvim" ,
+ "https://github.com/folke/snacks.nvim",
 })
 
 vim.g.neovide_opacity = 0.9

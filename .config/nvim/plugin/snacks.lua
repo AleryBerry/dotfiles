@@ -89,6 +89,19 @@ require('snacks').setup({
       },
     },
   },
+  dashboard= {
+    autokeys = "12345asdfqwert",
+    formats = {
+      key = function(item)
+        return { { "[", hl = "special" }, { item.key, hl = "key" }, { "]", hl = "special" } }
+      end,
+    },
+    sections = {
+      { section = "terminal", cmd = "cowsay $(fortune wisdom)", random = 100, hl = "header", height = 20, indent = 8 },
+      { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 2 },
+      { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 2 },
+    },
+  }
 })
 -- Add current pwd to projects
 local add_project = function()
